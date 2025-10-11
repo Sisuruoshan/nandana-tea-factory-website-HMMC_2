@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Nandana Tea</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo"><i class="fa-solid fa-leaf"></i> Nandana Tea</a>
+        <nav>
+            <a href="about.html">Our Story</a>
+            <a href="products.html">Products</a>
+            <a href="#">Sustainability</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+        <div class="header-icons">
+            <a href="#"><i class="fa-solid fa-magnifying-glass"></i></a>
+            <a href="#"><i class="fa-solid fa-bag-shopping"></i></a>
+            <a href="#"><img src="https://i.pravatar.cc/32" alt="User" class="user-icon"></a>
+        </div>
+        <div class="hamburger-menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top: 8rem;">
+        <div class="contact-grid">
+            <div class="contact-form">
+                <h1 style="font-family: var(--font-heading); font-size: 3rem; margin-bottom: 1rem;">Get in Touch</h1>
+                <p style="color:var(--text-medium); margin-bottom: 2rem;">We're here to assist you with any inquiries or feedback. Please reach out to us through the form or our contact details.</p>
+                <form id="contact-form" novalidate>
+                    <div class="form-group"><input type="text" name="name" placeholder="Enter your name" required></div>
+                    <div class="form-group"><input type="email" name="email" placeholder="Enter your email" required></div>
+                    <div class="form-group"><input type="text" name="subject" placeholder="Enter the subject" required></div>
+                    <div class="form-group"><textarea name="message" rows="5" placeholder="Enter your message" required></textarea></div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Message</button>
+                </form>
+            </div>
+            <div class="contact-info">
+                <h2>Contact Information</h2>
+                <div class="info-item">
+                    <i class="fa-solid fa-phone"></i>
+                    <span>+94 71 637 8331</span>
+                </div>
+                <div class="info-item">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span>info@nandanatea.com</span>
+                </div>
+                <div class="info-item">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>123 Tea Estate Road, Akuressa, Sri Lanka</span>
+                </div>
+                <div class="social-info" style="margin-top: 4rem;">
+                    <h2>Follow Us</h2>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-pinterest"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer style="background: #0d1f1e;">
+        <div class="container footer-content">
+            <div class="footer-links">
+                <a href="about.html">Our Story</a>
+                <a href="products.html">Products</a>
+                <a href="#">Sustainability</a>
+                <a href="contact.html">Contact</a>
+            </div>
+             <p>© 2025 Nandana Tea Factory. All rights reserved.</p>
+             <div class="footer-social">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+             </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/validation.js"></script>
+</body>
+</html>
