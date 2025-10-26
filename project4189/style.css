@@ -177,7 +177,11 @@ nav a:hover {
 /* --- Page Header --- */
 .page-header {
     text-align: center;
-    padding: 8rem 1rem 2rem 1rem; /* Adjusted padding for fixed header */
+    padding: 8rem 1rem 2rem 1rem; 
+    background-color:var(--secondary-dark-green);
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('srs/Factory.webp');
+   
+    
 }
 .page-header h1 {
     font-family: var(--font-heading);
@@ -189,6 +193,7 @@ nav a:hover {
     color: var(--text-medium);
     max-width: 600px;
     margin: 1rem auto 0;
+    font-weight:500;
 }
 
 /* --- About Page --- */
@@ -213,6 +218,7 @@ nav a:hover {
     line-height: 1.8;
 }
 .certifications {
+    
     text-align: center;
     padding: 4rem 0;
 }
@@ -223,9 +229,10 @@ nav a:hover {
     margin-top: 2rem;
 }
 .cert-card {
-    background-color: var(--secondary-dark-green);
+    background-color:var(--secondary-dark-green);
     padding: 2.5rem;
     border-radius: 12px;
+
 }
 .cert-card i {
     font-size: 2.5rem;
