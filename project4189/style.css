@@ -175,7 +175,7 @@ nav a:hover {
 }
 
 /* --- Page Header --- */
-.page-header {
+.page-header1 {
     text-align: center;
     padding: 8rem 1rem 2rem 1rem; 
     background-color:var(--secondary-dark-green);
@@ -183,6 +183,15 @@ nav a:hover {
    
     
 }
+
+.page-header {
+    text-align: center;
+    padding: 8rem 1rem 2rem 1rem; 
+    
+    
+}
+
+
 .page-header h1 {
     font-family: var(--font-heading);
     font-size: 3.5rem;
