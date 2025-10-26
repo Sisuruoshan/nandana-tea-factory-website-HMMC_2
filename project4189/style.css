@@ -3,8 +3,8 @@
 
 /* --- CSS Variables (Style Dictionary) --- */
 :root {
-    --primary-dark-green: #122b2a;
-    --secondary-dark-green: #1a3a39;
+    --primary-dark-green: #0c2e19;
+    --secondary-dark-green: #0c422c;
     --accent-mint-green: #6effa8;
     --text-light: #f0f0f0;
     --text-medium: #c0c0c0;
@@ -35,12 +35,15 @@ body {
     padding: 0 2rem;
 }
 
+/* (undo) main padding-top removed */
+
 /* --- Header & Navigation --- */
 header {
     position: fixed;
     width: 100%;
     z-index: 1000;
     padding: 1.5rem 2rem;
+    background-color: #012403; /* make top navigation black */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -49,7 +52,7 @@ header {
 }
 
 header.scrolled {
-    background-color: var(--primary-dark-green);
+    background-color: #03411d; /* keep black when scrolled */
     padding: 1rem 2rem;
     border-bottom: 1px solid var(--border-color);
 }
@@ -69,7 +72,7 @@ header.scrolled {
 }
 
 nav a {
-    color: var(--text-light);
+    color: #fff;
     text-decoration: none;
     margin: 0 1.5rem;
     font-weight: 500;
@@ -80,7 +83,7 @@ nav a:hover {
 }
 
 .header-icons a {
-    color: var(--text-light);
+    color: #fff;
     font-size: 1.2rem;
     margin-left: 1.5rem;
     transition: color 0.3s;
@@ -142,7 +145,7 @@ nav a:hover {
 
 /* --- Hero Section (Home Page) --- */
 .hero {
-    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://images.unsplash.com/photo-1576092762791-d6cc815f1825);
+    background: linear-gradient(rgba(93, 207, 127, 0.5), rgba(0, 0, 0, 0.5)), url('srs/BC1.webp');
     background-size: cover;
     background-position: center;
     padding: 12rem 0 8rem 0; /* Adjusted padding for fixed header */
