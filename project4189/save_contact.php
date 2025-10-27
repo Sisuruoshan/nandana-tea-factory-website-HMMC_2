@@ -1,5 +1,5 @@
 <?php
-include 'db_connect.php';
+include 'nandana_tea_factory.php';
 
 // Get form data//
 $name = $_POST['name'];
