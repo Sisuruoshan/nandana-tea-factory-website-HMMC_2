@@ -505,3 +505,100 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+
+/* --- Admin Dashboard Layout --- */
+.admin-body {
+    background-color: var(--primary-dark-green);
+}
+
+.admin-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.admin-sidebar {
+    width: 260px;
+    background-color: var(--secondary-dark-green);
+    padding: 2rem;
+    border-right: 1px solid var(--border-color);
+}
+
+.admin-nav {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-nav a {
+    color: var(--text-medium);
+    text-decoration: none;
+    padding: 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: color 0.3s;
+}
+
+.admin-nav a.active, .admin-nav a:hover {
+    color: var(--accent-mint-green);
+}
+
+.admin-main {
+    flex: 1;
+    padding: 2rem 4rem;
+}
+
+.admin-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.stat-card {
+    background: var(--secondary-dark-green);
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--accent-mint-green);
+    margin-top: 0.5rem;
+}
+
+/* --- Status Badges --- */
+.status-badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.status-badge.success {
+    background: rgba(110, 255, 168, 0.2);
+    color: var(--accent-mint-green);
+}
+
+.status-badge.pending {
+    background: rgba(255, 107, 107, 0.2);
+    color: var(--error-color);
+}
+
+/* --- Professional Header Scroll (Main Site) --- */
+header.scrolled {
+    background: rgba(18, 43, 42, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Nandana Tea</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="admin-body">
+    <div class="admin-wrapper">
+        <aside class="admin-sidebar">
+            <div class="logo"><i class="fa-solid fa-leaf"></i> Nandana Admin</div>
+            <nav class="admin-nav">
+                <a href="#" class="active"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+                <a href="products.html"><i class="fa-solid fa-boxes-stacked"></i> Products</a>
+                <a href="#"><i class="fa-solid fa-envelope"></i> Inquiries</a>
+                <a href="wholesale.html"><i class="fa-solid fa-handshake"></i> Wholesale</a>
+                <a href="index.html"><i class="fa-solid fa-house"></i> View Site</a>
+            </nav>
+        </aside>
+
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <h2>Overview</h2>
+                <div class="admin-user">
+                    <span>Admin User</span>
+                    <img src="https://i.pravatar.cc/40" alt="Admin" class="user-icon">
+                </div>
+            </header>
+
+            <section class="admin-stats">
+                <div class="stat-card">
+                    <h3>Total Products</h3>
+                    <p class="stat-number">24</p>
+                </div>
+                <div class="stat-card">
+                    <h3>New Inquiries</h3>
+                    <p class="stat-number">12</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Wholesale Requests</h3>
+                    <p class="stat-number">5</p>
+                </div>
+            </section>
+
+            <section class="admin-activity">
+                <h3>Recent Admin Activity</h3>
+                <div class="activity-table-wrapper">
+                    <table class="wholesale-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Action</th>
+                                <th>User</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activity-log">
+                            <tr>
+                                <td>2025-05-10 14:30</td>
+                                <td>Updated Price: Nandana Green Tea</td>
+                                <td>Admin_01</td>
+                                <td><span class="status-badge success">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>2025-05-10 11:15</td>
+                                <td>Responded to Wholesale Inquiry: TeaCo</td>
+                                <td>Admin_01</td>
+                                <td><span class="status-badge pending">Pending</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
