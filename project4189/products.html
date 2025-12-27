@@ -38,52 +38,8 @@
             <a href="wholesale.html" class="btn">Wholesale</a>
         </div>
         
-        <div class="product-grid">
-            <div class="product-card">
-                <img src="srs/black tea.jpg" alt="Black Tea">
-                <h3>Nandana Black Tea</h3>
-                <p>Rich, full-bodied black tea.</p>
-                <div class="price">$12.00</div>
-                <a href="product.html?id=black-tea">View More</a>
-            </div>
-            <div class="product-card">
-                <img src="srs/green tea.png" alt="Green Tea">
-                <h3>Nandana Green Tea</h3>
-                <p>Delicate, refreshing green tea.</p>
-                <div class="price">$14.00</div>
-                <a href="product.html?id=green-tea">View More</a>
-            </div>
-            <div class="product-card">
-                <img src="srs/white tea.png" alt="White Tea">
-                <h3>Nandana White Tea</h3>
-                <p>Rare, subtly sweet white tea.</p>
-                <div class="price">$18.00</div>
-                <a href="product.html?id=white-tea">View More</a>
-            </div>
-            <div class="product-card">
-                <img src="srs/oolong tea.png" alt="Oolong Tea">
-                <h3>Nandana Oolong Tea</h3>
-                <p>Complex, aromatic oolong tea.</p>
-                <div class="price">$16.00</div>
-                <a href="product.html?id=oolong-tea">View More</a>
-             </div>
-
-            <div class="product-card">
-                <img src="srs/ahmad tea.png" alt="Ahmad Tea">
-                <h3>Nandana Almond Tea</h3>
-                <p>Elegant, refined Ahmad Tea</p>
-                <div class="price">$17.00</div>
-                <a href="product.html?id=almond-tea">View More</a>
-            </div>
-
-            <div class="product-card">
-                <img src="srs/cinnamon tea.jpg" alt="Cinnamon Tea">
-                <h3>Nandana Cinnamon Tea</h3>
-                <p>Warm, spicy Cinnamon Tea</p>
-                <div class="price">$19.00</div>
-                <a href="product.html?id=cinnamon-tea">View More</a>
-            </div>
-            
+        <div class="product-grid" id="product-grid">
+            <!-- Populated from localStorage nandana_products by script -->
         </div>
     </main>
 
@@ -108,64 +64,55 @@
 
     <script src="main.js"></script>
     <script>
-    // Search functionality
-    const searchIcon = document.getElementById('search-icon');
-    const searchModal = document.getElementById('search-modal');
-    const closeSearch = document.getElementById('close-search');
-    const searchInput = document.getElementById('search-input');
-    const searchResults = document.getElementById('search-results');
+    // Build PRODUCTS map from `nandana_products` for search and let ProductSystem.render() draw the grid.
+    function buildSearchIndex() {
+        const stored = JSON.parse(localStorage.getItem('nandana_products') || '[]');
+        const defaults = [
+            { id: 'black-tea', name: 'Nandana Black Tea', price: 12.00, image: 'srs/black tea.jpg' },
+            { id: 'green-tea', name: 'Nandana Green Tea', price: 14.00, image: 'srs/green tea.png' },
+            { id: 'white-tea', name: 'Nandana White Tea', price: 18.00, image: 'srs/white tea.png' },
+            { id: 'oolong-tea', name: 'Nandana Oolong Tea', price: 16.00, image: 'srs/oolong tea.png' },
+            { id: 'almond-tea', name: 'Nandana Almond Tea', price: 17.00, image: 'srs/ahmad tea.png' },
+            { id: 'cinnamon-tea', name: 'Nandana Cinnamon Tea', price: 19.00, image: 'srs/cinnamon tea.jpg' }
+        ];
+        const products = (stored && stored.length) ? stored : defaults;
+        window.PRODUCTS = {};
+        products.forEach(p => { window.PRODUCTS[p.id] = { name: p.name, price: parseFloat(p.price)||0, image: p.img||p.image||'' }; });
+    }
 
-    const PRODUCTS = {
-        'black-tea': { name: 'Nandana Black Tea', price: 12.00, image: 'srs/black tea.jpg' },
-        'green-tea': { name: 'Nandana Green Tea', price: 14.00, image: 'srs/green tea.png' },
-        'white-tea': { name: 'Nandana White Tea', price: 18.00, image: 'srs/white tea.png' },
-        'oolong-tea': { name: 'Nandana Oolong Tea', price: 16.00, image: 'srs/oolong tea.png' },
-        'almond-tea': { name: 'Nandana Almond Tea', price: 17.00, image: 'srs/ahmad tea.png' },
-        'cinnamon-tea': { name: 'Nandana Cinnamon Tea', price: 19.00, image: 'srs/cinnamon tea.jpg' }
-    };
+    // Search functionality wired to dynamic PRODUCTS map
+    document.addEventListener('DOMContentLoaded', () => {
+        // Ensure search index reflects inventory, then render grid via ProductSystem
+        buildSearchIndex();
+        try { if (window.ProductSystem && typeof window.ProductSystem.render === 'function') window.ProductSystem.render(); } catch(e) { /* ignore */ }
 
-    searchIcon.addEventListener('click', (e) => {
-        e.preventDefault();
-        searchModal.style.display = 'flex';
-        searchInput.focus();
-    });
+        const searchIcon = document.getElementById('search-icon');
+        const searchModal = document.getElementById('search-modal');
+        const closeSearch = document.getElementById('close-search');
+        const searchInput = document.getElementById('search-input');
+        const searchResults = document.getElementById('search-results');
 
-    closeSearch.addEventListener('click', () => {
-        searchModal.style.display = 'none';
-        searchInput.value = '';
-        searchResults.innerHTML = '';
-    });
+        if (searchIcon) searchIcon.addEventListener('click', (e) => { e.preventDefault(); searchModal.style.display = 'flex'; searchInput.focus(); });
+        if (closeSearch) closeSearch.addEventListener('click', () => { searchModal.style.display = 'none'; searchInput.value = ''; searchResults.innerHTML = ''; });
+        if (searchModal) searchModal.addEventListener('click', (e) => { if (e.target === searchModal) searchModal.style.display = 'none'; });
 
-    searchModal.addEventListener('click', (e) => {
-        if (e.target === searchModal) searchModal.style.display = 'none';
-    });
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const q = e.target.value.toLowerCase().trim();
+                if (!q) { searchResults.innerHTML = ''; return; }
+                const matches = Object.entries(window.PRODUCTS || {}).filter(([id, p]) => p.name.toLowerCase().includes(q) || id.includes(q));
+                searchResults.innerHTML = matches.map(([id, p]) => `
+                    <div class="search-result-item">
+                        <img src="${p.image}" alt="${p.name}" class="search-result-img">
+                        <div style="flex:1;">
+                            <a href="product.html?id=${id}" onclick="document.getElementById('search-modal').style.display='none';">${p.name}</a>
+                            <span class="price">$${(p.price||0).toFixed(2)}</span>
+                        </div>
+                    </div>
+                `).join('') || '<p class="empty-msg">No products found</p>';
+            });
 
-    searchInput.addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase().trim();
-        if (!query) {
-            searchResults.innerHTML = '';
-            return;
-        }
-        const matches = Object.entries(PRODUCTS).filter(([id, p]) => 
-            p.name.toLowerCase().includes(query) || id.includes(query)
-        );
-        searchResults.innerHTML = matches.map(([id, p]) => `
-            <div class="search-result-item">
-                <img src="${p.image}" alt="${p.name}" class="search-result-img">
-                <div style="flex:1;">
-                    <a href="product.html?id=${id}" onclick="searchModal.style.display='none';">${p.name}</a>
-                    <span class="price">$${p.price.toFixed(2)}</span>
-                </div>
-            </div>
-        `).join('') || '<p class="empty-msg">No products found</p>';
-    });
-
-    searchInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            const firstLink = searchResults.querySelector('a');
-            if (firstLink) {
-                firstLink.click();
-            }
+            searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { const firstLink = searchResults.querySelector('a'); if (firstLink) firstLink.click(); } });
         }
     });
     </script>

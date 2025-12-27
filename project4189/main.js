@@ -97,14 +97,30 @@ document.addEventListener('DOMContentLoaded', () => {
 const ProductSystem = {
     storageKey: 'nandana_products',
 
+    // Default catalog used to populate admin inventory when empty
+    DEFAULT_PRODUCTS: [
+        { id: 'black-tea', name: 'Nandana Black Tea', price: 12.00, desc: 'Full-bodied Sri Lankan black tea with malty notes.', img: 'srs/black tea.jpg' },
+        { id: 'green-tea', name: 'Nandana Green Tea', price: 14.00, desc: 'Light, grassy green tea with fresh vegetal notes.', img: 'srs/green tea.png' },
+        { id: 'white-tea', name: 'Nandana White Tea', price: 18.00, desc: 'Delicate white tea made from young buds and leaves.', img: 'srs/white tea.png' },
+        { id: 'oolong-tea', name: 'Nandana Oolong Tea', price: 16.00, desc: 'Semi-oxidized oolong with layered aromatics.', img: 'srs/oolong tea.png' },
+        { id: 'almond-tea', name: 'Nandana Almond Tea', price: 17.00, desc: 'Tea blended with natural almond aroma.', img: 'srs/ahmad tea.png' },
+        { id: 'cinnamon-tea', name: 'Nandana Cinnamon Tea', price: 19.00, desc: 'Spiced tea blended with Ceylon cinnamon.', img: 'srs/cinnamon tea.jpg' }
+    ],
+
     init() {
-        this.container = document.getElementById('products-list');
+        // support admin container (`products-list`) or public products grid (`product-grid`)
+        this.container = document.getElementById('products-list') || document.getElementById('product-grid');
         this.form = document.getElementById('product-form');
         this.modal = document.getElementById('product-modal');
-        
-        if (!this.container) return;
 
-        this.render();
+        // Ensure there's an initial catalog available when inventory is empty
+        const existing = JSON.parse(localStorage.getItem(this.storageKey) || '[]');
+        if (!existing || existing.length === 0) {
+            localStorage.setItem(this.storageKey, JSON.stringify(this.DEFAULT_PRODUCTS));
+        }
+
+        // If there's a container on the page, render; otherwise still bind modal/form events so edit works when possible
+        if (this.container) this.render();
         this.bindEvents();
     },
 
@@ -120,17 +136,33 @@ const ProductSystem = {
             return;
         }
 
+        // Only show admin controls when the admin product container exists (`#products-list`) and session indicates admin
+        const showAdminControls = !!document.getElementById('products-list') && sessionStorage.getItem('isAdmin') === 'true';
+
         this.container.innerHTML = products.map(p => `
-            <div class="product-item">
-                <img src="${p.img || 'srs/white-tea.jpg'}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/60'">
-                <div class="product-item-details">
-                    <h4>${p.name}</h4>
-                    <p>$${parseFloat(p.price).toFixed(2)} — ID: ${p.id}</p>
+            <div style="display:flex; gap:12px; align-items:center; padding:12px; border-bottom:1px solid var(--border-color); background:var(--bg-light);">
+                <img src="${p.img || 'srs/white tea.png'}" alt="${p.name}" style="width:80px; height:80px; object-fit:cover; border-radius:4px;" onerror="this.src='https://via.placeholder.com/80'">
+                <div style="flex:1; min-width:0;">
+                    <h4 style="margin:0 0 4px 0; font-size:1rem;">${p.name}</h4>
+                    <p style="margin:0 0 6px 0; font-size:0.9rem; color:var(--text-medium); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${(p.desc || '').slice(0,80)}</p>
+                    <div style="font-size:0.85rem; color:var(--text-medium);">ID: ${p.id}</div>
                 </div>
-                <div class="product-item-actions">
-                    <button class="btn-icon delete-btn" onclick="ProductSystem.delete('${p.id}')">
+                <div style="flex-shrink:0;">
+                    <div class="price" style="font-weight:700;">$${parseFloat(p.price).toFixed(2)}</div>
+                </div>
+                <div style="display:flex; gap:6px; flex-shrink:0;">
+                    <a href="product.html?id=${p.id}" class="btn" style="padding:6px 12px; font-size:0.9rem;">View</a>
+                    ${showAdminControls ? `
+                    <button class="btn-icon" title="Edit SKU" onclick="ProductSystem.edit('${p.id}')">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+                    <button class="btn-icon" title="Duplicate SKU" onclick="ProductSystem.duplicate('${p.id}')">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                    <button class="btn-icon delete-btn" title="Delete SKU" onclick="ProductSystem.delete('${p.id}')">
                         <i class="fa-solid fa-trash"></i>
                     </button>
+                    ` : ''}
                 </div>
             </div>
         `).join('');
@@ -138,22 +170,43 @@ const ProductSystem = {
 
     save(e) {
         e.preventDefault();
-        const products = JSON.parse(localStorage.getItem(this.storageKey)) || [];
+        let products = JSON.parse(localStorage.getItem(this.storageKey)) || [];
         
         const newProduct = {
-            id: document.getElementById('product-id-slug').value,
+            id: document.getElementById('product-id-slug').value.trim(),
             name: document.getElementById('product-name').value,
             price: document.getElementById('product-price').value,
             desc: document.getElementById('product-description').value,
             img: document.getElementById('product-image').value
         };
 
-        products.push(newProduct);
-        localStorage.setItem(this.storageKey, JSON.stringify(products));
-        
+        // If we're editing an existing SKU, replace it
+        if (this.editingId) {
+            products = products.map(p => p.id === this.editingId ? newProduct : p);
+            localStorage.setItem(this.storageKey, JSON.stringify(products));
+            AdminActivity.log(`Edited SKU: ${newProduct.id}`, 'Inventory');
+        } else {
+            // Adding new: check for ID collision
+            const exists = products.find(p => p.id === newProduct.id);
+            if (exists) {
+                if (!confirm(`A product with ID ${newProduct.id} already exists. Overwrite?`)) {
+                    return;
+                }
+                products = products.map(p => p.id === newProduct.id ? newProduct : p);
+            } else {
+                products.push(newProduct);
+            }
+            localStorage.setItem(this.storageKey, JSON.stringify(products));
+            AdminActivity.log(`Added SKU: ${newProduct.id}`, 'Inventory');
+        }
+
+        // Reset editing state and UI
+        this.editingId = null;
+        const submitBtn = this.form.querySelector('button[type=submit]');
+        if (submitBtn) submitBtn.textContent = 'Save to Inventory';
+
         this.render();
         this.closeModal();
-        AdminActivity.log(`Added SKU: ${newProduct.id}`, 'Inventory');
         this.form.reset();
     },
 
@@ -165,6 +218,48 @@ const ProductSystem = {
             this.render();
             AdminActivity.log(`Deleted SKU: ${id}`, 'Inventory');
         }
+    },
+
+    edit(id) {
+        const products = JSON.parse(localStorage.getItem(this.storageKey)) || [];
+        const p = products.find(x => x.id === id);
+        if (!p) { alert('Product not found'); return; }
+
+        // Prefill form with existing product and set editing state
+        document.getElementById('product-id-slug').value = p.id;
+        document.getElementById('product-name').value = p.name;
+        document.getElementById('product-price').value = p.price;
+        document.getElementById('product-description').value = p.desc || '';
+        document.getElementById('product-image').value = p.img || '';
+
+        this.editingId = id;
+        const submitBtn = this.form.querySelector('button[type=submit]');
+        if (submitBtn) submitBtn.textContent = 'Update SKU';
+
+        // Open modal
+        this.modal.style.display = 'block';
+        setTimeout(() => this.modal.classList.add('show'), 10);
+    },
+
+    duplicate(id) {
+        const products = JSON.parse(localStorage.getItem(this.storageKey)) || [];
+        const p = products.find(x => x.id === id);
+        if (!p) { alert('Product not found'); return; }
+
+        // Prefill form with product data but clear id so user can enter a new one
+        document.getElementById('product-id-slug').value = '';
+        document.getElementById('product-name').value = p.name + ' (Copy)';
+        document.getElementById('product-price').value = p.price;
+        document.getElementById('product-description').value = p.desc || '';
+        document.getElementById('product-image').value = p.img || '';
+
+        this.editingId = null; // ensure save will create new
+        const submitBtn = this.form.querySelector('button[type=submit]');
+        if (submitBtn) submitBtn.textContent = 'Save to Inventory';
+
+        // Open modal
+        this.modal.style.display = 'block';
+        setTimeout(() => this.modal.classList.add('show'), 10);
     },
 
     bindEvents() {
