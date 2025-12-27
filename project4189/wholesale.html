@@ -18,6 +18,7 @@
         </nav>
         <div class="header-icons">
             <a href="#">Cart (0)</a>
+            <a href="#" id="search-icon" title="Search"><i class="fa-solid fa-magnifying-glass"></i></a>
             <a href="#"><img src="https://i.pravatar.cc/32" alt="User" class="user-icon"></a>
         </div>
         <div class="hamburger-menu">
@@ -111,7 +112,85 @@
         </div>
     </footer>
 
+    <div id="search-modal" class="search-modal">
+        <div class="search-modal-content">
+            <span id="close-search" class="close-search">&times;</span>
+            <input type="text" id="search-input" placeholder="Search teas..." autofocus>
+            <div id="search-results" class="search-results"></div>
+        </div>
+    </div>
+
     <script src="main.js"></script>
     <script src="js/validation.js"></script>
+    <script>
+        // Search functionality
+        const PRODUCTS = {
+            'black-tea': { name: 'Nandana Black Tea', price: 12.00, image: 'srs/black tea.jpg' },
+            'green-tea': { name: 'Nandana Green Tea', price: 14.00, image: 'srs/green tea.png' },
+            'white-tea': { name: 'Nandana White Tea', price: 18.00, image: 'srs/white tea.png' },
+            'oolong-tea': { name: 'Nandana Oolong Tea', price: 16.00, image: 'srs/oolong tea.png' },
+            'almond-tea': { name: 'Nandana Almond Tea', price: 17.00, image: 'srs/ahmad tea.png' },
+            'cinnamon-tea': { name: 'Nandana Cinnamon Tea', price: 19.00, image: 'srs/cinnamon tea.jpg' }
+        };
+
+        const searchIcon = document.getElementById('search-icon');
+        const searchModal = document.getElementById('search-modal');
+        const closeSearch = document.getElementById('close-search');
+        const searchInput = document.getElementById('search-input');
+        const searchResults = document.getElementById('search-results');
+
+        if (searchIcon) {
+            searchIcon.addEventListener('click', (e) => {
+                e.preventDefault();
+                searchModal.style.display = 'flex';
+                searchInput.focus();
+            });
+        }
+
+        if (closeSearch) {
+            closeSearch.addEventListener('click', () => {
+                searchModal.style.display = 'none';
+                searchInput.value = '';
+                searchResults.innerHTML = '';
+            });
+        }
+
+        if (searchModal) {
+            searchModal.addEventListener('click', (e) => {
+                if (e.target === searchModal) searchModal.style.display = 'none';
+            });
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                if (!query) {
+                    searchResults.innerHTML = '';
+                    return;
+                }
+                const matches = Object.entries(PRODUCTS).filter(([id, p]) => 
+                    p.name.toLowerCase().includes(query) || id.includes(query)
+                );
+                searchResults.innerHTML = matches.map(([id, p]) => `
+                    <div class="search-result-item">
+                        <img src="${p.image}" alt="${p.name}" class="search-result-img">
+                        <div style="flex:1;">
+                            <a href="product.html?id=${id}" onclick="searchModal.style.display='none';">${p.name}</a>
+                            <span class="price">$${p.price.toFixed(2)}</span>
+                        </div>
+                    </div>
+                `).join('') || '<p class="empty-msg">No products found</p>';
+            });
+
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const firstLink = searchResults.querySelector('a');
+                    if (firstLink) {
+                        firstLink.click();
+                    }
+                }
+            });
+        }
+    </script>
 </body>
 </html>
