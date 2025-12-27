@@ -12,9 +12,9 @@
         <aside class="admin-sidebar">
             <div class="logo"><i class="fa-solid fa-leaf"></i> Nandana Admin</div>
             <nav class="admin-nav">
-                <a href="#" class="active"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
-                <a href="products.html"><i class="fa-solid fa-boxes-stacked"></i> Products</a>
-                <a href="#"><i class="fa-solid fa-envelope"></i> Inquiries</a>
+                <a href="#dashboard" class="active" data-section="dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+                <a href="#products" data-section="products"><i class="fa-solid fa-boxes-stacked"></i> Manage Products</a>
+                <a href="#inquiries" data-section="inquiries"><i class="fa-solid fa-envelope"></i> Inquiries</a>
                 <a href="wholesale.html"><i class="fa-solid fa-handshake"></i> Wholesale</a>
                 <a href="index.html"><i class="fa-solid fa-house"></i> View Site</a>
             </nav>
@@ -29,51 +29,127 @@
                 </div>
             </header>
 
-            <section class="admin-stats">
-                <div class="stat-card">
-                    <h3>Total Products</h3>
-                    <p class="stat-number">24</p>
-                </div>
-                <div class="stat-card">
-                    <h3>New Inquiries</h3>
-                    <p class="stat-number">12</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Wholesale Requests</h3>
-                    <p class="stat-number">5</p>
-                </div>
-            </section>
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="admin-section active">
+                <section class="admin-stats">
+                    <div class="stat-card">
+                        <h3>Total Products</h3>
+                        <p class="stat-number" id="total-products">6</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>New Inquiries</h3>
+                        <p class="stat-number">12</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Wholesale Requests</h3>
+                        <p class="stat-number">5</p>
+                    </div>
+                </section>
 
-            <section class="admin-activity">
-                <h3>Recent Admin Activity</h3>
-                <div class="activity-table-wrapper">
-                    <table class="wholesale-table">
-                        <thead>
-                            <tr>
-                                <th>Timestamp</th>
-                                <th>Action</th>
-                                <th>User</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="activity-log">
-                            <tr>
-                                <td>2025-05-10 14:30</td>
-                                <td>Updated Price: Nandana Green Tea</td>
-                                <td>Admin_01</td>
-                                <td><span class="status-badge success">Completed</span></td>
-                            </tr>
-                            <tr>
-                                <td>2025-05-10 11:15</td>
-                                <td>Responded to Wholesale Inquiry: TeaCo</td>
-                                <td>Admin_01</td>
-                                <td><span class="status-badge pending">Pending</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+                <section class="admin-activity">
+                    <h3>Recent Admin Activity</h3>
+                    <div class="activity-table-wrapper">
+                        <table class="wholesale-table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Action</th>
+                                    <th>User</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="activity-log">
+                                <tr>
+                                    <td>2025-05-10 14:30</td>
+                                    <td>Updated Price: Nandana Green Tea</td>
+                                    <td>Admin_01</td>
+                                    <td><span class="status-badge success">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2025-05-10 11:15</td>
+                                    <td>Responded to Wholesale Inquiry: TeaCo</td>
+                                    <td>Admin_01</td>
+                                    <td><span class="status-badge pending">Pending</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Product Management Section -->
+            <div id="products-section" class="admin-section">
+                <section class="admin-products">
+                    <div class="section-header">
+                        <h3>Product Management</h3>
+                        <button class="btn btn-primary" id="add-product-btn">
+                            <i class="fa-solid fa-plus"></i> Add New Product
+                        </button>
+                    </div>
+
+                    <div class="products-list" id="products-list">
+                        <!-- Products will be loaded here dynamically -->
+                    </div>
+                </section>
+            </div>
+
+            <!-- Inquiries Section -->
+            <div id="inquiries-section" class="admin-section">
+                <section class="admin-inquiries">
+                    <h3>Customer Inquiries</h3>
+                    <p>Inquiries management coming soon...</p>
+                </section>
+            </div>
         </main>
+
+        <!-- Product Modal -->
+        <div id="product-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-title">Add New Product</h3>
+                    <span class="close-modal">&times;</span>
+                </div>
+                <form id="product-form">
+                    <input type="hidden" id="product-id">
+                    
+                    <div class="form-group">
+                        <label for="product-name">Product Name</label>
+                        <input type="text" id="product-name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="product-description">Description</label>
+                        <textarea id="product-description" rows="3" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="product-price">Price ($)</label>
+                        <input type="number" id="product-price" step="0.01" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="product-image">Image Path</label>
+                        <input type="text" id="product-image" placeholder="e.g., srs/black tea.jpg" required>
+                        <small>Enter the path to the image file</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="product-id-slug">Product ID (URL slug)</label>
+                        <input type="text" id="product-id-slug" placeholder="e.g., black-tea" required>
+                        <small>Used in product URLs - lowercase with hyphens</small>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa-solid fa-save"></i> Save Product
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="cancel-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
+
+    <script src="main.js"></script>
 </body>
 </html>
