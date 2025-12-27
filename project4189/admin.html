@@ -14,6 +14,7 @@
             <nav class="admin-nav">
                 <a href="#dashboard" class="active" data-section="dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
                 <a href="#products" data-section="products"><i class="fa-solid fa-boxes-stacked"></i> Manage Products</a>
+                <a href="#wsproducts" data-section="wsproducts"><i class="fa-solid fa-truck-ramp-box"></i> Wholesale Products</a>
                 <a href="#inquiries" data-section="inquiries"><i class="fa-solid fa-envelope"></i> Inquiries</a>
                 <a href="wholesale.html"><i class="fa-solid fa-handshake"></i> Wholesale</a>
                 <a href="index.html"><i class="fa-solid fa-house"></i> View Site</a>
@@ -100,6 +101,21 @@
                     <p>Inquiries management coming soon...</p>
                 </section>
             </div>
+            
+            <!-- Wholesale Products Management Section -->
+            <div id="wsproducts-section" class="admin-section">
+                <section class="admin-products">
+                    <div class="section-header">
+                        <h3>Wholesale Products</h3>
+                        <button class="btn btn-primary" id="add-ws-product-btn">
+                            <i class="fa-solid fa-plus"></i> Add Wholesale Product
+                        </button>
+                    </div>
+                    <div class="products-list" id="ws-products-list">
+                        <!-- Wholesale products will be loaded here dynamically -->
+                    </div>
+                </section>
+            </div>
         </main>
 
         <!-- Product Modal -->
@@ -147,6 +163,61 @@
                     </div>
                 </form>
             </div>
+        </div>
+    </div>
+
+    <!-- Wholesale Product Modal -->
+    <div id="ws-product-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="ws-modal-title">Add Wholesale Product</h3>
+                <span class="close-modal" id="ws-close">&times;</span>
+            </div>
+            <form id="ws-product-form">
+                <input type="hidden" id="ws-product-id">
+
+                <div class="form-group">
+                    <label for="ws-product-name">Product Name</label>
+                    <input type="text" id="ws-product-name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="ws-product-description">Description</label>
+                    <textarea id="ws-product-description" rows="3" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="ws-product-price">Retail Price ($)</label>
+                    <input type="number" id="ws-product-price" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="ws-product-wholesale-price">Wholesale Price ($)</label>
+                    <input type="number" id="ws-product-wholesale-price" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="ws-product-minqty">Minimum Quantity</label>
+                    <input type="number" id="ws-product-minqty" min="1" value="10" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="ws-product-image">Image Path</label>
+                    <input type="text" id="ws-product-image" placeholder="e.g., srs/black tea.jpg" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="ws-product-id-slug">Product ID (URL slug)</label>
+                    <input type="text" id="ws-product-id-slug" placeholder="e.g., black-tea" required>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-save"></i> Save Wholesale Product
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="ws-cancel">Cancel</button>
+                </div>
+            </form>
         </div>
     </div>
 

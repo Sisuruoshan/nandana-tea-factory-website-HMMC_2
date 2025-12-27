@@ -85,6 +85,12 @@ document.addEventListener('DOMContentLoaded', () => {
      * 5. Product Management System
      */
     initializeProductManagement();
+
+    // 6. Wholesale Portal
+    initializeWholesalePortal();
+
+    // 7. Admin Wholesale Management
+    initializeAdminWholesaleManagement();
 });
 
 /**
@@ -356,5 +362,271 @@ function logActivity(action) {
     `;
     
     activityLog.insertBefore(newRow, activityLog.firstChild);
+}
+
+/**
+ * Wholesale Portal: dataset and rendering
+ */
+function ensureWholesaleDefaults() {
+    if (!localStorage.getItem('wholesaleProducts')) {
+        const retail = JSON.parse(localStorage.getItem('products')) || [];
+        const fallback = retail.length ? retail : [
+            { id: 'black-tea', name: 'Nandana Black Tea', description: 'Rich, full-bodied black tea.', price: 12.00, image: 'srs/black tea.jpg' },
+            { id: 'green-tea', name: 'Nandana Green Tea', description: 'Delicate, refreshing green tea.', price: 14.00, image: 'srs/green tea.png' },
+            { id: 'white-tea', name: 'Nandana White Tea', description: 'Rare, subtly sweet white tea.', price: 18.00, image: 'srs/white tea.png' }
+        ];
+        const ws = fallback.map(p => ({
+            id: p.id,
+            name: p.name,
+            description: p.description,
+            price: p.price,
+            wholesalePrice: p.price, // default same; admin can change
+            minQty: 10,
+            image: p.image
+        }));
+        localStorage.setItem('wholesaleProducts', JSON.stringify(ws));
+    }
+}
+
+function initializeWholesalePortal() {
+    const loginForm = document.getElementById('wholesale-login-form');
+    const loginSection = document.getElementById('login-section');
+    const productsSection = document.getElementById('wholesale-products-section');
+    const logoutBtn = document.getElementById('logout-btn');
+    const grid = document.getElementById('wholesale-products-grid');
+    if (!loginForm && !productsSection && !grid) return; // Not on wholesale page
+
+    ensureWholesaleDefaults();
+
+    // Check if already logged in (session storage)
+    const isLoggedIn = sessionStorage.getItem('wholesaleLoggedIn');
+    if (isLoggedIn === 'true') {
+        if (loginSection) loginSection.style.display = 'none';
+        if (productsSection) productsSection.style.display = 'block';
+        renderWholesaleProducts();
+    }
+
+    if (loginForm) {
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Mark as logged in
+            sessionStorage.setItem('wholesaleLoggedIn', 'true');
+            // Hide login, show products
+            if (loginSection) loginSection.style.display = 'none';
+            if (productsSection) productsSection.style.display = 'block';
+            renderWholesaleProducts();
+        });
+    }
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            // Clear login state
+            sessionStorage.removeItem('wholesaleLoggedIn');
+            // Reset form and show login section
+            if (loginForm) loginForm.reset();
+            if (loginSection) loginSection.style.display = 'block';
+            if (productsSection) productsSection.style.display = 'none';
+        });
+    }
+}
+
+function renderWholesaleProducts() {
+    const grid = document.getElementById('wholesale-products-grid');
+    if (!grid) return;
+    const products = JSON.parse(localStorage.getItem('wholesaleProducts')) || [];
+    grid.innerHTML = products.map(p => `
+        <div class="product-card">
+            <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/320x200?text=No+Image'">
+            <h3>${p.name}</h3>
+            <p>${p.description}</p>
+            <div class="price">Wholesale: $${parseFloat(p.wholesalePrice).toFixed(2)} / unit</div>
+            <div class="bulk-actions">
+                <label>Qty (min ${p.minQty})</label>
+                <div class="qty-control">
+                    <button type="button" class="qty-btn qty-minus" data-id="${p.id}">−</button>
+                    <input type="number" class="bulk-qty" data-id="${p.id}" min="${p.minQty}" value="${p.minQty}" />
+                    <button type="button" class="qty-btn qty-plus" data-id="${p.id}">+</button>
+                </div>
+                <button class="btn btn-primary bulk-add" data-id="${p.id}">Add to Bulk Order</button>
+            </div>
+        </div>
+    `).join('');
+
+    // Wire up quantity validation and add buttons
+    const qtyInputs = grid.querySelectorAll('.bulk-qty');
+    qtyInputs.forEach(input => {
+        const min = parseInt(input.min, 10) || 10;
+        const btn = grid.querySelector(`.bulk-add[data-id="${input.dataset.id}"]`);
+        const minusBtn = grid.querySelector(`.qty-minus[data-id="${input.dataset.id}"]`);
+        const plusBtn = grid.querySelector(`.qty-plus[data-id="${input.dataset.id}"]`);
+        
+        const validate = () => {
+            const val = parseInt(input.value, 10) || 0;
+            btn.disabled = val < min;
+        };
+        
+        input.addEventListener('input', validate);
+        
+        if (minusBtn) {
+            minusBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const val = parseInt(input.value, 10) || min;
+                input.value = Math.max(val - 1, min);
+                validate();
+            });
+        }
+        
+        if (plusBtn) {
+            plusBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const val = parseInt(input.value, 10) || min;
+                input.value = val + 1;
+                validate();
+            });
+        }
+        
+        validate();
+    });
+
+    const addButtons = grid.querySelectorAll('.bulk-add');
+    addButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            const input = grid.querySelector(`.bulk-qty[data-id="${id}"]`);
+            const qty = parseInt(input.value, 10) || 0;
+            const products = JSON.parse(localStorage.getItem('wholesaleProducts')) || [];
+            const p = products.find(x => x.id === id);
+            if (!p) return;
+            if (qty < p.minQty) {
+                alert(`Minimum order is ${p.minQty}.`);
+                return;
+            }
+            const total = qty * parseFloat(p.wholesalePrice);
+            alert(`Added ${qty} x ${p.name} to bulk order. Total: $${total.toFixed(2)}`);
+        });
+    });
+}
+
+/**
+ * Admin Wholesale Management
+ */
+function initializeAdminWholesaleManagement() {
+    const wsSection = document.getElementById('wsproducts-section');
+    if (!wsSection) return; // Not on admin page or section not present
+    ensureWholesaleDefaults();
+
+    const addBtn = document.getElementById('add-ws-product-btn');
+    const modal = document.getElementById('ws-product-modal');
+    const closeBtn = document.getElementById('ws-close');
+    const cancelBtn = document.getElementById('ws-cancel');
+    const form = document.getElementById('ws-product-form');
+
+    loadWholesaleAdminProducts();
+
+    if (addBtn) addBtn.addEventListener('click', () => openWsModal('add'));
+    if (closeBtn) closeBtn.addEventListener('click', closeWsModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeWsModal);
+    window.addEventListener('click', (e) => { if (e.target === modal) closeWsModal(); });
+    if (form) form.addEventListener('submit', (e) => { e.preventDefault(); saveWsProduct(); });
+}
+
+function loadWholesaleAdminProducts() {
+    const listEl = document.getElementById('ws-products-list');
+    if (!listEl) return;
+    const products = JSON.parse(localStorage.getItem('wholesaleProducts')) || [];
+    listEl.innerHTML = products.map(p => `
+        <div class="product-item" data-id="${p.id}">
+            <div class="product-item-image">
+                <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/100x100?text=No+Image'">
+            </div>
+            <div class="product-item-details">
+                <h4>${p.name}</h4>
+                <p>${p.description}</p>
+                <p class="product-item-price">Retail: $${parseFloat(p.price).toFixed(2)} | Wholesale: $${parseFloat(p.wholesalePrice).toFixed(2)}</p>
+                <p class="product-item-price">Min Qty: ${p.minQty}</p>
+            </div>
+            <div class="product-item-actions">
+                <button class="btn-icon edit-btn" onclick="editWsProduct('${p.id}')" title="Edit">
+                    <i class="fa-solid fa-pen"></i>
+                </button>
+                <button class="btn-icon delete-btn" onclick="deleteWsProduct('${p.id}')" title="Delete">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function openWsModal(mode, id = null) {
+    const modal = document.getElementById('ws-product-modal');
+    const title = document.getElementById('ws-modal-title');
+    const form = document.getElementById('ws-product-form');
+    form.reset();
+    document.getElementById('ws-product-id').value = '';
+    if (mode === 'add') {
+        title.textContent = 'Add Wholesale Product';
+    } else if (mode === 'edit' && id) {
+        title.textContent = 'Edit Wholesale Product';
+        const products = JSON.parse(localStorage.getItem('wholesaleProducts')) || [];
+        const p = products.find(x => x.id === id);
+        if (p) {
+            document.getElementById('ws-product-id').value = p.id;
+            document.getElementById('ws-product-name').value = p.name;
+            document.getElementById('ws-product-description').value = p.description;
+            document.getElementById('ws-product-price').value = p.price;
+            document.getElementById('ws-product-wholesale-price').value = p.wholesalePrice;
+            document.getElementById('ws-product-minqty').value = p.minQty;
+            document.getElementById('ws-product-image').value = p.image;
+            document.getElementById('ws-product-id-slug').value = p.id;
+        }
+    }
+    modal.style.display = 'block';
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function closeWsModal() {
+    const modal = document.getElementById('ws-product-modal');
+    modal.classList.remove('show');
+    setTimeout(() => modal.style.display = 'none', 300);
+}
+
+function saveWsProduct() {
+    const idExisting = document.getElementById('ws-product-id').value;
+    const idSlug = document.getElementById('ws-product-id-slug').value.trim();
+    const name = document.getElementById('ws-product-name').value.trim();
+    const description = document.getElementById('ws-product-description').value.trim();
+    const price = parseFloat(document.getElementById('ws-product-price').value);
+    const wholesalePrice = parseFloat(document.getElementById('ws-product-wholesale-price').value);
+    const minQty = parseInt(document.getElementById('ws-product-minqty').value, 10) || 10;
+    const image = document.getElementById('ws-product-image').value.trim();
+    const products = JSON.parse(localStorage.getItem('wholesaleProducts')) || [];
+
+    if (idExisting) {
+        const index = products.findIndex(p => p.id === idExisting);
+        if (index !== -1) {
+            products[index] = { id: idSlug, name, description, price, wholesalePrice, minQty, image };
+            logActivity(`Updated Wholesale: ${name}`);
+        }
+    } else {
+        products.push({ id: idSlug, name, description, price, wholesalePrice, minQty, image });
+        logActivity(`Added Wholesale: ${name}`);
+    }
+    localStorage.setItem('wholesaleProducts', JSON.stringify(products));
+    loadWholesaleAdminProducts();
+    closeWsModal();
+    alert('Wholesale product saved successfully!');
+}
+
+function editWsProduct(id) { openWsModal('edit', id); }
+
+function deleteWsProduct(id) {
+    if (!confirm('Are you sure you want to delete this wholesale product?')) return;
+    const products = JSON.parse(localStorage.getItem('wholesaleProducts')) || [];
+    const p = products.find(x => x.id === id);
+    const filtered = products.filter(x => x.id !== id);
+    localStorage.setItem('wholesaleProducts', JSON.stringify(filtered));
+    loadWholesaleAdminProducts();
+    if (p) logActivity(`Deleted Wholesale: ${p.name}`);
+    alert('Wholesale product deleted successfully!');
 }
 

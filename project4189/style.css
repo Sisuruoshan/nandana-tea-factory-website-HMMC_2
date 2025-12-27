@@ -353,6 +353,97 @@ nav a:hover {
     font-weight: 500;
 }
 
+/* --- Wholesale Bulk Actions --- */
+.bulk-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: var(--secondary-dark-green);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.bulk-actions label {
+    color: var(--text-light);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.qty-control {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.qty-btn {
+    width: 40px;
+    height: 40px;
+    background: var(--accent-mint-green);
+    color: var(--primary-dark-green);
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.qty-btn:hover {
+    background: #5ee898;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(110, 255, 168, 0.3);
+}
+
+.qty-btn:active {
+    transform: scale(0.95);
+}
+
+.bulk-actions .bulk-qty {
+    flex: 1;
+    padding: 0.65rem;
+    background: var(--primary-dark-green);
+    border: 1px solid var(--accent-mint-green);
+    border-radius: 6px;
+    color: var(--text-light);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.bulk-actions .bulk-qty:focus {
+    outline: none;
+    border-color: var(--accent-mint-green);
+    box-shadow: 0 0 8px rgba(110, 255, 168, 0.3);
+}
+
+.bulk-actions .bulk-add {
+    padding: 0.7rem 1.2rem;
+    background: var(--accent-mint-green);
+    color: var(--primary-dark-green);
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.bulk-actions .bulk-add:hover:not(:disabled) {
+    background: #5ee898;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(110, 255, 168, 0.3);
+}
+
+.bulk-actions .bulk-add:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* --- Contact & Wholesale Pages --- */
 .contact-grid, .wholesale-grid {
     display: grid;
