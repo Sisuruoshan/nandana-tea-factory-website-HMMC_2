@@ -43,6 +43,8 @@
                 <p id="pd-desc" class="pd-desc">Description</p>
                 <div class="pd-price" id="pd-price">$0.00</div>
 
+                <div id="pd-wholesale" class="pd-wholesale" style="display:none; margin-top:0.5rem; font-weight:700; color:var(--accent-mint-green);"></div>
+
                 <div class="pd-actions">
                     <label for="pd-qty">Quantity</label>
                     <input id="pd-qty" type="number" min="1" value="1">
@@ -201,6 +203,19 @@
             const params = new URLSearchParams({ product: product.id, qty: String(qty) });
             window.location.href = `contact.html?${params.toString()}`;
         };
+
+        // Show wholesale pricing for logged-in wholesale partners
+        try {
+            const ws = sessionStorage.getItem('wholesaleUser');
+            const wsEl = document.getElementById('pd-wholesale');
+            if (ws && wsEl) {
+                const wholesalePrice = (parseFloat(product.price) * 0.8).toFixed(2);
+                wsEl.textContent = `Wholesale: $${wholesalePrice}`;
+                wsEl.style.display = 'block';
+            } else if (wsEl) {
+                wsEl.style.display = 'none';
+            }
+        } catch (err) { /* ignore */ }
     }
 
     loadProduct();

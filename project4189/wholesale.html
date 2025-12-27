@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body>
+<body class="wholesale-page">
     <header>
         <a href="index.html" class="logo"><i class="fa-solid fa-leaf"></i> Nandana Tea</a>
        <nav>
@@ -39,14 +39,20 @@
                 <form id="wholesale-login-form">
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input type="email" id="email" placeholder="you@example.com">
+                        <input type="email" id="email" placeholder="you@example.com" value="demo@partner.local">
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" id="password">
+                        <input type="password" id="password" value="wholesale123">
                     </div>
                     <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
                 </form>
+                <div style="margin-top:0.75rem; font-size:0.95rem; color:var(--text-medium);">
+                    Default demo credentials: <strong>demo@partner.local</strong> / <strong>wholesale123</strong>
+                    <div style="margin-top:0.5rem;">
+                        <button id="ws-quick-login" type="button" class="btn btn-secondary" onclick="document.getElementById('email').value='demo@partner.local'; document.getElementById('password').value='wholesale123'; document.getElementById('wholesale-login-form').querySelector('button[type=submit]').click();">Quick Login (Demo)</button>
+                    </div>
+                </div>
             </div>
             <div style="padding-top: 3rem;">
                 <h2>New Wholesale Partner?</h2>

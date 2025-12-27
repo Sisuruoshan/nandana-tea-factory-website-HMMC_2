@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script>
-        // Professional Security Gate: Prevents direct URL entry without login
+        // Professional Security Gate: Prevents direct URL entry without valid session
         if (sessionStorage.getItem('isAdmin') !== 'true') {
             window.location.href = 'login.html';
         }
@@ -47,40 +47,28 @@
         </aside>
 
         <main class="admin-main">
-            <header class="admin-topbar">
-                <div class="breadcrumb">
-                    <span id="current-section-title">Dashboard Overview</span>
-                </div>
-                <div class="admin-profile">
-                    <div class="profile-info">
-                        <strong>Admin Manager</strong>
-                        <span>ID: #4189-A</span>
-                    </div>
-                    <img src="https://i.pravatar.cc/45" alt="Profile" class="user-avatar">
-                </div>
-            </header>
 
             <div id="dashboard" class="admin-tab active">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon green"><i class="fa-solid fa-boxes-packing"></i></div>
-                        <div class="stat-details">
-                            <h3>Total Inventory</h3>
-                            <p class="stat-number">24</p>
+                <div class="dashboard-summary">
+                    <div class="kpi-card">
+                        <div class="kpi-icon"><i class="fa-solid fa-boxes-packing"></i></div>
+                        <div class="kpi-content">
+                            <div class="kpi-label">Total SKUs</div>
+                            <div class="kpi-value" id="total-inventory-count">0</div>
                         </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon mint"><i class="fa-solid fa-comments-dollar"></i></div>
-                        <div class="stat-details">
-                            <h3>WS Requests</h3>
-                            <p class="stat-number">08</p>
+                    <div class="kpi-card">
+                        <div class="kpi-icon"><i class="fa-solid fa-handshake"></i></div>
+                        <div class="kpi-content">
+                            <div class="kpi-label">B2B Partners</div>
+                            <div class="kpi-value" id="total-partners">0</div>
                         </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon dark"><i class="fa-solid fa-user-check"></i></div>
-                        <div class="stat-details">
-                            <h3>Active Partners</h3>
-                            <p class="stat-number">15</p>
+                    <div class="kpi-card">
+                        <div class="kpi-icon"><i class="fa-solid fa-tasks"></i></div>
+                        <div class="kpi-content">
+                            <div class="kpi-label">Actions Today</div>
+                            <div class="kpi-value" id="actions-today">0</div>
                         </div>
                     </div>
                 </div>
@@ -127,16 +115,66 @@
                     </button>
                 </div>
                 <div class="products-grid-admin" id="products-list">
-                    <p class="empty-msg">Scanning local storage inventory...</p>
+                    <p class="empty-msg">Scanning inventory...</p>
                 </div>
             </div>
 
             <div id="wsproducts" class="admin-tab">
                 <div class="section-header">
                     <h2>Wholesale Catalog Management</h2>
-                </div>
-                <div class="table-scroll-wrapper">
+                    <div class="section-actions">
+                        <button id="ws-refresh-btn" class="btn btn-secondary">Refresh Products</button>
                     </div>
+                </div>
+
+                <div class="admin-card">
+                    <h3 style="margin-top:0;">Assign SKUs to Wholesale Partners</h3>
+                    <form id="ws-assign-form" class="admin-form">
+                        <div class="form-row">
+                            <div class="form-group" style="flex: 1 1 320px;">
+                                <label for="ws-partner-email">Partner Email</label>
+                                <input id="ws-partner-email" type="email" placeholder="partner@example.com" required>
+                            </div>
+                            <div class="form-group" style="flex: 1 1 320px;">
+                                <label>Products to Assign</label>
+                                <div id="ws-product-list" class="ws-product-list">
+                                    <!-- populated by JS -->
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:12px; margin-top:12px;">
+                            <button id="ws-assign-save" type="submit" class="btn btn-primary">Save Assignment</button>
+                            <button id="ws-assign-clear" type="button" class="btn btn-secondary">Clear Selection</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="admin-card" style="margin-top:1rem;">
+                    <h3 style="margin-top:0;">Existing Wholesale Assignments</h3>
+                    <div class="table-scroll-wrapper">
+                        <table class="wholesale-table" id="ws-assignments-table">
+                            <thead>
+                                <tr>
+                                    <th>Partner Email</th>
+                                    <th>Assigned SKUs</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="inquiries" class="admin-tab">
+                <div class="section-header">
+                    <h2>Customer Contact Requests</h2>
+                </div>
+                <div class="inquiry-list">
+                   <p>Customer messages will appear here once submitted from the contact page.</p>
+                </div>
             </div>
         </main>
     </div>
@@ -144,7 +182,7 @@
     <div id="product-modal" class="modal">
         <div class="modal-content admin-card">
             <div class="modal-header">
-                <h3>Product Configuration</h3>
+                <h3>Configure Product SKU</h3>
                 <span class="close-modal">&times;</span>
             </div>
             <form id="product-form" class="admin-form">
@@ -154,21 +192,25 @@
                         <input type="text" id="product-name" placeholder="e.g. Silver Needle White Tea" required>
                     </div>
                     <div class="form-group">
-                        <label>Unit Price ($)</label>
+                        <label>Price ($)</label>
                         <input type="number" id="product-price" step="0.01" required>
                     </div>
+                </div>
+                <div class="form-group">
+                    <label>Product ID (lowercase, no spaces)</label>
+                    <input type="text" id="product-id-slug" placeholder="e.g. silver-needle" required>
                 </div>
                 <div class="form-group">
                     <label>Description</label>
                     <textarea id="product-description" rows="3" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Asset Path</label>
+                    <label>Image Asset Path</label>
                     <input type="text" id="product-image" placeholder="srs/white-tea.jpg">
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Publish to Store</button>
-                    <button type="button" class="btn btn-secondary close-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save to Inventory</button>
+                    <button type="button" class="btn btn-secondary close-btn">Discard Changes</button>
                 </div>
             </form>
         </div>
