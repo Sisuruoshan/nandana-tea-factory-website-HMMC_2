@@ -19,7 +19,7 @@
         </nav>
         <div class="header-icons">
             <a href="products.html"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
-            <a href="#" id="search-icon" title="Search"><i class="fa-solid fa-magnifying-glass"></i></a>
+            <a href="#"><i class="fa-solid fa-magnifying-glass"></i></a>
         </div>
         <div class="hamburger-menu">
             <span class="bar"></span>
@@ -43,8 +43,6 @@
                 <p id="pd-desc" class="pd-desc">Description</p>
                 <div class="pd-price" id="pd-price">$0.00</div>
 
-                <div id="pd-wholesale" class="pd-wholesale" style="display:none; margin-top:0.5rem; font-weight:700; color:var(--accent-mint-green);"></div>
-
                 <div class="pd-actions">
                     <label for="pd-qty">Quantity</label>
                     <input id="pd-qty" type="number" min="1" value="1">
@@ -56,7 +54,7 @@
 
         <section class="product-explainer">
             <div class="pd-meta">
-                <h3>Origin & Tasting</h3>
+                <h3>Origin & Notes</h3>
                 <p id="pd-origin"></p>
                 <p id="pd-notes"></p>
             </div>
@@ -64,13 +62,9 @@
                 <h3>Brewing Guide</h3>
                 <ul id="pd-brew"></ul>
             </div>
-            <div class="pd-benefits">
-                <h3>Health Notes</h3>
-                <p id="pd-benefits"></p>
-            </div>
-            <div class="pd-history">
-                <h3>History</h3>
-                <p id="pd-history"></p>
+            <div class="pd-long">
+                <h3>About this Tea</h3>
+                <p id="pd-long"></p>
             </div>
         </section>
     </main>
@@ -87,85 +81,73 @@
     </footer>
 
     <script>
-    // Minimal, sourced PRODUCTS (essential fields only)
+    // Simple product catalog mapping
     const PRODUCTS = {
         'black-tea': {
             id: 'black-tea',
             name: 'Nandana Black Tea',
-            desc: 'Full-bodied Sri Lankan black tea with malty notes.',
+            desc: 'Rich, full-bodied black tea.',
             price: 12.00,
             image: 'srs/black tea.jpg',
-            origin: 'Sri Lanka (Ceylon) highlands',
-            notes: 'Malty, robust, with light cocoa undertones',
-            brew: '95°C — 3–4 min',
-            benefits: 'Contains flavonoids; supports alertness',
-            history: 'Ceylon black tea has been a major export since the 19th century.',
-            sources: ['https://en.wikipedia.org/wiki/Black_tea','https://en.wikipedia.org/wiki/Ceylon_tea']
+            origin: 'Harvested from Sri Lankan highland gardens known for brisk, malty character.',
+            notes: 'Malty and bold with a clean finish; subtle hints of cocoa.',
+            longDesc: 'Our Black Tea is crafted from carefully selected leaves, with a traditional Sri Lankan profile that balances strength and smoothness. It pairs well with breakfast and stands up beautifully to milk or lemon.',
+            brew: ['2–3 g per 250 ml', '95°C water', 'Steep 3–4 minutes', 'Enjoy plain or with milk']
         },
         'green-tea': {
             id: 'green-tea',
             name: 'Nandana Green Tea',
-            desc: 'Light, grassy green tea with fresh vegetal notes.',
+            desc: 'Delicate, refreshing green tea.',
             price: 14.00,
             image: 'srs/green tea.png',
-            origin: 'China / East Asia styles',
-            notes: 'Fresh, grassy, mildly sweet',
-            brew: '80°C — 1–3 min',
-            benefits: 'Rich in polyphenols (catechins); gentle stimulation',
-            history: 'Green tea is ancient in East Asia and is minimally oxidized to retain freshness.',
-            sources: ['https://en.wikipedia.org/wiki/Green_tea']
+            origin: 'Handpicked leaves steamed to preserve freshness and gentle sweetness.',
+            notes: 'Fresh and grassy with a soft, sweet finish.',
+            longDesc: 'This Green Tea offers a crisp cup with lively vegetal notes. Its gentle processing preserves antioxidants and a light, refreshing character ideal for afternoon sipping.',
+            brew: ['2 g per 250 ml', '80°C water', 'Steep 2–3 minutes', 'Avoid oversteeping for best sweetness']
         },
         'white-tea': {
             id: 'white-tea',
             name: 'Nandana White Tea',
-            desc: 'Delicate white tea made from young buds and leaves.',
+            desc: 'Rare, subtly sweet white tea.',
             price: 18.00,
             image: 'srs/white tea.png',
-            origin: 'Fujian region (traditional)',
-            notes: 'Subtle floral and honeyed sweetness',
-            brew: '75–85°C — 3–5 min',
-            benefits: 'High in antioxidants; light caffeine',
-            history: 'White tea is a lightly processed Chinese style prized for its purity.',
-            sources: ['https://en.wikipedia.org/wiki/White_tea']
+            origin: 'Tender buds sun-withered to retain natural sweetness and aroma.',
+            notes: 'Soft florals with honey-like sweetness and silky texture.',
+            longDesc: 'Our White Tea is delicate and nuanced, prized for its minimal processing. It delivers a serene cup with gentle florals and a lingering sweetness.',
+            brew: ['2 g per 250 ml', '75–85°C water', 'Steep 3–5 minutes', 'Savor without milk']
         },
         'oolong-tea': {
             id: 'oolong-tea',
             name: 'Nandana Oolong Tea',
-            desc: 'Semi-oxidized oolong with layered aromatics.',
+            desc: 'Complex, aromatic oolong tea.',
             price: 16.00,
             image: 'srs/oolong tea.png',
-            origin: 'China / Taiwan styles',
-            notes: 'Floral, stone-fruit, lightly roasted notes',
-            brew: '85–95°C — 2–4 min (multiple infusions)',
-            benefits: 'Supports digestion and sustained energy',
-            history: 'Oolong occupies the middle ground between green and black teas.',
-            sources: ['https://en.wikipedia.org/wiki/Oolong']
+            origin: 'Carefully oxidized leaves for layered aroma and flavor.',
+            notes: 'Orchid-like aromatics with baked sweetness and stone-fruit hints.',
+            longDesc: 'This Oolong balances floral aromatics and baked sweetness. Multiple infusions reveal evolving notes, making it a favorite for mindful tea sessions.',
+            brew: ['3 g per 250 ml', '90°C water', 'Steep 2–3 minutes', 'Reinfuse 2–3 times, slightly longer each brew']
         },
         'almond-tea': {
             id: 'almond-tea',
             name: 'Nandana Almond Tea',
-            desc: 'Tea blended with natural almond aroma.',
+            desc: 'Elegant, refined Almond Tea.',
             price: 17.00,
             image: 'srs/ahmad tea.png',
-            origin: 'Blended flavor — tea base with almond essence',
-            notes: 'Warm nutty almond, creamy mouthfeel',
-            brew: '90°C — 3–4 min',
-            benefits: 'Pleasant, comforting flavored tea',
-            history: 'Almond-flavored blends combine tea with nutty aromatics for a refined infusion.',
-            sources: ['https://en.wikipedia.org/wiki/Almond']
+            origin: 'Aromatic blend marrying smooth tea with natural almond notes.',
+            notes: 'Rounded nuttiness with gentle sweetness; comforting and smooth.',
+            longDesc: 'Our Almond Tea blends a mellow base with natural almond accents for a cozy, dessert-like cup. Lovely on its own or lightly sweetened.',
+            brew: ['2–3 g per 250 ml', '90–95°C water', 'Steep 3–4 minutes', 'Enjoy plain or lightly sweetened']
         },
         'cinnamon-tea': {
             id: 'cinnamon-tea',
             name: 'Nandana Cinnamon Tea',
-            desc: 'Spiced tea blended with Ceylon cinnamon.',
+            desc: 'Warm, spicy Cinnamon Tea.',
             price: 19.00,
             image: 'srs/cinnamon tea.jpg',
-            origin: 'Tea base blended with Ceylon (true) cinnamon',
-            notes: 'Warm cinnamon spice and gentle sweetness',
-            brew: '95°C — 3–4 min',
-            benefits: 'Aromatic spice; traditional warming flavour',
-            history: 'Cinnamon has a long culinary history; Ceylon cinnamon is prized for its quality.',
-            sources: ['https://en.wikipedia.org/wiki/Cinnamon','https://en.wikipedia.org/wiki/Ceylon_tea']
+            origin: 'Infused with true cinnamon for vibrant spice and warmth.',
+            notes: 'Bright spice, gentle sweetness, and a cozy finish.',
+            longDesc: 'A spirited cup featuring true cinnamon. It delivers warmth and a pleasantly sweet-spicy profile perfect for cool mornings and evenings.',
+            brew: ['2–3 g per 250 ml', '95°C water', 'Steep 3–4 minutes', 'Optional: a slice of orange or a dash of honey']
         }
     };
 
@@ -180,99 +162,56 @@
 
     function loadProduct() {
         const id = getParam('id');
-        const product = PRODUCTS[id] || Object.values(PRODUCTS)[0];
+        
+        // Try to get product from localStorage first
+        const storedProducts = JSON.parse(localStorage.getItem('products') || '[]');
+        let product = storedProducts.find(p => p.id === id);
+        
+        // Fallback to hardcoded PRODUCTS if not found in localStorage
+        if (!product) {
+            product = PRODUCTS[id] || PRODUCTS['black-tea'];
+        }
 
         document.getElementById('pd-name').textContent = product.name;
         document.getElementById('pd-title').textContent = product.name;
-        document.getElementById('pd-desc').textContent = product.desc || '';
-        document.getElementById('pd-price').textContent = formatPrice(product.price || 0);
+        document.getElementById('pd-desc').textContent = product.desc || product.description;
+        document.getElementById('pd-price').textContent = formatPrice(product.price);
         const img = document.getElementById('pd-image');
-        img.src = product.image || '';
-        img.alt = product.name || '';
+        img.src = product.image;
+        img.alt = product.name;
 
-        // Explainer content (essential fields only)
-        document.getElementById('pd-origin').textContent = product.origin || '';
-        document.getElementById('pd-notes').textContent = product.notes || '';
+        // Explainer content
+        const originEl = document.getElementById('pd-origin');
+        const notesEl = document.getElementById('pd-notes');
+        const longEl = document.getElementById('pd-long');
         const brewEl = document.getElementById('pd-brew');
-        brewEl.innerHTML = product.brew ? `<li>${product.brew}</li>` : '';
-        document.getElementById('pd-benefits').textContent = product.benefits || '';
-        document.getElementById('pd-history').textContent = product.history || '';
+        originEl.textContent = product.origin || '';
+        notesEl.textContent = product.notes || '';
+        longEl.textContent = product.longDesc || '';
+        brewEl.innerHTML = (product.brew || []).map(step => `<li>${step}</li>`).join('');
 
-        // actions
+        // Wire up actions
         const qtyInput = document.getElementById('pd-qty');
         document.getElementById('pd-add').onclick = () => {
             const qty = Math.max(1, parseInt(qtyInput.value || '1', 10));
             const item = { id: product.id, name: product.name, price: product.price, qty };
             const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            // merge if same id exists
             const existing = cart.find(c => c.id === item.id);
-            if (existing) existing.qty += qty; else cart.push(item);
+            if (existing) { existing.qty += qty; } else { cart.push(item); }
             localStorage.setItem('cart', JSON.stringify(cart));
             alert(`${product.name} added to cart (x${qty}).`);
         };
 
         document.getElementById('pd-order').onclick = () => {
             const qty = Math.max(1, parseInt(qtyInput.value || '1', 10));
+            // Simple redirect to contact with query params
             const params = new URLSearchParams({ product: product.id, qty: String(qty) });
             window.location.href = `contact.html?${params.toString()}`;
         };
-
-        // wholesale display
-        try {
-            const ws = sessionStorage.getItem('wholesaleUser');
-            const wsEl = document.getElementById('pd-wholesale');
-            if (ws && wsEl) {
-                const wholesalePrice = ((parseFloat(product.price) || 0) * 0.8).toFixed(2);
-                wsEl.textContent = `Wholesale: $${wholesalePrice}`;
-                wsEl.style.display = 'block';
-            } else if (wsEl) wsEl.style.display = 'none';
-        } catch (e) { /* ignore */ }
     }
 
-    // Search modal logic (uses PRODUCTS defined above)
-    document.addEventListener('DOMContentLoaded', () => {
-        loadProduct();
-        const searchIcon = document.getElementById('search-icon');
-        const searchModal = document.getElementById('search-modal');
-        const closeSearch = document.getElementById('close-search');
-        const searchInput = document.getElementById('search-input');
-        const searchResults = document.getElementById('search-results');
-
-        if (searchIcon) searchIcon.addEventListener('click', (e) => { e.preventDefault(); searchModal.style.display = 'flex'; searchInput.focus(); });
-        if (closeSearch) closeSearch.addEventListener('click', () => { searchModal.style.display = 'none'; searchInput.value = ''; searchResults.innerHTML = ''; });
-        if (searchModal) searchModal.addEventListener('click', (e) => { if (e.target === searchModal) searchModal.style.display = 'none'; });
-
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                const q = e.target.value.toLowerCase().trim();
-                if (!q) { searchResults.innerHTML = ''; return; }
-                const matches = Object.entries(PRODUCTS).filter(([id, p]) => p.name.toLowerCase().includes(q) || id.includes(q));
-                searchResults.innerHTML = matches.map(([id, p]) => `
-                    <div class="search-result-item">
-                        <img src="${p.image}" alt="${p.name}" class="search-result-img">
-                        <div style="flex:1;">
-                            <a href="product.html?id=${id}" onclick="document.getElementById('search-modal').style.display='none';">${p.name}</a>
-                            <span class="price">$${(p.price||0).toFixed(2)}</span>
-                        </div>
-                    </div>
-                `).join('') || '<p class="empty-msg">No products found</p>';
-            });
-
-            searchInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    const firstLink = searchResults.querySelector('a');
-                    if (firstLink) firstLink.click();
-                }
-            });
-        }
-    });
+    loadProduct();
     </script>
-
-    <div id="search-modal" class="search-modal">
-        <div class="search-modal-content">
-            <span id="close-search" class="close-search">&times;</span>
-            <input type="text" id="search-input" placeholder="Search teas..." autofocus>
-            <div id="search-results" class="search-results"></div>
-        </div>
-    </div>
 </body>
 </html>

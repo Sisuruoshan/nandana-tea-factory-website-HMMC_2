@@ -3,103 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Nandana Tea Factory</title>
+    <title>Admin Dashboard - Nandana Tea</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script>
-        // Professional Security Gate: Prevents direct URL entry without valid session
-        if (sessionStorage.getItem('isAdmin') !== 'true') {
-            window.location.href = 'login.html';
-        }
-    </script>
 </head>
 <body class="admin-body">
     <div class="admin-wrapper">
         <aside class="admin-sidebar">
-            <div class="admin-logo">
-                <i class="fa-solid fa-leaf"></i> 
-                <span>Nandana Admin</span>
-            </div>
-            
+            <div class="logo"><i class="fa-solid fa-leaf"></i> Nandana Admin</div>
             <nav class="admin-nav">
-                <a href="#dashboard" class="nav-item active" data-target="dashboard">
-                    <i class="fa-solid fa-chart-pie"></i> Dashboard
-                </a>
-                <a href="#products" class="nav-item" data-target="products">
-                    <i class="fa-solid fa-leaf"></i> Retail Teas
-                </a>
-                <a href="#wsproducts" class="nav-item" data-target="wsproducts">
-                    <i class="fa-solid fa-truck-fast"></i> Wholesale Hub
-                </a>
-                <a href="#inquiries" class="nav-item" data-target="inquiries">
-                    <i class="fa-solid fa-envelope-open-text"></i> Inquiries
-                </a>
-                
-                <div class="nav-divider"></div>
-                
-                <a href="index.html" class="nav-item site-link">
-                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Live Site
-                </a>
-                <a href="#" id="admin-logout" class="nav-item logout" onclick="sessionStorage.clear(); window.location.href='login.html';">
-                    <i class="fa-solid fa-power-off"></i> Logout
-                </a>
+                <a href="#dashboard" class="active" data-section="dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+                <a href="#products" data-section="products"><i class="fa-solid fa-boxes-stacked"></i> Retail Products</a>
+                <a href="#wsproducts" data-section="wsproducts"><i class="fa-solid fa-truck-ramp-box"></i> Wholesale Products</a>
+                <a href="#inquiries" data-section="inquiries"><i class="fa-solid fa-envelope"></i> Inquiries</a>
+                <a href="wholesale.html"><i class="fa-solid fa-handshake"></i> Wholesale</a>
+                <a href="index.html"><i class="fa-solid fa-house"></i> View Site</a>
             </nav>
         </aside>
 
         <main class="admin-main">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="admin-section active">
+                <section class="admin-stats">
+                    <div class="stat-card">
+                        <h3>Total Products</h3>
+                        <p class="stat-number" id="total-products">6</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>New Inquiries</h3>
+                        <p class="stat-number">12</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Wholesale Requests</h3>
+                        <p class="stat-number">5</p>
+                    </div>
+                </section>
 
-            <div id="dashboard" class="admin-tab active">
-                <div class="dashboard-summary">
-                    <div class="kpi-card">
-                        <div class="kpi-icon"><i class="fa-solid fa-boxes-packing"></i></div>
-                        <div class="kpi-content">
-                            <div class="kpi-label">Total SKUs</div>
-                            <div class="kpi-value" id="total-inventory-count">0</div>
-                        </div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-icon"><i class="fa-solid fa-handshake"></i></div>
-                        <div class="kpi-content">
-                            <div class="kpi-label">B2B Partners</div>
-                            <div class="kpi-value" id="total-partners">0</div>
-                        </div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-icon"><i class="fa-solid fa-tasks"></i></div>
-                        <div class="kpi-content">
-                            <div class="kpi-label">Actions Today</div>
-                            <div class="kpi-value" id="actions-today">0</div>
-                        </div>
-                    </div>
-                </div>
-
-                <section class="activity-container">
-                    <div class="section-header">
-                        <h3><i class="fa-solid fa-clock-rotate-left"></i> System Activity Log</h3>
-                        <button class="btn btn-primary btn-sm">Export Log</button>
-                    </div>
-                    <div class="table-scroll-wrapper">
+                <section class="admin-activity">
+                    <h3>Recent Admin Activity</h3>
+                    <div class="activity-table-wrapper">
                         <table class="wholesale-table">
                             <thead>
                                 <tr>
                                     <th>Timestamp</th>
-                                    <th>Admin Action</th>
-                                    <th>Category</th>
+                                    <th>Action</th>
+                                    <th>User</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody id="activity-log">
                                 <tr>
-                                    <td>Oct 24, 14:30</td>
-                                    <td>Price adjustment: White Tea</td>
-                                    <td>Retail</td>
-                                    <td><span class="status-badge success">Synced</span></td>
+                                    <td>2025-05-10 14:30</td>
+                                    <td>Updated Price: Nandana Green Tea</td>
+                                    <td>Admin_01</td>
+                                    <td><span class="status-badge success">Completed</span></td>
                                 </tr>
                                 <tr>
-                                    <td>Oct 24, 11:15</td>
-                                    <td>Wholesale Inquiry: Ceylon Exports</td>
-                                    <td>B2B</td>
-                                    <td><span class="status-badge pending">Awaiting</span></td>
+                                    <td>2025-05-10 11:15</td>
+                                    <td>Responded to Wholesale Inquiry: TeaCo</td>
+                                    <td>Admin_01</td>
+                                    <td><span class="status-badge pending">Pending</span></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -107,110 +70,169 @@
                 </section>
             </div>
 
-            <div id="products" class="admin-tab">
-                <div class="section-header">
-                    <h2>Retail Product Management</h2>
-                    <button class="btn btn-primary" id="open-product-modal">
-                        <i class="fa-solid fa-plus"></i> Add New SKU
-                    </button>
-                </div>
-                <div class="products-grid-admin" id="products-list">
-                    <p class="empty-msg">Scanning inventory...</p>
-                </div>
+            <!-- Retail Products Section -->
+            <div id="products-section" class="admin-section">
+                <section class="admin-products">
+                    <div class="section-header">
+                        <h3>Retail Products</h3>
+                        <button class="btn btn-primary" id="add-product-btn">
+                            <i class="fa-solid fa-plus"></i> Add New Product
+                        </button>
+                    </div>
+
+                    <div class="products-list" id="products-list">
+                        <!-- Products will be loaded here dynamically -->
+                    </div>
+                </section>
             </div>
 
-            <div id="wsproducts" class="admin-tab">
-                <div class="section-header">
-                    <h2>Wholesale Catalog Management</h2>
-                    <div class="section-actions">
-                        <button id="ws-refresh-btn" class="btn btn-secondary">Refresh Products</button>
-                    </div>
-                </div>
-
-                <div class="admin-card">
-                    <h3 style="margin-top:0;">Assign SKUs to Wholesale Partners</h3>
-                    <form id="ws-assign-form" class="admin-form">
-                        <div class="form-row">
-                            <div class="form-group" style="flex: 1 1 320px;">
-                                <label for="ws-partner-email">Partner Email</label>
-                                <input id="ws-partner-email" type="email" placeholder="partner@example.com" required>
-                            </div>
-                            <div class="form-group" style="flex: 1 1 320px;">
-                                <label>Products to Assign</label>
-                                <div id="ws-product-list" class="ws-product-list">
-                                    <!-- populated by JS -->
-                                </div>
-                            </div>
-                        </div>
-                        <div style="display:flex; gap:12px; margin-top:12px;">
-                            <button id="ws-assign-save" type="submit" class="btn btn-primary">Save Assignment</button>
-                            <button id="ws-assign-clear" type="button" class="btn btn-secondary">Clear Selection</button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="admin-card" style="margin-top:1rem;">
-                    <h3 style="margin-top:0;">Existing Wholesale Assignments</h3>
-                    <div class="table-scroll-wrapper">
-                        <table class="wholesale-table" id="ws-assignments-table">
-                            <thead>
-                                <tr>
-                                    <th>Partner Email</th>
-                                    <th>Assigned SKUs</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- populated by JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <!-- Inquiries Section -->
+            <div id="inquiries-section" class="admin-section">
+                <section class="admin-inquiries">
+                    <h3>Customer Inquiries</h3>
+                    <p>Inquiries management coming soon...</p>
+                </section>
             </div>
-
-            <div id="inquiries" class="admin-tab">
-                <div class="section-header">
-                    <h2>Customer Contact Requests</h2>
-                </div>
-                <div class="inquiry-list">
-                   <p>Customer messages will appear here once submitted from the contact page.</p>
-                </div>
+            
+            <!-- Wholesale Products Management Section -->
+            <div id="wsproducts-section" class="admin-section">
+                <section class="admin-products">
+                    <div class="section-header">
+                        <h3>Wholesale Products</h3>
+                        <button class="btn btn-primary" id="add-ws-product-btn">
+                            <i class="fa-solid fa-plus"></i> Add Wholesale Product
+                        </button>
+                    </div>
+                    <div class="products-list" id="ws-products-list">
+                        <!-- Wholesale products will be loaded here dynamically -->
+                    </div>
+                </section>
             </div>
         </main>
-    </div>
 
-    <div id="product-modal" class="modal">
-        <div class="modal-content admin-card">
-            <div class="modal-header">
-                <h3>Configure Product SKU</h3>
-                <span class="close-modal">&times;</span>
-            </div>
-            <form id="product-form" class="admin-form">
-                <div class="form-row">
+        <!-- Product Modal -->
+        <div id="product-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-title">Add New Product</h3>
+                    <span class="close-modal">&times;</span>
+                </div>
+                <form id="product-form">
+                    <input type="hidden" id="product-id">
+                    
                     <div class="form-group">
-                        <label>Display Name</label>
-                        <input type="text" id="product-name" placeholder="e.g. Silver Needle White Tea" required>
+                        <label for="product-name">Product Name</label>
+                        <input type="text" id="product-name" required>
                     </div>
+
                     <div class="form-group">
-                        <label>Price ($)</label>
+                        <label for="product-description">Description</label>
+                        <textarea id="product-description" rows="3" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="product-price">Price ($)</label>
                         <input type="number" id="product-price" step="0.01" required>
                     </div>
-                </div>
+
+                    <div class="form-group">
+                        <label for="product-image">Image Path</label>
+                        <input type="text" id="product-image" placeholder="e.g., srs/black tea.jpg" required>
+                        <small>Enter the path to the image file</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="product-id-slug">Product ID (URL slug)</label>
+                        <input type="text" id="product-id-slug" placeholder="e.g., black-tea" required>
+                        <small>Used in product URLs - lowercase with hyphens</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="product-origin">Origin</label>
+                        <textarea id="product-origin" rows="2" placeholder="e.g., Harvested from Sri Lankan highland gardens..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="product-notes">Notes</label>
+                        <textarea id="product-notes" rows="2" placeholder="e.g., Malty and bold with a clean finish..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="product-brew">Brewing Guide</label>
+                        <textarea id="product-brew" rows="4" placeholder="Enter each brewing step on a new line, e.g.:
+2–3 g per 250 ml
+95°C water
+Steep 3–4 minutes
+Enjoy plain or with milk"></textarea>
+                        <small>Enter each brewing step on a new line</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="product-long-desc">About this Tea</label>
+                        <textarea id="product-long-desc" rows="4" placeholder="Detailed description about the tea..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa-solid fa-save"></i> Save Product
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="cancel-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wholesale Product Modal -->
+    <div id="ws-product-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="ws-modal-title">Add Wholesale Product</h3>
+                <span class="close-modal" id="ws-close">&times;</span>
+            </div>
+            <form id="ws-product-form">
+                <input type="hidden" id="ws-product-id">
+
                 <div class="form-group">
-                    <label>Product ID (lowercase, no spaces)</label>
-                    <input type="text" id="product-id-slug" placeholder="e.g. silver-needle" required>
+                    <label for="ws-product-name">Product Name</label>
+                    <input type="text" id="ws-product-name" required>
                 </div>
+
                 <div class="form-group">
-                    <label>Description</label>
-                    <textarea id="product-description" rows="3" required></textarea>
+                    <label for="ws-product-description">Description</label>
+                    <textarea id="ws-product-description" rows="3" required></textarea>
                 </div>
+
                 <div class="form-group">
-                    <label>Image Asset Path</label>
-                    <input type="text" id="product-image" placeholder="srs/white-tea.jpg">
+                    <label for="ws-product-price">Retail Price ($)</label>
+                    <input type="number" id="ws-product-price" step="0.01" required>
                 </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Save to Inventory</button>
-                    <button type="button" class="btn btn-secondary close-btn">Discard Changes</button>
+
+                <div class="form-group">
+                    <label for="ws-product-wholesale-price">Wholesale Price ($)</label>
+                    <input type="number" id="ws-product-wholesale-price" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="ws-product-minqty">Minimum Quantity</label>
+                    <input type="number" id="ws-product-minqty" min="1" value="10" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="ws-product-image">Image Path</label>
+                    <input type="text" id="ws-product-image" placeholder="e.g., srs/black tea.jpg" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="ws-product-id-slug">Product ID (URL slug)</label>
+                    <input type="text" id="ws-product-id-slug" placeholder="e.g., black-tea" required>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-save"></i> Save Wholesale Product
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="ws-cancel">Cancel</button>
                 </div>
             </form>
         </div>
