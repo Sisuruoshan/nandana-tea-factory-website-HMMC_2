@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     document.addEventListener('keydown', (e) => {
         if (e.shiftKey && (e.key === 'A' || e.key === 'a')) {
-            window.location.href = 'login.html';
+            window.location.href = 'admin-login.html';
         }
     });
 
@@ -899,7 +899,7 @@ function updateUserUI() {
     const headerIcons = document.querySelectorAll('.header-icons');
     headerIcons.forEach(container => {
         const cur = getCurrentUser();
-        if (cur) {
+            if (cur) {
             container.innerHTML = `
                 <a href="profile.html" class="user-link"><img src="srs/avatar-placeholder.png" alt="user" class="user-icon"> ${escapeHtml(cur.name.split(' ')[0]||cur.name)}</a>
                 <a href="#" id="logout-link" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></a>
@@ -907,7 +907,7 @@ function updateUserUI() {
             const logout = container.querySelector('#logout-link');
             if (logout) logout.addEventListener('click', (e)=>{ e.preventDefault(); logoutUser(); });
         } else {
-            container.innerHTML = `<a href="login.html"><i class="fa-solid fa-user"></i></a>`;
+            container.innerHTML = `<a href="user-login.html"><i class="fa-solid fa-user"></i></a>`;
         }
     });
 }

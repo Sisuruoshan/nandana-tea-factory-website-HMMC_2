@@ -24,7 +24,7 @@
             <a href="contact.html">Contact</a>
         </nav>
         <div class="header-icons">
-            <a href="login.html"><i class="fa-solid fa-user"></i></a>
+            <a href="user-login.html"><i class="fa-solid fa-user"></i></a>
         </div>
         <div class="hamburger-menu"><span class="bar"></span><span class="bar"></span><span class="bar"></span></div>
     </header>
@@ -80,7 +80,7 @@
 <script>
     function populateProfile(){
         const cur = getCurrentUser();
-        if (!cur) { alert('Not signed in'); window.location.href='login.html'; return; }
+        if (!cur) { alert('Not signed in'); window.location.href='user-login.html'; return; }
         document.getElementById('profile-id').value = cur.id;
         document.getElementById('profile-name').value = cur.name || '';
         document.getElementById('profile-email').value = cur.email || '';

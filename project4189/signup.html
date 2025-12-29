@@ -7,16 +7,18 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        .auth-page{ display:flex; align-items:center; justify-content:center; min-height:100vh; background:linear-gradient(180deg, rgba(1,36,3,0.95), rgba(3,65,29,0.95)); }
-        .auth-card{ background:var(--secondary-dark-green); padding:2.5rem; border-radius:12px; width:100%; max-width:520px; border:1px solid var(--border-color); }
+        .auth-page{ display:flex; align-items:center; justify-content:center; min-height:100vh; background:#012403; position:relative; }
+        .auth-page::before { content:''; position:absolute; top:0; left:0; width:100%; height:100%; background:url('srs/12.png') no-repeat center center fixed; background-size:cover; z-index:-1; }
+        .auth-card{ background:var(--secondary-dark-green); padding:1.5rem; border-radius:12px; width:100%; max-width:450px; border:1px solid var(--border-color); position:relative; z-index:1; text-align:center; }
         .auth-card h2{ margin-bottom:0.75rem; }
-        .form-actions{ display:flex; gap:0.75rem; align-items:center; margin-top:1rem; }
+        .form-actions{ display:flex; gap:0.75rem; align-items:stretch; margin-top:1rem; }
+        .form-actions button, .form-actions a { flex:1; }
     </style>
 </head>
 <body class="auth-page">
     <div class="auth-card">
         <h2>Create Your Account</h2>
-        <p style="color:var(--text-medium); margin-bottom:1rem;">Create a profile to save orders and speed checkout.</p>
+       
         <form id="signup-form">
             <div class="form-group">
                 <label>Full Name</label>
@@ -40,7 +42,7 @@
             </div>
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Create Account</button>
-                <a href="login.html" class="btn btn-secondary">Already have an account</a>
+                <a href="user-login.html" class="btn btn-secondary">Already have an account</a>
             </div>
         </form>
     </div>
