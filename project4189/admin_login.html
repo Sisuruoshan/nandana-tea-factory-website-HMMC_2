@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff Login - Nandana Tea Factory</title>
+    <title>Admin Login - Nandana Tea Factory</title>
     <link rel="stylesheet" href="style.css"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         .login-container {
@@ -27,7 +27,7 @@
 <body class="login-container">
     <div class="login-card">
         <i class="fa-solid fa-leaf" style="color: var(--accent-mint-green); font-size: 3rem;"></i>
-        <h2 style="margin: 1rem 0;">Welcome Back</h2>
+        <h2 style="margin: 1rem 0;">Admin Login</h2>
         <form id="login-form">
             <div class="form-group" style="text-align: left;">
                 <label>Email</label>
@@ -39,9 +39,6 @@
             </div>
             <button type="submit" class="btn btn-primary" style="width: 100%;">Sign In</button>
         </form>
-        <div style="margin-top:1rem;text-align:center;color:var(--text-medium)">
-            <a href="signup.html" class="btn btn-secondary">Create an account</a>
-        </div>
     </div>
 
     <script>
@@ -49,12 +46,12 @@
             e.preventDefault();
             const email = document.getElementById('user-email').value.trim();
             const pass = document.getElementById('user-pass').value;
-            const res = authenticateUser(email, pass);
-            if (res.ok) {
-                alert('Signed in');
-                window.location.href = 'index.html';
+            // This will need a specific admin authentication function
+            if (email === 'admin@nandana.com' && pass === 'admin123') {
+                alert('Admin signed in');
+                window.location.href = 'admin.html'; // Redirect to admin panel
             } else {
-                alert(res.message || 'Invalid credentials');
+                alert('Invalid admin credentials');
             }
         });
     </script>

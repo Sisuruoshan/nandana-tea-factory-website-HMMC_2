@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     document.addEventListener('keydown', (e) => {
         if (e.shiftKey && (e.key === 'A' || e.key === 'a')) {
-            window.location.href = 'login.html';
+            window.location.href = 'admin_login.html';
         }
     });
 
@@ -907,11 +907,10 @@ function updateUserUI() {
             const logout = container.querySelector('#logout-link');
             if (logout) logout.addEventListener('click', (e)=>{ e.preventDefault(); logoutUser(); });
         } else {
-            container.innerHTML = `<a href="login.html"><i class="fa-solid fa-user"></i></a>`;
+            container.innerHTML = `<a href="user_login.html"><i class="fa-solid fa-user"></i></a>`;
         }
     });
 }
 
 // Ensure UI updates on load
 document.addEventListener('DOMContentLoaded', updateUserUI);
-
