@@ -672,3 +672,246 @@ function deleteWsProduct(id) {
     alert('Wholesale product deleted successfully!');
 }
 
+/**
+ * Inquiry Management for Admin
+ */
+function initializeInquiryManagement() {
+    const inqSection = document.getElementById('inquiries-section');
+    if (!inqSection) return;
+
+    const refreshBtn = document.getElementById('refresh-inquiries-btn');
+    const modal = document.getElementById('inquiry-modal');
+    const closeBtn = document.getElementById('inquiry-close');
+    const cancelBtn = document.getElementById('inquiry-cancel');
+    const saveBtn = document.getElementById('save-inquiry-btn');
+    const sendBtn = document.getElementById('send-reply-btn');
+
+    loadInquiries();
+
+    if (refreshBtn) refreshBtn.addEventListener('click', loadInquiries);
+    if (closeBtn) closeBtn.addEventListener('click', closeInquiryModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeInquiryModal);
+    window.addEventListener('click', (e) => { if (e.target === modal) closeInquiryModal(); });
+    if (saveBtn) saveBtn.addEventListener('click', saveInquiryEdit);
+    if (sendBtn) sendBtn.addEventListener('click', sendInquiryReply);
+}
+
+function getInquiries() {
+    return JSON.parse(localStorage.getItem('inquiries') || '[]');
+}
+
+function loadInquiries() {
+    const listEl = document.getElementById('inquiries-list');
+    if (!listEl) return;
+    const inquiries = getInquiries();
+    if (inquiries.length === 0) {
+        listEl.innerHTML = '<tr><td colspan="6">No inquiries yet.</td></tr>';
+        return;
+    }
+
+    listEl.innerHTML = inquiries.map(i => `
+        <tr data-id="${i.id}">
+            <td>${new Date(i.timestamp).toLocaleString()}</td>
+            <td>${escapeHtml(i.name)}</td>
+            <td>${escapeHtml(i.email)}</td>
+            <td>${escapeHtml(i.subject)}</td>
+            <td class="short-message">${escapeHtml(i.message).slice(0,120)}${i.message.length>120? '...':''}</td>
+            <td>
+                <button class="btn btn-small" onclick="openInquiryModal('${i.id}')"><i class="fa-solid fa-pen-to-square"></i> View</button>
+                <button class="btn btn-small" onclick="openInquiryModal('${i.id}', true)"><i class="fa-solid fa-reply"></i> Reply</button>
+                <button class="btn btn-danger btn-small" onclick="deleteInquiry('${i.id}')"><i class="fa-solid fa-trash"></i></button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function openInquiryModal(id, focusReply = false) {
+    const inquiries = getInquiries();
+    const i = inquiries.find(x => x.id === id);
+    if (!i) return;
+    document.getElementById('inquiry-id').value = i.id;
+    document.getElementById('inquiry-name').value = i.name;
+    document.getElementById('inquiry-email').value = i.email;
+    document.getElementById('inquiry-subject').value = i.subject;
+    document.getElementById('inquiry-message').value = i.message;
+    document.getElementById('inquiry-reply').value = i.replyMessage || '';
+
+    const modal = document.getElementById('inquiry-modal');
+    modal.style.display = 'block';
+    setTimeout(() => modal.classList.add('show'), 10);
+
+    if (focusReply) {
+        setTimeout(() => document.getElementById('inquiry-reply').focus(), 200);
+    }
+}
+
+function closeInquiryModal() {
+    const modal = document.getElementById('inquiry-modal');
+    if (!modal) return;
+    modal.classList.remove('show');
+    setTimeout(() => modal.style.display = 'none', 300);
+}
+
+function saveInquiryEdit() {
+    const id = document.getElementById('inquiry-id').value;
+    const name = document.getElementById('inquiry-name').value.trim();
+    const email = document.getElementById('inquiry-email').value.trim();
+    const subject = document.getElementById('inquiry-subject').value.trim();
+    const message = document.getElementById('inquiry-message').value.trim();
+    const replyMessage = document.getElementById('inquiry-reply').value.trim();
+
+    const inquiries = getInquiries();
+    const idx = inquiries.findIndex(x => x.id === id);
+    if (idx === -1) return alert('Inquiry not found');
+
+    inquiries[idx].name = name;
+    inquiries[idx].email = email;
+    inquiries[idx].subject = subject;
+    inquiries[idx].message = message;
+    inquiries[idx].replyMessage = replyMessage;
+
+    localStorage.setItem('inquiries', JSON.stringify(inquiries));
+    loadInquiries();
+    logActivity(`Edited Inquiry: ${subject}`);
+    alert('Inquiry saved.');
+    closeInquiryModal();
+}
+
+function sendInquiryReply() {
+    const id = document.getElementById('inquiry-id').value;
+    const reply = document.getElementById('inquiry-reply').value.trim();
+    const inquiries = getInquiries();
+    const idx = inquiries.findIndex(x => x.id === id);
+    if (idx === -1) return alert('Inquiry not found');
+
+    const inquiry = inquiries[idx];
+    const subject = `Re: ${inquiry.subject}`;
+    const body = `${reply}\n\n--- Original Message ---\n${inquiry.message}`;
+
+    // Save reply draft and mark replied
+    inquiry.replyMessage = reply;
+    inquiry.replied = true;
+    localStorage.setItem('inquiries', JSON.stringify(inquiries));
+    loadInquiries();
+
+    // Open user's mail client with mailto:
+    const mailto = `mailto:${encodeURIComponent(inquiry.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailto;
+    logActivity(`Replied to Inquiry: ${inquiry.subject}`);
+    closeInquiryModal();
+}
+
+function deleteInquiry(id) {
+    if (!confirm('Delete this inquiry?')) return;
+    const inquiries = getInquiries();
+    const filtered = inquiries.filter(x => x.id !== id);
+    localStorage.setItem('inquiries', JSON.stringify(filtered));
+    loadInquiries();
+    logActivity('Deleted an inquiry');
+}
+
+// Utility: simple HTML escape
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, function (s) {
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[s];
+    });
+}
+
+// Initialize inquiries when admin page loads
+document.addEventListener('DOMContentLoaded', initializeInquiryManagement);
+
+/**
+ * Cart helpers: update cart count in header and listen for storage changes
+ */
+function updateCartCount() {
+    const countEls = document.querySelectorAll('.cart-count');
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const totalQty = cart.reduce((s, i) => s + (parseInt(i.qty, 10) || 0), 0);
+    countEls.forEach(el => el.textContent = totalQty);
+}
+
+window.updateCartCount = updateCartCount;
+
+// Update count on storage change (other tabs) and on load
+window.addEventListener('storage', (e) => {
+    if (e.key === 'cart') updateCartCount();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    updateCartCount();
+});
+
+/**
+ * Simple client-side user management (localStorage)
+ */
+function getUsers() {
+    return JSON.parse(localStorage.getItem('users') || '[]');
+}
+
+function saveUsers(users) {
+    localStorage.setItem('users', JSON.stringify(users));
+}
+
+function createUser({id, name, email, password, phone, address}) {
+    const users = getUsers();
+    if (users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
+        return { ok: false, message: 'Email already registered' };
+    }
+    const user = { id: id || 'u_' + Date.now(), name, email, password, phone: phone || '', address: address || '' };
+    users.push(user);
+    saveUsers(users);
+    return { ok: true, user };
+}
+
+function authenticateUser(email, password) {
+    const users = getUsers();
+    const u = users.find(x => x.email.toLowerCase() === (email||'').toLowerCase() && x.password === password);
+    if (!u) return { ok: false, message: 'Invalid credentials' };
+    localStorage.setItem('currentUserId', u.id);
+    updateUserUI();
+    return { ok: true, user: u };
+}
+
+function getCurrentUser() {
+    const id = localStorage.getItem('currentUserId');
+    if (!id) return null;
+    return getUsers().find(u => u.id === id) || null;
+}
+
+function logoutUser() {
+    localStorage.removeItem('currentUserId');
+    updateUserUI();
+}
+
+function updateUserProfile(updates) {
+    const cur = getCurrentUser();
+    if (!cur) return { ok: false };
+    const users = getUsers();
+    const idx = users.findIndex(u => u.id === cur.id);
+    if (idx === -1) return { ok: false };
+    users[idx] = { ...users[idx], ...updates };
+    saveUsers(users);
+    return { ok: true, user: users[idx] };
+}
+
+function updateUserUI() {
+    const headerIcons = document.querySelectorAll('.header-icons');
+    headerIcons.forEach(container => {
+        const cur = getCurrentUser();
+        if (cur) {
+            container.innerHTML = `
+                <a href="profile.html" class="user-link"><img src="srs/avatar-placeholder.png" alt="user" class="user-icon"> ${escapeHtml(cur.name.split(' ')[0]||cur.name)}</a>
+                <a href="#" id="logout-link" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></a>
+            `;
+            const logout = container.querySelector('#logout-link');
+            if (logout) logout.addEventListener('click', (e)=>{ e.preventDefault(); logoutUser(); });
+        } else {
+            container.innerHTML = `<a href="login.html"><i class="fa-solid fa-user"></i></a>`;
+        }
+    });
+}
+
+// Ensure UI updates on load
+document.addEventListener('DOMContentLoaded', updateUserUI);
+

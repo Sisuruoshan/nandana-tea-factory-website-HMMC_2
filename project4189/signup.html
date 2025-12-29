@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign Up - Nandana Tea</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .auth-page{ display:flex; align-items:center; justify-content:center; min-height:100vh; background:linear-gradient(180deg, rgba(1,36,3,0.95), rgba(3,65,29,0.95)); }
+        .auth-card{ background:var(--secondary-dark-green); padding:2.5rem; border-radius:12px; width:100%; max-width:520px; border:1px solid var(--border-color); }
+        .auth-card h2{ margin-bottom:0.75rem; }
+        .form-actions{ display:flex; gap:0.75rem; align-items:center; margin-top:1rem; }
+    </style>
+</head>
+<body class="auth-page">
+    <div class="auth-card">
+        <h2>Create Your Account</h2>
+        <p style="color:var(--text-medium); margin-bottom:1rem;">Create a profile to save orders and speed checkout.</p>
+        <form id="signup-form">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="name" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="password" required>
+            </div>
+            <div class="form-group">
+                <label>Phone (optional)</label>
+                <input type="text" id="phone">
+            </div>
+            <div class="form-group">
+                <label>Address (optional)</label>
+                <textarea id="address" rows="2"></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Create Account</button>
+                <a href="login.html" class="btn btn-secondary">Already have an account</a>
+            </div>
+        </form>
+    </div>
+
+<script>
+    document.getElementById('signup-form').addEventListener('submit', (e)=>{
+        e.preventDefault();
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const phone = document.getElementById('phone').value.trim();
+        const address = document.getElementById('address').value.trim();
+
+        if (!name || !email || !password) { alert('Please fill required fields'); return; }
+
+        const result = createUser({ name, email, password, phone, address });
+        if (!result.ok) { alert(result.message); return; }
+        // Auto-login
+        authenticateUser(email, password);
+        alert('Account created. You are now signed in.');
+        window.location.href = 'index.html';
+    });
+</script>
+<script src="main.js"></script>
+</body>
+</html>

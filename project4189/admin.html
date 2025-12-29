@@ -16,7 +16,6 @@
                 <a href="#products" data-section="products"><i class="fa-solid fa-boxes-stacked"></i> Retail Products</a>
                 <a href="#wsproducts" data-section="wsproducts"><i class="fa-solid fa-truck-ramp-box"></i> Wholesale Products</a>
                 <a href="#inquiries" data-section="inquiries"><i class="fa-solid fa-envelope"></i> Inquiries</a>
-                <a href="wholesale.html"><i class="fa-solid fa-handshake"></i> Wholesale</a>
                 <a href="index.html"><i class="fa-solid fa-house"></i> View Site</a>
             </nav>
         </aside>
@@ -90,7 +89,26 @@
             <div id="inquiries-section" class="admin-section">
                 <section class="admin-inquiries">
                     <h3>Customer Inquiries</h3>
-                    <p>Inquiries management coming soon...</p>
+                    <div class="section-header">
+                        <button class="btn btn-primary" id="refresh-inquiries-btn"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+                    </div>
+                    <div class="activity-table-wrapper">
+                        <table class="wholesale-table">
+                            <thead>
+                                <tr>
+                                    <th>Received</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Subject</th>
+                                    <th>Message</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inquiries-list">
+                                <!-- Inquiries will be injected here -->
+                            </tbody>
+                        </table>
+                    </div>
                 </section>
             </div>
             
@@ -160,10 +178,10 @@
                     <div class="form-group">
                         <label for="product-brew">Brewing Guide</label>
                         <textarea id="product-brew" rows="4" placeholder="Enter each brewing step on a new line, e.g.:
-2–3 g per 250 ml
-95°C water
-Steep 3–4 minutes
-Enjoy plain or with milk"></textarea>
+                                2–3 g per 250 ml
+                                95°C water
+                                Steep 3–4 minutes
+                                Enjoy plain or with milk"></textarea>
                         <small>Enter each brewing step on a new line</small>
                     </div>
 
@@ -233,6 +251,44 @@ Enjoy plain or with milk"></textarea>
                         <i class="fa-solid fa-save"></i> Save Wholesale Product
                     </button>
                     <button type="button" class="btn btn-secondary" id="ws-cancel">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Inquiry Modal -->
+    <div id="inquiry-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="inquiry-modal-title">View / Edit Inquiry</h3>
+                <span class="close-modal" id="inquiry-close">&times;</span>
+            </div>
+            <form id="inquiry-form">
+                <input type="hidden" id="inquiry-id">
+                <div class="form-group">
+                    <label for="inquiry-name">Name</label>
+                    <input type="text" id="inquiry-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="inquiry-email">Email</label>
+                    <input type="email" id="inquiry-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="inquiry-subject">Subject</label>
+                    <input type="text" id="inquiry-subject" required>
+                </div>
+                <div class="form-group">
+                    <label for="inquiry-message">Message</label>
+                    <textarea id="inquiry-message" rows="5" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="inquiry-reply">Reply (draft)</label>
+                    <textarea id="inquiry-reply" rows="4" placeholder="Write a reply here. Use 'Send Reply' to open mail client."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-primary" id="save-inquiry-btn"><i class="fa-solid fa-save"></i> Save</button>
+                    <button type="button" class="btn btn-success" id="send-reply-btn"><i class="fa-solid fa-paper-plane"></i> Send Reply</button>
+                    <button type="button" class="btn btn-secondary" id="inquiry-cancel">Cancel</button>
                 </div>
             </form>
         </div>
