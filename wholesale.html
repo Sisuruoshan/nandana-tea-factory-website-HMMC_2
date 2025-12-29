@@ -10,9 +10,9 @@
 <body>
     <header>
         <a href="index.html" class="logo"><i class="fa-solid fa-leaf"></i> Nandana Tea</a>
-       <nav>
-            <a href="index.html">Home</a>
-            <a href="products.html">Products</a>
+        <nav>
+            <a href="#">Our Team</a>
+            <a href="wholesale.html">Wholesale</a>
             <a href="about.html">About Us</a>
             <a href="contact.html">Contact</a>
         </nav>
@@ -33,10 +33,10 @@
             <p>Access exclusive pricing and bulk ordering.</p>
         </section>
         
-        <section id="login-section" class="wholesale-grid">
+        <section class="wholesale-grid">
             <div class="form-container">
                 <h2>Login to your Account</h2>
-                <form id="wholesale-login-form">
+                <form>
                     <div class="form-group">
                         <label for="email">Email</label>
                         <input type="email" id="email" placeholder="you@example.com">
@@ -52,21 +52,6 @@
                 <h2>New Wholesale Partner?</h2>
                 <p style="color:var(--text-medium); line-height: 1.8; margin: 1rem 0 2rem 0;">Register for a wholesale account to unlock benefits like tiered pricing, dedicated support, and early access to new tea collections.</p>
                 <a href="#" class="btn btn-primary">Create an Account</a>
-            </div>
-        </section>
-
-        <!-- Wholesale Products (shown after login) -->
-        <section id="wholesale-products-section" style="display:none; margin-top: 2rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h2>Wholesale Products</h2>
-                <button id="logout-btn" class="btn btn-secondary">Logout</button>
-            </div>
-            <div class="product-controls">
-                <a href="#" class="btn active">Wholesale</a>
-                <a href="products.html" class="btn">Retail</a>
-            </div>
-            <div class="product-grid" id="wholesale-products-grid">
-                <!-- Rendered dynamically by main.js -->
             </div>
         </section>
 
@@ -105,7 +90,7 @@
         </div>
     </footer>
 
-    <script src="main.js"></script>
+    <script src="js/main.js"></script>
     <script src="js/validation.js"></script>
 </body>
 </html>

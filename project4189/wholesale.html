@@ -7,18 +7,17 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body class="wholesale-page">
+<body>
     <header>
         <a href="index.html" class="logo"><i class="fa-solid fa-leaf"></i> Nandana Tea</a>
-       <nav>
-            <a href="index.html">Home</a>
-            <a href="products.html">Products</a>
+        <nav>
+            <a href="#">Our Team</a>
+            <a href="wholesale.html">Wholesale</a>
             <a href="about.html">About Us</a>
             <a href="contact.html">Contact</a>
         </nav>
         <div class="header-icons">
             <a href="#">Cart (0)</a>
-            <a href="#" id="search-icon" title="Search"><i class="fa-solid fa-magnifying-glass"></i></a>
             <a href="#"><img src="https://i.pravatar.cc/32" alt="User" class="user-icon"></a>
         </div>
         <div class="hamburger-menu">
@@ -34,46 +33,25 @@
             <p>Access exclusive pricing and bulk ordering.</p>
         </section>
         
-        <section id="login-section" class="wholesale-grid">
+        <section class="wholesale-grid">
             <div class="form-container">
                 <h2>Login to your Account</h2>
-                <form id="wholesale-login-form">
+                <form>
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input type="email" id="email" placeholder="you@example.com" value="demo@partner.local">
+                        <input type="email" id="email" placeholder="you@example.com">
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" id="password" value="wholesale123">
+                        <input type="password" id="password">
                     </div>
                     <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
                 </form>
-                <div style="margin-top:0.75rem; font-size:0.95rem; color:var(--text-medium);">
-                    Default demo credentials: <strong>demo@partner.local</strong> / <strong>wholesale123</strong>
-                    <div style="margin-top:0.5rem;">
-                        <button id="ws-quick-login" type="button" class="btn btn-secondary" onclick="document.getElementById('email').value='demo@partner.local'; document.getElementById('password').value='wholesale123'; document.getElementById('wholesale-login-form').querySelector('button[type=submit]').click();">Quick Login (Demo)</button>
-                    </div>
-                </div>
             </div>
             <div style="padding-top: 3rem;">
                 <h2>New Wholesale Partner?</h2>
                 <p style="color:var(--text-medium); line-height: 1.8; margin: 1rem 0 2rem 0;">Register for a wholesale account to unlock benefits like tiered pricing, dedicated support, and early access to new tea collections.</p>
                 <a href="#" class="btn btn-primary">Create an Account</a>
-            </div>
-        </section>
-
-        <!-- Wholesale Products (shown after login) -->
-        <section id="wholesale-products-section" style="display:none; margin-top: 2rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h2>Wholesale Products</h2>
-                <button id="logout-btn" class="btn btn-secondary">Logout</button>
-            </div>
-            <div class="product-controls">
-                <a href="#" class="btn active">Wholesale</a>
-                <a href="products.html" class="btn">Retail</a>
-            </div>
-            <div class="product-grid" id="wholesale-products-grid">
-                <!-- Rendered dynamically by main.js -->
             </div>
         </section>
 
@@ -112,85 +90,7 @@
         </div>
     </footer>
 
-    <div id="search-modal" class="search-modal">
-        <div class="search-modal-content">
-            <span id="close-search" class="close-search">&times;</span>
-            <input type="text" id="search-input" placeholder="Search teas..." autofocus>
-            <div id="search-results" class="search-results"></div>
-        </div>
-    </div>
-
-    <script src="main.js"></script>
+    <script src="js/main.js"></script>
     <script src="js/validation.js"></script>
-    <script>
-        // Search functionality
-        const PRODUCTS = {
-            'black-tea': { name: 'Nandana Black Tea', price: 12.00, image: 'srs/black tea.jpg' },
-            'green-tea': { name: 'Nandana Green Tea', price: 14.00, image: 'srs/green tea.png' },
-            'white-tea': { name: 'Nandana White Tea', price: 18.00, image: 'srs/white tea.png' },
-            'oolong-tea': { name: 'Nandana Oolong Tea', price: 16.00, image: 'srs/oolong tea.png' },
-            'almond-tea': { name: 'Nandana Almond Tea', price: 17.00, image: 'srs/ahmad tea.png' },
-            'cinnamon-tea': { name: 'Nandana Cinnamon Tea', price: 19.00, image: 'srs/cinnamon tea.jpg' }
-        };
-
-        const searchIcon = document.getElementById('search-icon');
-        const searchModal = document.getElementById('search-modal');
-        const closeSearch = document.getElementById('close-search');
-        const searchInput = document.getElementById('search-input');
-        const searchResults = document.getElementById('search-results');
-
-        if (searchIcon) {
-            searchIcon.addEventListener('click', (e) => {
-                e.preventDefault();
-                searchModal.style.display = 'flex';
-                searchInput.focus();
-            });
-        }
-
-        if (closeSearch) {
-            closeSearch.addEventListener('click', () => {
-                searchModal.style.display = 'none';
-                searchInput.value = '';
-                searchResults.innerHTML = '';
-            });
-        }
-
-        if (searchModal) {
-            searchModal.addEventListener('click', (e) => {
-                if (e.target === searchModal) searchModal.style.display = 'none';
-            });
-        }
-
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase().trim();
-                if (!query) {
-                    searchResults.innerHTML = '';
-                    return;
-                }
-                const matches = Object.entries(PRODUCTS).filter(([id, p]) => 
-                    p.name.toLowerCase().includes(query) || id.includes(query)
-                );
-                searchResults.innerHTML = matches.map(([id, p]) => `
-                    <div class="search-result-item">
-                        <img src="${p.image}" alt="${p.name}" class="search-result-img">
-                        <div style="flex:1;">
-                            <a href="product.html?id=${id}" onclick="searchModal.style.display='none';">${p.name}</a>
-                            <span class="price">$${p.price.toFixed(2)}</span>
-                        </div>
-                    </div>
-                `).join('') || '<p class="empty-msg">No products found</p>';
-            });
-
-            searchInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    const firstLink = searchResults.querySelector('a');
-                    if (firstLink) {
-                        firstLink.click();
-                    }
-                }
-            });
-        }
-    </script>
 </body>
 </html>
