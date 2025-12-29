@@ -17,10 +17,59 @@
             <a href="about.html">About Us</a>
             <a href="contact.html">Contact</a>
         </nav>
-        <div class="header-icons">
-            <a href="#"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
-            <a href="#"><i class="fa-solid fa-magnifying-glass"></i></a>
+    <div class="header-icons">
+        <!-- Search Button -->
+        <div class="search-cart-container">
+            <input type="text" id="product-search" placeholder="Search products..." class="search-bar" style="display: none;" aria-label="Search products" />
+            <button id="search-btn" class="icon-btn" type="button" onclick="toggleSearch()">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+            <a href="cart.html" class="cart-icon">
+            <i class="fa-solid fa-shopping-cart"></i>
+            <span class="cart-count">0</span>
+            </a>
         </div>
+        <script>
+            function toggleSearch() {
+                const searchBar = document.getElementById('product-search');
+                if (searchBar.style.display === 'none' || searchBar.style.display === '') {
+                    searchBar.style.display = 'block';
+                    searchBar.focus();
+                } else {
+                    searchBar.style.display = 'none';
+                    searchBar.value = '';
+                    filterProducts('');
+                }
+            }
+
+            function filterProducts(query) {
+                const q = (query || '').trim().toLowerCase();
+                const cards = document.querySelectorAll('.product-card');
+                let anyVisible = false;
+                cards.forEach(card => {
+                    const title = card.querySelector('h3')?.textContent.toLowerCase() || '';
+                    const desc = card.querySelector('p')?.textContent.toLowerCase() || '';
+                    const price = card.querySelector('.price')?.textContent.toLowerCase() || '';
+                    const matches = q === '' || title.includes(q) || desc.includes(q) || price.includes(q);
+                    card.style.display = matches ? '' : 'none';
+                    if (matches) anyVisible = true;
+                });
+                const noResults = document.getElementById('no-results');
+                if (noResults) {
+                    noResults.style.display = anyVisible ? 'none' : 'block';
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const searchBar = document.getElementById('product-search');
+                searchBar.addEventListener('input', (e) => filterProducts(e.target.value));
+                searchBar.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') toggleSearch();
+                });
+            });
+        </script>
+    </div>
+
         <div class="hamburger-menu">
             <span class="bar"></span>
             <span class="bar"></span>
@@ -85,6 +134,7 @@
             </div>
             
         </div>
+        <div id="no-results" style="display:none;padding:20px;text-align:center;color:#555;">No matching products found.</div>
     </main>
 
     <footer>
