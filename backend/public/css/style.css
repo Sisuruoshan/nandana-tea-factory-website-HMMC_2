@@ -178,8 +178,9 @@ nav a:hover {
 }
 
 /* --- Hero Section (Home Page) --- */
+
 .hero {
-    background: linear-gradient(rgba(93, 207, 127, 0.5), rgba(0, 0, 0, 0.5)), url('srs/BC1.webp');
+    background: linear-gradient(rgba(93, 207, 127, 0.5), rgba(0, 0, 0, 0.5)), url('../srs/BC1.webp');
     background-size: cover;
     background-position: center;
     padding: 12rem 0 8rem 0; /* Adjusted padding for fixed header */
