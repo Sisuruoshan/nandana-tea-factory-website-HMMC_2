@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     document.addEventListener('keydown', (e) => {
         if (e.shiftKey && (e.key === 'A' || e.key === 'a')) {
-            window.location.href = 'admin-login.html';
+            window.location.href = '/admin-login';
         }
     });
 
@@ -526,7 +526,7 @@ function initializeWholesaleSignup() {
         sessionStorage.setItem('wholesaleLoggedIn', 'true');
         sessionStorage.setItem('wholesalePartnerId', newPartner.id);
         alert('Wholesale account created successfully. You are now logged in.');
-        window.location.href = 'wholesale.html';
+        window.location.href = '/wholesale';
     });
 }
 
@@ -959,7 +959,7 @@ function updateUserUI() {
         const cur = getCurrentUser();
             if (cur) {
             container.innerHTML = `
-                <a href="profile.html" class="user-link"><img src="srs/avatar-placeholder.png" alt="user" class="user-icon"> ${escapeHtml(cur.name.split(' ')[0]||cur.name)}</a>
+                <a href="/profile" class="user-link"><img src="srs/avatar-placeholder.png" alt="user" class="user-icon"> ${escapeHtml(cur.name.split(' ')[0]||cur.name)}</a>
                 <a href="#" id="logout-link" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></a>
             `;
             const logout = container.querySelector('#logout-link');
