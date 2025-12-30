@@ -86,7 +86,7 @@
 
         <div class="product-controls">
             <a href="#" class="btn active">Retail</a>
-            <a href="wholesale.blade.php" class="btn">Wholesale</a>
+            <a href="{{ url('/wholesale') }}" class="btn">Wholesale</a>
         </div>
         
         <div class="product-grid">
