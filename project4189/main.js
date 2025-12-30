@@ -102,6 +102,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // 6. Wholesale Portal
     initializeWholesalePortal();
 
+    // 6.1 Wholesale Signup
+    initializeWholesaleSignup();
+
     // 7. Admin Wholesale Management
     initializeAdminWholesaleManagement();
 });
@@ -470,6 +473,61 @@ function initializeWholesalePortal() {
             if (productsSection) productsSection.style.display = 'none';
         });
     }
+}
+
+/**
+ * Wholesale Signup handling
+ */
+function initializeWholesaleSignup() {
+    const signupForm = document.getElementById('wholesale-signup-form');
+    if (!signupForm) return;
+
+    signupForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const company = (document.getElementById('ws-signup-company') || {}).value || '';
+        const name = (document.getElementById('ws-signup-name') || {}).value || '';
+        const emailEl = document.getElementById('ws-signup-email');
+        const email = emailEl ? (emailEl.value || '').toLowerCase().trim() : '';
+        const phone = (document.getElementById('ws-signup-phone') || {}).value || '';
+        const address = (document.getElementById('ws-signup-address') || {}).value || '';
+        const password = (document.getElementById('ws-signup-password') || {}).value || '';
+        const confirm = (document.getElementById('ws-signup-password-confirm') || {}).value || '';
+
+        if (!company || !name || !email || !password) {
+            alert('Please fill company, contact name, email and password.');
+            return;
+        }
+        if (password !== confirm) {
+            alert('Passwords do not match.');
+            return;
+        }
+
+        const partners = JSON.parse(localStorage.getItem('wholesalePartners') || '[]');
+        if (partners.find(p => p.email === email)) {
+            alert('An account with this email already exists.');
+            return;
+        }
+
+        const newPartner = {
+            id: 'ws_' + Date.now(),
+            company: company.trim(),
+            contactName: name.trim(),
+            email,
+            phone: phone.trim(),
+            address: address.trim(),
+            password, // Stored locally for demo purposes only
+            createdAt: new Date().toISOString()
+        };
+
+        partners.push(newPartner);
+        localStorage.setItem('wholesalePartners', JSON.stringify(partners));
+
+        // Log in the new partner and redirect to wholesale portal
+        sessionStorage.setItem('wholesaleLoggedIn', 'true');
+        sessionStorage.setItem('wholesalePartnerId', newPartner.id);
+        alert('Wholesale account created successfully. You are now logged in.');
+        window.location.href = 'wholesale.html';
+    });
 }
 
 function renderWholesaleProducts() {
