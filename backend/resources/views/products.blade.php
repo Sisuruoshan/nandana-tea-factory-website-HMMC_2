@@ -1,63 +1,156 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <title>Our Teas - Nandana Tea</title>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
 
-@section('title', 'Our Teas - Nandana Tea')
+    <header>
+        <a href="index.blade.php" class="logo"><i class="fa-solid fa-leaf"></i> Nandana Tea</a>
 
-@section('content')
-    <section class="page-header">
-        <h1>Our Teas</h1>
-    </section>
+       <nav>
+            <a href="{{ url('/') }}">Home</a>
+            <a href="{{ url('/products') }}">Products</a>
+            <a href="{{ url('/about') }}">About Us</a>
+            <a href="{{ url('/contact') }}">Contact</a>
+        </nav>
 
-    <div class="product-controls">
-        <a href="#" class="btn active">Retail</a>
-        <a href="{{ url('/wholesale') }}" class="btn">Wholesale</a>
+    <div class="header-icons">
+        <!-- Search Button -->
+        <div class="search-cart-container">
+            <input type="text" id="product-search" placeholder="Search products..." class="search-bar" style="display: none;" aria-label="Search products" />
+            <button id="search-btn" class="icon-btn" type="button" onclick="toggleSearch()">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+            <a href="cart.blade.php" class="cart-icon">
+            <i class="fa-solid fa-shopping-cart"></i>
+            <span class="cart-count">0</span>
+            </a>
+        </div>
+        <script>
+            function toggleSearch() {
+                const searchBar = document.getElementById('product-search');
+                if (searchBar.style.display === 'none' || searchBar.style.display === '') {
+                    searchBar.style.display = 'block';
+                    searchBar.focus();
+                } else {
+                    searchBar.style.display = 'none';
+                    searchBar.value = '';
+                    filterProducts('');
+                }
+            }
+
+            function filterProducts(query) {
+                const q = (query || '').trim().toLowerCase();
+                const cards = document.querySelectorAll('.product-card');
+                let anyVisible = false;
+                cards.forEach(card => {
+                    const title = card.querySelector('h3')?.textContent.toLowerCase() || '';
+                    const desc = card.querySelector('p')?.textContent.toLowerCase() || '';
+                    const price = card.querySelector('.price')?.textContent.toLowerCase() || '';
+                    const matches = q === '' || title.includes(q) || desc.includes(q) || price.includes(q);
+                    card.style.display = matches ? '' : 'none';
+                    if (matches) anyVisible = true;
+                });
+                const noResults = document.getElementById('no-results');
+                if (noResults) {
+                    noResults.style.display = anyVisible ? 'none' : 'block';
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const searchBar = document.getElementById('product-search');
+                searchBar.addEventListener('input', (e) => filterProducts(e.target.value));
+                searchBar.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') toggleSearch();
+                });
+            });
+        </script>
     </div>
-    
-    <div class="product-grid">
-        <div class="product-card">
-            <img src="{{ asset('srs/black tea.jpg') }}" alt="Black Tea">
-            <h3>Nandana Black Tea</h3>
-            <p>Rich, full-bodied black tea.</p>
-            <div class="price">$12.00</div>
-            <a href="{{ url('/product') }}?id=black-tea">View More</a>
-        </div>
-        <div class="product-card">
-            <img src="{{ asset('srs/green tea.png') }}" alt="Green Tea">
-            <h3>Nandana Green Tea</h3>
-            <p>Delicate, refreshing green tea.</p>
-            <div class="price">$14.00</div>
-            <a href="{{ url('/product') }}?id=green-tea">View More</a>
-        </div>
-        <div class="product-card">
-            <img src="{{ asset('srs/white tea.png') }}" alt="White Tea">
-            <h3>Nandana White Tea</h3>
-            <p>Rare, subtly sweet white tea.</p>
-            <div class="price">$18.00</div>
-            <a href="{{ url('/product') }}?id=white-tea">View More</a>
-        </div>
-        <div class="product-card">
-            <img src="{{ asset('srs/oolong tea.png') }}" alt="Oolong Tea">
-            <h3>Nandana Oolong Tea</h3>
-            <p>Complex, aromatic oolong tea.</p>
-            <div class="price">$16.00</div>
-            <a href="{{ url('/product') }}?id=oolong-tea">View More</a>
-         </div>
 
-        <div class="product-card">
-            <img src="{{ asset('srs/ahmad tea.png') }}" alt="Ahmad Tea">
-            <h3>Nandana Almond Tea</h3>
-            <p>Elegant, refined Ahmad Tea</p>
-            <div class="price">$17.00</div>
-            <a href="{{ url('/product') }}?id=almond-tea">View More</a>
+        <div class="hamburger-menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
         </div>
+    </header>
 
-        <div class="product-card">
-            <img src="{{ asset('srs/cinnamon tea.jpg') }}" alt="Cinnamon Tea">
-            <h3>Nandana Cinnamon Tea</h3>
-            <p>Warm, spicy Cinnamon Tea</p>
-            <div class="price">$19.00</div>
-            <a href="{{ url('/product') }}?id=cinnamon-tea">View More</a>
+    <main class="container">
+        <section class="page-header">
+            <h1>Our Teas</h1>
+        </section>
+
+        <div class="product-controls">
+            <a href="#" class="btn active">Retail</a>
+            <a href="wholesale.blade.php" class="btn">Wholesale</a>
         </div>
         
-    </div>
-    <div id="no-results" style="display:none;padding:20px;text-align:center;color:#555;">No matching products found.</div>
-@endsection
+        <div class="product-grid">
+            <div class="product-card">
+                <img src="{{ asset('images/black tea.jpg') }}" alt="Black Tea">
+                <h3>Nandana Black Tea</h3>
+                <p>Rich, full-bodied black tea.</p>
+                <div class="price">$12.00</div>
+                <a href="product.blade.php?id=black-tea">View More</a>
+            </div>
+            <div class="product-card">
+                <img src="{{ asset('images/green tea.png') }}" alt="Green Tea">
+                <h3>Nandana Green Tea</h3>
+                <p>Delicate, refreshing green tea.</p>
+                <div class="price">$14.00</div>
+                <a href="product.blade.php?id=green-tea">View More</a>
+            </div>
+            <div class="product-card">
+                <img src="{{ asset('images/white tea.png') }}" alt="White Tea">
+                <h3>Nandana White Tea</h3>
+                <p>Rare, subtly sweet white tea.</p>
+                <div class="price">$18.00</div>
+                <a href="product.blade.php?id=white-tea">View More</a>
+            </div>
+            <div class="product-card">
+                <img src="{{ asset('images/oolong tea.png') }}" alt="Oolong Tea">
+                <h3>Nandana Oolong Tea</h3>
+                <p>Complex, aromatic oolong tea.</p>
+                <div class="price">$16.00</div>
+                <a href="product.blade.php?id=oolong-tea">View More</a>
+             </div>
+
+            <div class="product-card">
+                <img src="{{ asset('images/ahmad tea.png') }}" alt="Ahmad Tea">
+
+                <h3>Nandana Almond Tea</h3>
+                <p>Elegant, refined Ahmad Tea</p>
+                <div class="price">$17.00</div>
+                <a href="product.blade.php?id=almond-tea">View More</a>
+            </div>
+
+            <div class="product-card">
+                <img src="{{ asset('images/cinnamon tea.jpg') }}" alt="Cinnamon Tea">
+                <h3>Nandana Cinnamon Tea</h3>
+                <p>Warm, spicy Cinnamon Tea</p>
+                <div class="price">$19.00</div>
+                <a href="product.blade.php?id=cinnamon-tea">View More</a>
+            </div>
+            
+        </div>
+        <div id="no-results" style="display:none;padding:20px;text-align:center;color:#555;">No matching products found.</div>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <p>© 2025 Nandana Tea Factory. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="contact.blade.php">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ asset('js/main.js') }}"></script>
+</body>
+</html>

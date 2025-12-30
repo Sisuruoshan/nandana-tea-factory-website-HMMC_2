@@ -18,7 +18,7 @@
             <a href="{{ url('/contact') }}">Contact</a>
         </nav>
         <div class="header-icons">
-            <a href="#"><i class="fa-solid fa-user"></i></a>
+            <a href="{{ url('/login') }}"><i class="fa-solid fa-user"></i></a>
         </div>
         <div class="hamburger-menu">
             <span class="bar"></span>

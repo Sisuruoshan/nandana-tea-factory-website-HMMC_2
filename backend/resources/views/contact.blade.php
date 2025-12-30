@@ -1,8 +1,31 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Nandana Tea</title>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <header>
+        <a href="{{ url('/') }}" class="logo"><i class="fa-solid fa-leaf"></i> Nandana Tea</a>
+        <nav>
+            <a href="{{ url('/') }}">Home</a>
+            <a href="{{ url('/products') }}">Products</a>
+            <a href="{{ url('/about') }}">About Us</a>
+            <a href="{{ url('/contact') }}">Contact</a>
+        </nav>
+        <div class="header-icons">
+            <a href="#"><i class="fa-solid fa-user"></i></a>
+        </div>
+        <div class="hamburger-menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+    </header>
 
-@section('title', 'Contact - Nandana Tea')
-
-@section('content')
     <main class="container" style="padding-top: 8rem;">
         <div class="contact-grid">
             <div class="contact-form">
@@ -40,10 +63,24 @@
             </div>
         </div>
     </main>
+    
+    <footer style="background: #0c2e19;">
+        <div class="container footer-content">
+            <div class="footer-links">
+                <a href="{{ url('/about') }}">Our Story</a>
+                <a href="{{ url('/products') }}">Products</a>
+                <a href="#">Sustainability</a>
+                <a href="{{ url('/contact') }}">Contact</a>
+            </div>
+             <p>© 2025 Nandana Tea Factory. All rights reserved.</p>
+             <div class="footer-social">
+                <a href="https://www.facebook.com/share/1Ay4bEF4K6/"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/nandanatea?igsh=MTJsd3h5ZXpyaGFmbQ=="><i class="fab fa-instagram"></i></a>
+             </div>
+        </div>
+    </footer>
 
-@endsection
-
-@push('scripts')
+    <script src="{{ asset('js/main.js') }}"></script>
 <script src="{{ asset('js/validation.js') }}"></script>
-@endpush
-@endsection
+</body>
+</html>

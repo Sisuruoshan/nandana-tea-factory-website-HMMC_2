@@ -965,7 +965,7 @@ function updateUserUI() {
             const logout = container.querySelector('#logout-link');
             if (logout) logout.addEventListener('click', (e)=>{ e.preventDefault(); logoutUser(); });
         } else {
-            container.innerHTML = `<a href="user-login.html"><i class="fa-solid fa-user"></i></a>`;
+            container.innerHTML = `<a href="/login"><i class="fa-solid fa-user"></i></a>`;
         }
     });
 }

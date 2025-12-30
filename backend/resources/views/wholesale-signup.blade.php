@@ -1,20 +1,86 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wholesale Signup - Nandana Tea</title>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <header>
+        <a href="{{ url('/') }}" class="logo"><i class="fa-solid fa-leaf"></i> Nandana Tea</a>
+       <nav>
+            <a href="{{ url('/') }}">Home</a>
+            <a href="{{ url('/products') }}">Products</a>
+            <a href="{{ url('/about') }}">About Us</a>
+            <a href="{{ url('/contact') }}">Contact</a>
+        </nav>
+        <div class="header-icons">
+            <a href="#">Cart (0)</a>
+            <a href="#"><img src="https://i.pravatar.cc/32" alt="User" class="user-icon"></a>
+        </div>
+        <div class="hamburger-menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+    </header>
 
-@section('title','Wholesale Signup')
+    <main class="container">
+        <section class="page-header">
+            <h1>Create Wholesale Account</h1>
+            <p>Register as a wholesale partner to access bulk pricing and special offers.</p>
+        </section>
 
-@section('content')
-    <section class="page-header">
-        <h1>Wholesale Signup</h1>
-    </section>
-    <div class="container" style="padding:2rem 0;">
-        <form id="wholesale-signup-form">
-            <div class="form-group"><label>Company</label><input id="ws-signup-company" required></div>
-            <div class="form-group"><label>Contact Name</label><input id="ws-signup-name" required></div>
-            <div class="form-group"><label>Email</label><input id="ws-signup-email" type="email" required></div>
-            <div class="form-group"><label>Phone</label><input id="ws-signup-phone"></div>
-            <div class="form-group"><label>Password</label><input id="ws-signup-password" type="password" required></div>
-            <div class="form-group"><label>Confirm Password</label><input id="ws-signup-password-confirm" type="password" required></div>
-            <button class="btn btn-primary" type="submit">Create Account</button>
-        </form>
-    </div>
-@endsection
+        <section class="form-container" style="max-width:640px; margin: 2rem auto;">
+            <form id="wholesale-signup-form" novalidate>
+                <div class="form-group">
+                    <label for="ws-signup-company">Company Name</label>
+                    <input type="text" id="ws-signup-company" required>
+                </div>
+                <div class="form-group">
+                    <label for="ws-signup-name">Contact Person</label>
+                    <input type="text" id="ws-signup-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="ws-signup-email">Email</label>
+                    <input type="email" id="ws-signup-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="ws-signup-phone">Phone</label>
+                    <input type="tel" id="ws-signup-phone">
+                </div>
+                <div class="form-group">
+                    <label for="ws-signup-address">Address</label>
+                    <input type="text" id="ws-signup-address">
+                </div>
+                <div class="form-group">
+                    <label for="ws-signup-password">Password</label>
+                    <input type="password" id="ws-signup-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="ws-signup-password-confirm">Confirm Password</label>
+                    <input type="password" id="ws-signup-password-confirm" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">Create Account</button>
+            </form>
+            <p style="text-align:center; margin-top:1rem;">Already have an account? <a href="{{ url('/wholesale') }}">Login here</a>.</p>
+        </section>
+    </main>
+
+    <footer>
+         <div class="container footer-content">
+            <p>© 2025 Nandana Tea Factory. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="{{ url('/contact') }}">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ asset('js/main.js') }}"></script>
+<script src="{{ asset('js/validation.js') }}"></script>
+</body>
+</html>
