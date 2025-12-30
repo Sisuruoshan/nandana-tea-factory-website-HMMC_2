@@ -20,7 +20,20 @@
             justify-content: center;
             min-height: 100vh;
             padding: 1rem;
-            background: url('srs/12.png') no-repeat center center/cover;
+            background: url('srs/tea4.jpg') no-repeat center center/cover;
+            background-attachment: fixed;
+            position: relative;
+        }
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: inherit;
+            filter: blur(2px);
+            z-index: -1;
             background-attachment: fixed;
         }
         .login-card {
@@ -33,6 +46,8 @@
             border: 1px solid var(--card-border);
             box-shadow: 0 8px 24px rgba(0,0,0,0.25);
             color: var(--text-light);
+            position: relative;
+            z-index: 1;
         }
         .login-card i { color: var(--accent); font-size: 3rem; display:block; margin:0 auto; }
         .login-card h2 { margin: 1rem 0; font-size: 1.5rem; }
