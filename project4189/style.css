@@ -352,9 +352,10 @@ nav a:hover {
 }
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 280px));
     gap: 2rem;
     padding: 2rem 0;
+    justify-content: center;
 }
 .product-card {
     background: var(--card-bg);

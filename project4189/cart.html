@@ -6,6 +6,65 @@
     <title>Shopping Cart - Nandana Tea</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        main {
+            flex: 1;
+        }
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .cart-table th, .cart-table td {
+            border: none;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        .cart-table th {
+            background-color: var(--secondary-dark-green);
+            color: white;
+        }
+        .cart-table tr {
+            background-color:  var(--primary-dark-green); /* light green for all rows */
+        }
+        .cart-qty {
+            text-align: center;
+        }
+        .item-total {
+            font-weight: bold;
+        }
+        .cart-qty input {
+            border: 2px solid var(--accent-mint-green);
+            border-radius: 4px;
+            padding: 0.25rem;
+            text-align: center;
+            width: 60px;
+        }
+        .cart-qty input:focus {
+            outline: none;
+            border-color: #4a9b7a;
+        }
+        .remove-item .fa-trash {
+            color: var(--accent-mint-green);
+        }
+        .remove-item {
+            background-color: transparent;
+            border: 2px solid var(--accent-mint-green);
+            color: var(--accent-mint-green);
+            padding: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .remove-item:hover {
+            background-color: var(--accent-mint-green);
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -62,6 +121,11 @@
     <footer>
         <div class="container footer-content">
             <p>© 2025 Nandana Tea Factory. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="contact.html">Contact Us</a>
+            </div>
         </div>
     </footer>
 
