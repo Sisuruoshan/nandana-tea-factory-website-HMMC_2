@@ -956,16 +956,29 @@ function updateUserProfile(updates) {
 function updateUserUI() {
     const headerIcons = document.querySelectorAll('.header-icons');
     headerIcons.forEach(container => {
+        let userEl = container.querySelector('.user-links');
+        if (!userEl) {
+            userEl = document.createElement('div');
+            userEl.className = 'user-links';
+            container.appendChild(userEl);
+        }
+        // Remove any stray user anchors/icons inserted directly in header to avoid duplicates
+        container.querySelectorAll('a').forEach(a => {
+            if (a.classList.contains('cart-icon')) return; // keep cart
+            if (a.closest && a.closest('.search-cart-container')) return; // keep search/cart inner anchors
+            if (a.classList.contains('user-link')) { a.remove(); return; }
+            if (a.querySelector && a.querySelector('.fa-user')) { a.remove(); return; }
+        });
         const cur = getCurrentUser();
-            if (cur) {
-            container.innerHTML = `
+        if (cur) {
+            userEl.innerHTML = `
                 <a href="/profile" class="user-link"><img src="srs/avatar-placeholder.png" alt="user" class="user-icon"> ${escapeHtml(cur.name.split(' ')[0]||cur.name)}</a>
                 <a href="#" id="logout-link" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></a>
             `;
-            const logout = container.querySelector('#logout-link');
+            const logout = userEl.querySelector('#logout-link');
             if (logout) logout.addEventListener('click', (e)=>{ e.preventDefault(); logoutUser(); });
         } else {
-            container.innerHTML = `<a href="/login"><i class="fa-solid fa-user"></i></a>`;
+            userEl.innerHTML = `<a href="/login"><i class="fa-solid fa-user"></i></a>`;
         }
     });
 }

@@ -26,7 +26,7 @@
             <button id="search-btn" class="icon-btn" type="button" onclick="toggleSearch()">
             <i class="fa-solid fa-magnifying-glass"></i>
             </button>
-            <a href="cart.blade.php" class="cart-icon">
+            <a href="{{ url('/cart') }}" class="cart-icon">
             <i class="fa-solid fa-shopping-cart"></i>
             <span class="cart-count">0</span>
             </a>

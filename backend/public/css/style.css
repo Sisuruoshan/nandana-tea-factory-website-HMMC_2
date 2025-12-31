@@ -131,6 +131,12 @@ nav a:hover {
     border-radius: 50%;
     vertical-align: middle;
 }
+/* Ensure header icon group is inline and items centered */
+.header-icons {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
 
 /* --- Hamburger Menu (Mobile) --- */
 .hamburger-menu {
