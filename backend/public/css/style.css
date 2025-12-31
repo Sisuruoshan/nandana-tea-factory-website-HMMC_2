@@ -577,6 +577,7 @@ nav a:hover {
 footer {
     padding: 4rem 2rem 2rem 2rem;
     margin-top: 4rem;
+    margin-top: 0;
     border-top: 1px solid var(--border-color);
 }
 .footer-content {
