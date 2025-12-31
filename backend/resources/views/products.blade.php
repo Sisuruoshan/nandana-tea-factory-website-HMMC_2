@@ -95,28 +95,28 @@
                 <h3>Nandana Black Tea</h3>
                 <p>Rich, full-bodied black tea.</p>
                 <div class="price">$12.00</div>
-                <a href="product.blade.php?id=black-tea">View More</a>
+                <a href="{{ url('/product') }}?id=black-tea">View More</a>
             </div>
             <div class="product-card">
                 <img src="{{ asset('images/green tea.png') }}" alt="Green Tea">
                 <h3>Nandana Green Tea</h3>
                 <p>Delicate, refreshing green tea.</p>
                 <div class="price">$14.00</div>
-                <a href="product.blade.php?id=green-tea">View More</a>
+                <a href="{{ url('/product') }}?id=green-tea">View More</a>
             </div>
             <div class="product-card">
                 <img src="{{ asset('images/white tea.png') }}" alt="White Tea">
                 <h3>Nandana White Tea</h3>
                 <p>Rare, subtly sweet white tea.</p>
                 <div class="price">$18.00</div>
-                <a href="product.blade.php?id=white-tea">View More</a>
+                <a href="{{ url('/product') }}?id=white-tea">View More</a>
             </div>
             <div class="product-card">
                 <img src="{{ asset('images/oolong tea.png') }}" alt="Oolong Tea">
                 <h3>Nandana Oolong Tea</h3>
                 <p>Complex, aromatic oolong tea.</p>
                 <div class="price">$16.00</div>
-                <a href="product.blade.php?id=oolong-tea">View More</a>
+                <a href="{{ url('/product') }}?id=oolong-tea">View More</a>
              </div>
 
             <div class="product-card">
@@ -125,7 +125,7 @@
                 <h3>Nandana Almond Tea</h3>
                 <p>Elegant, refined Ahmad Tea</p>
                 <div class="price">$17.00</div>
-                <a href="product.blade.php?id=almond-tea">View More</a>
+                <a href="{{ url('/product') }}?id=almond-tea">View More</a>
             </div>
 
             <div class="product-card">
@@ -133,7 +133,7 @@
                 <h3>Nandana Cinnamon Tea</h3>
                 <p>Warm, spicy Cinnamon Tea</p>
                 <div class="price">$19.00</div>
-                <a href="product.blade.php?id=cinnamon-tea">View More</a>
+                <a href="{{ url('/product') }}?id=cinnamon-tea">View More</a>
             </div>
             
         </div>
