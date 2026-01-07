@@ -19,7 +19,7 @@
             <a href="{{ url('/contact') }}">Contact</a>
         </nav>
         <div class="header-icons">
-            <a href="products.blade.php"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
+            <a href="{{ url('/cart') }}"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
             <a href="#"><i class="fa-solid fa-magnifying-glass"></i></a>
         </div>
         <div class="hamburger-menu">
@@ -76,7 +76,7 @@
             <div class="footer-links">
                 <a href="#">Privacy Policy</a>
                 <a href="#">Terms of Service</a>
-                <a href="contact.html">Contact Us</a>
+                <a href="{{ url('/contact') }}">Contact Us</a>
             </div>
         </div>
     </footer>

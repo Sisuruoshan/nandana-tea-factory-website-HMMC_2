@@ -10,7 +10,7 @@
 <body>
 
     <header>
-        <a href="index.blade.php" class="logo"><i class="fa-solid fa-leaf"></i> Nandana Tea</a>
+        <a href="{{ url('/') }}" class="logo"><i class="fa-solid fa-leaf"></i> Nandana Tea</a>
 
        <nav>
             <a href="{{ url('/') }}">Home</a>

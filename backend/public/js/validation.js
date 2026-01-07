@@ -46,28 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
         contactForm.addEventListener('submit', function (e) {
             if (!validateForm(contactForm)) {
                 e.preventDefault(); // Stop submission if validation fails
-            } else {
-                e.preventDefault();
-                // Save inquiry to localStorage for admin review
-                const formData = new FormData(contactForm);
-                const inquiry = {
-                    id: 'inq_' + Date.now(),
-                    name: formData.get('name').trim(),
-                    email: formData.get('email').trim(),
-                    subject: formData.get('subject').trim(),
-                    message: formData.get('message').trim(),
-                    timestamp: new Date().toISOString(),
-                    replied: false,
-                    replyMessage: ''
-                };
-                const inquiries = JSON.parse(localStorage.getItem('inquiries') || '[]');
-                inquiries.unshift(inquiry);
-                localStorage.setItem('inquiries', JSON.stringify(inquiries));
-
-                // Show confirmation and reset form
-                alert('Thank you for your message! We will get back to you soon.');
-                contactForm.reset();
-            }
+            } // else allow native submit to Laravel
         });
     }
 
@@ -75,9 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
         wholesaleForm.addEventListener('submit', function (e) {
             if (!validateForm(wholesaleForm)) {
                 e.preventDefault(); // Stop submission if validation fails
-            } else {
-                alert('Thank you for your wholesale inquiry!');
-            }
+            } // else allow native submit to Laravel
         });
     }
 });

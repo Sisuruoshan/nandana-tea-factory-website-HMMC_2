@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Nandana Tea</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -16,7 +17,7 @@
                 <a href="#products" data-section="products"><i class="fa-solid fa-boxes-stacked"></i> Retail Products</a>
                 <a href="#wsproducts" data-section="wsproducts"><i class="fa-solid fa-truck-ramp-box"></i> Wholesale Products</a>
                 <a href="#inquiries" data-section="inquiries"><i class="fa-solid fa-envelope"></i> Inquiries</a>
-                <a href="index.html"><i class="fa-solid fa-house"></i> View Site</a>
+                <a href="/"><i class="fa-solid fa-house"></i> View Site</a>
             </nav>
         </aside>
 
@@ -30,7 +31,7 @@
                     </div>
                     <div class="stat-card">
                         <h3>New Inquiries</h3>
-                        <p class="stat-number">12</p>
+                        <p class="stat-number" id="inquiry-count">0</p>
                     </div>
                     <div class="stat-card">
                         <h3>Wholesale Requests</h3>
@@ -295,5 +296,141 @@
     </div>
 
     <script src="{{ asset('js/main.js') }}"></script>
+    <script>
+        // Initialize admin dashboard data
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProducts();
+            loadWholesaleProducts();
+            loadInquiries();
+        });
+
+        function loadProducts() {
+            const productsList = document.getElementById('products-list');
+            if (!productsList) return;
+            productsList.innerHTML = '<p style="text-align: center; color: #666;">No products yet. Click "Add New Product" to create one.</p>';
+        }
+
+        function loadWholesaleProducts() {
+            const wsProductsList = document.getElementById('ws-products-list');
+            if (!wsProductsList) return;
+            wsProductsList.innerHTML = '<p style="text-align: center; color: #666;">No wholesale products yet. Click "Add Wholesale Product" to create one.</p>';
+        }
+
+
+            function loadInquiries() {
+                fetch('/api/inquiries')
+                    .then(response => response.json())
+                    .then(data => {
+                        const inquiriesList = document.getElementById('inquiries-list');
+                        const inquiryCount = document.getElementById('inquiry-count');
+                    
+                        if (!inquiriesList) return;
+                    
+                        if (data.length === 0) {
+                            inquiriesList.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #666;">No inquiries yet.</td></tr>';
+                            inquiryCount.textContent = '0';
+                        } else {
+                            inquiriesList.innerHTML = data.map(inquiry => `
+                                <tr>
+                                    <td>${new Date(inquiry.created_at).toLocaleDateString()}</td>
+                                    <td>${inquiry.name}</td>
+                                    <td>${inquiry.email}</td>
+                                    <td>${inquiry.subject}</td>
+                                    <td><span class="message-preview">${inquiry.message.substring(0, 50)}...</span></td>
+                                    <td>
+                                        <button class="btn-action" onclick="deleteInquiry(${inquiry.id})" title="Delete">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('');
+                            inquiryCount.textContent = data.length;
+                        }
+                    })
+                    .catch(error => console.error('Error loading inquiries:', error));
+            }
+
+            function deleteInquiry(id) {
+                if (confirm('Are you sure you want to delete this inquiry?')) {
+                    fetch(`/api/inquiries/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert('Inquiry deleted successfully');
+                        loadInquiries();
+                    })
+                    .catch(error => console.error('Error deleting inquiry:', error));
+                }
+            }
+
+        // Modal controls
+        const productModal = document.getElementById('product-modal');
+        const wsProductModal = document.getElementById('ws-product-modal');
+        const inquiryModal = document.getElementById('inquiry-modal');
+        const addProductBtn = document.getElementById('add-product-btn');
+        const addWsProductBtn = document.getElementById('add-ws-product-btn');
+
+        if (addProductBtn) {
+            addProductBtn.addEventListener('click', () => {
+                document.getElementById('modal-title').textContent = 'Add New Product';
+                document.getElementById('product-form').reset();
+                productModal.style.display = 'block';
+            });
+        }
+
+        if (addWsProductBtn) {
+            addWsProductBtn.addEventListener('click', () => {
+                document.getElementById('ws-modal-title').textContent = 'Add Wholesale Product';
+                document.getElementById('ws-product-form').reset();
+                wsProductModal.style.display = 'block';
+            });
+        }
+
+        // Close modals
+        document.querySelectorAll('.close-modal').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.target.closest('.modal').style.display = 'none';
+            });
+        });
+
+        document.getElementById('cancel-btn').addEventListener('click', () => {
+            productModal.style.display = 'none';
+        });
+
+        document.getElementById('ws-cancel').addEventListener('click', () => {
+            wsProductModal.style.display = 'none';
+        });
+
+        document.getElementById('inquiry-cancel').addEventListener('click', () => {
+            inquiryModal.style.display = 'none';
+        });
+
+        // Form submissions
+        document.getElementById('product-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Product saved successfully!');
+            productModal.style.display = 'none';
+            loadProducts();
+        });
+
+        document.getElementById('ws-product-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Wholesale product saved successfully!');
+            wsProductModal.style.display = 'none';
+            loadWholesaleProducts();
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === productModal) productModal.style.display = 'none';
+            if (e.target === wsProductModal) wsProductModal.style.display = 'none';
+            if (e.target === inquiryModal) inquiryModal.style.display = 'none';
+        });
+    </script>
 </body>
 </html>

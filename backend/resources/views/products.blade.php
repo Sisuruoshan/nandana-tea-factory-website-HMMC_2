@@ -10,7 +10,7 @@
 <body>
 
     <header>
-        <a href="index.blade.php" class="logo"><i class="fa-solid fa-leaf"></i> Nandana Tea</a>
+        <a href="{{ url('/') }}" class="logo"><i class="fa-solid fa-leaf"></i> Nandana Tea</a>
 
        <nav>
             <a href="{{ url('/') }}">Home</a>
@@ -146,7 +146,7 @@
             <div class="footer-links">
                 <a href="#">Privacy Policy</a>
                 <a href="#">Terms of Service</a>
-                <a href="contact.blade.php">Contact Us</a>
+                <a href="{{ url('/contact') }}">Contact Us</a>
             </div>
         </div>
     </footer>

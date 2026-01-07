@@ -31,13 +31,29 @@
             <div class="contact-form">
                 <h1 style="font-family: var(--font-heading); font-size: 3rem; margin-bottom: 1rem;">Get in Touch</h1>
                 <p style="color:var(--text-medium); margin-bottom: 2rem;">We're here to assist you with any inquiries or feedback. Please reach out to us through the form or our contact details.</p>
-                <form id="contact-form" novalidate>
+                @if (session('status'))
+                    <div style="background:#e6ffed;color:#03543f;border:1px solid #84e1bc;padding:12px;border-radius:8px;margin-bottom:16px;">
+                        {{ session('status') }}
+                    </div>
+                @endif
+                @if ($errors->any())
+                    <div style="background:#ffebeb;color:#8a1f1f;border:1px solid #f5a9a9;padding:12px;border-radius:8px;margin-bottom:16px;">
+                        <ul style="margin:0;padding-left:18px;">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                <form id="contact-form" method="POST" action="{{ url('/contact') }}" novalidate>
+                    @csrf
                     <div class="form-group"><input type="text" name="name" placeholder="Enter your name" required></div>
                     <div class="form-group"><input type="email" name="email" placeholder="Enter your email" required></div>
                     <div class="form-group"><input type="text" name="subject" placeholder="Enter the subject" required></div>
                     <div class="form-group"><textarea name="message" rows="5" placeholder="Enter your message" required></textarea></div>
                     <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Message</button>
                 </form>
+                <div id="form-status" style="margin-top: 1rem; display: none;"></div>
             </div>
             <div class="contact-info">
                 <h2>Contact Information</h2>

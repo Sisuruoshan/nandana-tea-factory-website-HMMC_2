@@ -64,7 +64,7 @@
             </div>
             <div class="product-controls">
                 <a href="#" class="btn active">Wholesale</a>
-                <a href="products.html" class="btn">Retail</a>
+                <a href="{{ url('/products') }}" class="btn">Retail</a>
             </div>
             <div class="product-grid" id="wholesale-products-grid">
                 <!-- Rendered dynamically by main.js -->
@@ -73,22 +73,28 @@
 
         <section class="form-container" style="margin-top: 4rem; max-width: none;">
             <h2 style="text-align: center;">Specific Wholesale Inquiry</h2>
-            <form id="wholesale-inquiry-form" novalidate>
+            @if (session('status'))
+                <div style="background:#e6ffed;color:#03543f;border:1px solid #84e1bc;padding:12px;border-radius:8px;margin:16px 0;">
+                    {{ session('status') }}
+                </div>
+            @endif
+            <form id="wholesale-inquiry-form" method="POST" action="{{ url('/wholesale/inquiry') }}" novalidate>
+                @csrf
                 <div class="form-group">
                     <label for="ws-name">Your Name</label>
-                    <input type="text" id="ws-name" required>
+                    <input type="text" name="ws-name" required>
                 </div>
                 <div class="form-group">
                     <label for="ws-company">Company Name</label>
-                    <input type="text" id="ws-company" required>
+                    <input type="text" name="ws-company" required>
                 </div>
                 <div class="form-group">
                     <label for="ws-email">Your Email</label>
-                    <input type="email" id="ws-email" required>
+                    <input type="email" name="ws-email" required>
                 </div>
                 <div class="form-group">
                     <label for="ws-details">Inquiry Details</label>
-                    <textarea id="ws-details" rows="5" required></textarea>
+                    <textarea name="ws-details" rows="5" required></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Inquiry</button>
             </form>
@@ -96,12 +102,12 @@
     </main>
 
     <footer>
-         <div class="container footer-content">
+             <div class="container footer-content">
             <p>© 2025 Nandana Tea Factory. All rights reserved.</p>
             <div class="footer-links">
                 <a href="#">Privacy Policy</a>
                 <a href="#">Terms of Service</a>
-                <a href="contact.blade.php">Contact Us</a>
+                <a href="{{ url('/contact') }}">Contact Us</a>
             </div>
         </div>
     </footer>

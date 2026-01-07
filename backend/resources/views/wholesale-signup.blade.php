@@ -34,34 +34,35 @@
         </section>
 
         <section class="form-container" style="max-width:640px; margin: 2rem auto;">
-            <form id="wholesale-signup-form" novalidate>
+            <form id="wholesale-signup-form" method="POST" action="{{ url('/wholesale-signup') }}" novalidate>
+                @csrf
                 <div class="form-group">
                     <label for="ws-signup-company">Company Name</label>
-                    <input type="text" id="ws-signup-company" required>
+                    <input type="text" name="ws-signup-company" required>
                 </div>
                 <div class="form-group">
                     <label for="ws-signup-name">Contact Person</label>
-                    <input type="text" id="ws-signup-name" required>
+                    <input type="text" name="ws-signup-name" required>
                 </div>
                 <div class="form-group">
                     <label for="ws-signup-email">Email</label>
-                    <input type="email" id="ws-signup-email" required>
+                    <input type="email" name="ws-signup-email" required>
                 </div>
                 <div class="form-group">
                     <label for="ws-signup-phone">Phone</label>
-                    <input type="tel" id="ws-signup-phone">
+                    <input type="tel" name="ws-signup-phone">
                 </div>
                 <div class="form-group">
                     <label for="ws-signup-address">Address</label>
-                    <input type="text" id="ws-signup-address">
+                    <input type="text" name="ws-signup-address">
                 </div>
                 <div class="form-group">
                     <label for="ws-signup-password">Password</label>
-                    <input type="password" id="ws-signup-password" required>
+                    <input type="password" name="ws-signup-password" required>
                 </div>
                 <div class="form-group">
                     <label for="ws-signup-password-confirm">Confirm Password</label>
-                    <input type="password" id="ws-signup-password-confirm" required>
+                    <input type="password" name="ws-signup-password-confirm" required>
                 </div>
                 <button type="submit" class="btn btn-primary" style="width:100%;">Create Account</button>
             </form>

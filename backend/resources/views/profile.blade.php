@@ -16,15 +16,15 @@
 </head>
 <body>
     <header>
-        <a href="index.html" class="logo"><i class="fa-solid fa-leaf"></i> Nandana Tea</a>
+        <a href="{{ url('/') }}" class="logo"><i class="fa-solid fa-leaf"></i> Nandana Tea</a>
         <nav>
-            <a href="index.html">Home</a>
-            <a href="products.html">Products</a>
-            <a href="about.html">About Us</a>
-            <a href="contact.html">Contact</a>
+            <a href="{{ url('/') }}">Home</a>
+            <a href="{{ url('/products') }}">Products</a>
+            <a href="{{ url('/about') }}">About Us</a>
+            <a href="{{ url('/contact') }}">Contact</a>
         </nav>
         <div class="header-icons">
-            <a href="user-login.html"><i class="fa-solid fa-user"></i></a>
+            <a href="{{ url('/login') }}"><i class="fa-solid fa-user"></i></a>
         </div>
         <div class="hamburger-menu"><span class="bar"></span><span class="bar"></span><span class="bar"></span></div>
     </header>

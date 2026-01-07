@@ -19,30 +19,31 @@
     <div class="auth-card">
         <h2>Create Your Account</h2>
        
-        <form id="signup-form">
+        <form id="signup-form" method="POST" action="{{ url('/signup') }}">
+            @csrf
             <div class="form-group">
                 <label>Full Name</label>
-                <input type="text" id="name" required>
+                <input type="text" name="name" required>
             </div>
             <div class="form-group">
                 <label>Email</label>
-                <input type="email" id="email" required>
+                <input type="email" name="email" required>
             </div>
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" id="password" required>
+                <input type="password" name="password" required>
             </div>
             <div class="form-group">
                 <label>Phone (optional)</label>
-                <input type="text" id="phone">
+                <input type="text" name="phone">
             </div>
             <div class="form-group">
                 <label>Address (optional)</label>
-                <textarea id="address" rows="2"></textarea>
+                <textarea name="address" rows="2"></textarea>
             </div>
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Create Account</button>
-                <a href="user-login.html" class="btn btn-secondary">Already have an account</a>
+                <a href="{{ url('/login') }}" class="btn btn-secondary">Already have an account</a>
             </div>
         </form>
     </div>
