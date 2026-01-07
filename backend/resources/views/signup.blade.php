@@ -43,7 +43,7 @@
             </div>
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Create Account</button>
-                <a href="{{ url('/login') }}" class="btn btn-secondary">Already have an account</a>
+                <a href="user-login.html" class="btn btn-secondary">Already have an account</a>
             </div>
         </form>
     </div>
