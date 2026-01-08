@@ -77,17 +77,7 @@
         </section>
     </main>
     
-    <footer>
-        <div class="container footer-content">
-            <p>© 2025 Nandana Tea Factory. All rights reserved.</p>
-            <div class="footer-links">
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-                <a href="contact.html">Contact Us</a>
-            </div>
-        </div>
-    </footer>
-
-       <script src="{{ asset('js/main.js') }}"></script>
+    @include('partials.footer')
+    <script src="{{ asset('js/main.js') }}"></script>
 </body>
 </html>

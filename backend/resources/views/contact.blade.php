@@ -80,23 +80,8 @@
         </div>
     </main>
     
-    <footer style="background: #0c2e19;">
-        <div class="container footer-content">
-            <div class="footer-links">
-                <a href="{{ url('/about') }}">Our Story</a>
-                <a href="{{ url('/products') }}">Products</a>
-                <a href="#">Sustainability</a>
-                <a href="{{ url('/contact') }}">Contact</a>
-            </div>
-             <p>© 2025 Nandana Tea Factory. All rights reserved.</p>
-             <div class="footer-social">
-                <a href="https://www.facebook.com/share/1Ay4bEF4K6/"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://www.instagram.com/nandanatea?igsh=MTJsd3h5ZXpyaGFmbQ=="><i class="fab fa-instagram"></i></a>
-             </div>
-        </div>
-    </footer>
-
+    @include('partials.footer')
     <script src="{{ asset('js/main.js') }}"></script>
-<script src="{{ asset('js/validation.js') }}"></script>
+    <script src="{{ asset('js/validation.js') }}"></script>
 </body>
 </html>

@@ -432,5 +432,7 @@
             if (e.target === inquiryModal) inquiryModal.style.display = 'none';
         });
     </script>
+
+    @include('partials.footer')
 </body>
 </html>

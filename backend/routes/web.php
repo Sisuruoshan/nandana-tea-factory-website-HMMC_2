@@ -24,6 +24,14 @@ Route::get('/contact', function () {
 
 Route::post('/contact', [ContactController::class, 'store']);
 
+Route::get('/privacy', function () {
+    return view('privacy');
+});
+
+Route::get('/terms', function () {
+    return view('terms');
+});
+
 Route::get('/product', function () {
     return view('product');
 });

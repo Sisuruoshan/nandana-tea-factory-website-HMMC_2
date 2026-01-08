@@ -118,16 +118,7 @@
         </div>
     </main>
 
-    <footer>
-        <div class="container footer-content">
-            <p>© 2025 Nandana Tea Factory. All rights reserved.</p>
-            <div class="footer-links">
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-                <a href="contact.html">Contact Us</a>
-            </div>
-        </div>
-    </footer>
+    @include('partials.footer')
 
     <script>
     function formatPrice(v){return `$${parseFloat(v||0).toFixed(2)}`;}
@@ -211,6 +202,6 @@
         });
     });
     </script>
-        <script src="{{ asset('js/main.js') }}"></script>
+    <script src="{{ asset('js/main.js') }}"></script>
 </body>
 </html>

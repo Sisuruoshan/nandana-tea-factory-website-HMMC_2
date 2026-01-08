@@ -214,6 +214,7 @@
 
     loadProduct();
     </script>
+    @include('partials.footer')
     <script src="{{ asset('js/main.js') }}"></script>
 
 </body>

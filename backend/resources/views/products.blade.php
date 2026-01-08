@@ -140,17 +140,7 @@
         <div id="no-results" style="display:none;padding:20px;text-align:center;color:#555;">No matching products found.</div>
     </main>
 
-    <footer>
-        <div class="container footer-content">
-            <p>© 2025 Nandana Tea Factory. All rights reserved.</p>
-            <div class="footer-links">
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-                <a href="{{ url('/contact') }}">Contact Us</a>
-            </div>
-        </div>
-    </footer>
-
+    @include('partials.footer')
     <script src="{{ asset('js/main.js') }}"></script>
 </body>
 </html>

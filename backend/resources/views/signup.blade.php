@@ -68,5 +68,7 @@
     });
 </script>
 <script src="main.js"></script>
+    @include('partials.footer')
+    <script src="{{ asset('js/main.js') }}"></script>
 </body>
 </html>

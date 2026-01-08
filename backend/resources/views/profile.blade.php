@@ -70,4 +70,8 @@
             </div>
         </div>
     </main>
+    @include('partials.footer')
+    <script src="{{ asset('js/main.js') }}"></script>
+</body>
+</html>
 

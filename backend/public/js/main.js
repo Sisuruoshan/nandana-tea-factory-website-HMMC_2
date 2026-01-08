@@ -11,6 +11,99 @@ document.addEventListener('DOMContentLoaded', () => {
     const adminLinks = document.querySelectorAll('.admin-nav a');
 
     /**
+     * Page Transitions & Content Reveal
+     * - Smooth fade on initial load
+     * - Overlay fade on navigation between internal pages
+     * - Reveal sections/cards on scroll using IntersectionObserver
+     * - Respects prefers-reduced-motion
+     */
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Tag the main content as a shell for entrance animation
+    const pageShell = document.querySelector('main');
+    if (pageShell) {
+        pageShell.classList.add('page-shell');
+    }
+
+    // Create a lightweight transition overlay for page exits
+    let pageTransitionEl = document.getElementById('page-transition');
+    if (!pageTransitionEl) {
+        pageTransitionEl = document.createElement('div');
+        pageTransitionEl.id = 'page-transition';
+        document.body.appendChild(pageTransitionEl);
+    }
+
+    // Initial load: fade in content
+    if (!prefersReducedMotion) {
+        document.body.classList.add('is-loading');
+        window.addEventListener('load', () => {
+            document.body.classList.remove('is-loading');
+            document.body.classList.add('is-ready');
+        }, { once: true });
+        // Handle BFCache restore
+        window.addEventListener('pageshow', (e) => {
+            if (e.persisted) {
+                document.body.classList.add('is-ready');
+            }
+        });
+    }
+
+    // Intercept internal link clicks to add a subtle exit transition (disabled to keep native back button behavior reliable)
+    const enablePageTransitions = false;
+    const isModifiedClick = (e) => e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button === 1;
+    const isInternal = (href) => {
+        try {
+            const url = new URL(href, window.location.href);
+            return url.origin === window.location.origin;
+        } catch { return false; }
+    };
+    document.addEventListener('click', (e) => {
+        if (!enablePageTransitions) return; // allow native navigation and back button
+        const a = e.target.closest('a');
+        if (!a) return;
+        const href = a.getAttribute('href');
+        if (!href || href.startsWith('#') || a.target === '_blank' || a.hasAttribute('download')) return;
+        if (!isInternal(href) || isModifiedClick(e)) return;
+        if (prefersReducedMotion) return; // navigate normally
+        e.preventDefault();
+        // Show overlay and navigate after a short delay
+        pageTransitionEl.classList.add('active');
+        document.body.classList.add('is-exiting');
+        setTimeout(() => { window.location.href = href; }, 250);
+    });
+
+    // Content reveal on scroll
+    const revealSelectors = [
+        '.hero', '.page-header', '.about-section', '.cert-card',
+        '.product-grid .product-card', '.product-detail', '.product-explainer',
+        '.contact-grid', '.wholesale-grid', '.products-list .product-item',
+        'footer .footer-content'
+    ];
+    try {
+        const nodes = document.querySelectorAll(revealSelectors.join(','));
+        nodes.forEach((el, i) => {
+            el.classList.add('reveal');
+            // Stagger using a CSS var so different groups can animate elegantly
+            el.style.setProperty('--reveal-delay', `${Math.min(i * 40, 200)}ms`);
+        });
+
+        if (!prefersReducedMotion && 'IntersectionObserver' in window) {
+            const io = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in-view');
+                        io.unobserve(entry.target);
+                    }
+                });
+            }, { rootMargin: '0px 0px -10% 0px', threshold: 0.1 });
+            document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+        } else {
+            // Immediate reveal for reduced motion or unsupported IO
+            document.querySelectorAll('.reveal').forEach(el => el.classList.add('in-view'));
+        }
+    } catch (_) { /* noop */ }
+
+    /**
      * 0. Admin Dashboard Keyboard Shortcut
      * Navigate to admin login page when Shift + A is pressed on home page
      */
