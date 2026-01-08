@@ -23,9 +23,13 @@ class SignupController extends Controller
         // Save to database
         UserSignup::create($validated);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Account created successfully! You can now login.'
-        ]);
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Account created successfully! You can now login.'
+            ]);
+        }
+
+        return redirect('/login')->with('success', 'Account created successfully! Please login.');
     }
 }

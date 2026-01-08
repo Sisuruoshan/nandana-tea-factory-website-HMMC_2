@@ -18,7 +18,14 @@
 <body class="auth-page">
     <div class="auth-card">
         <h2>Create Your Account</h2>
-       
+
+        @if(session('success'))
+            <div class="alert success">{{ session('success') }}</div>
+        @endif
+        @if($errors->any())
+            <div class="alert error"><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
+        @endif
+
         <form id="signup-form" method="POST" action="{{ url('/signup') }}">
             @csrf
             <div class="form-group">
@@ -48,26 +55,6 @@
         </form>
     </div>
 
-<script>
-    document.getElementById('signup-form').addEventListener('submit', (e)=>{
-        e.preventDefault();
-        const name = document.getElementById('name').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value;
-        const phone = document.getElementById('phone').value.trim();
-        const address = document.getElementById('address').value.trim();
-
-        if (!name || !email || !password) { alert('Please fill required fields'); return; }
-
-        const result = createUser({ name, email, password, phone, address });
-        if (!result.ok) { alert(result.message); return; }
-        // Auto-login
-        authenticateUser(email, password);
-        alert('Account created. You are now signed in.');
-        window.location.href = 'index.blade.php';
-    });
-</script>
-<script src="main.js"></script>
     <script src="{{ asset('js/main.js') }}"></script>
 </body>
 </html>
