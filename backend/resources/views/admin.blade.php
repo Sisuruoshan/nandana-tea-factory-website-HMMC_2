@@ -301,10 +301,26 @@
         </div>
     </div>
 
-    <script src="{{ asset('js/main.js') }}"></script>
     <script>
-        // Initialize admin dashboard data
+        // Initialize admin dashboard data and navigation
         document.addEventListener('DOMContentLoaded', function() {
+            // Section toggling for admin sidebar
+            const links = document.querySelectorAll('.admin-nav a[data-section]');
+            const sections = document.querySelectorAll('.admin-section');
+            links.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = this.getAttribute('data-section');
+                    if (!target) return;
+                    links.forEach(l => l.classList.remove('active'));
+                    sections.forEach(s => s.classList.remove('active'));
+                    this.classList.add('active');
+                    const el = document.getElementById(`${target}-section`);
+                    if (el) el.classList.add('active');
+                });
+            });
+
+            // Load initial data
             loadProducts();
             loadWholesaleProducts();
             loadInquiries();
