@@ -83,14 +83,23 @@
     <div class="login-card">
         <i class="fa-solid fa-leaf"></i>
         <h2>Welcome Back</h2>
-        <form id="login-form">
+
+        @if(session('success'))
+            <div class="alert success">{{ session('success') }}</div>
+        @endif
+        @if($errors->any())
+            <div class="alert error"><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
+        @endif
+
+        <form method="POST" action="{{ url('/login') }}" id="login-form">
+            @csrf
             <div class="form-group">
                 <label>Email</label>
-                <input type="email" id="user-email" required>
+                <input type="email" name="email" value="{{ old('email') }}" required>
             </div>
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" id="user-pass" required>
+                <input type="password" name="password" required>
             </div>
             <button type="submit" class="btn btn-primary">Sign In</button>
         </form>
@@ -99,20 +108,6 @@
         </div>
     </div>
 
-    <script>
-        document.getElementById('login-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('user-email').value.trim();
-            const pass = document.getElementById('user-pass').value;
-            const res = authenticateUser(email, pass);
-            if (res.ok) {
-                alert('Signed in');
-                window.location.href = 'index.html';
-            } else {
-                alert(res.message || 'Invalid credentials');
-            }
-        });
-    </script>
     <script src="{{ asset('js/main.js') }}"></script>
 </body>
 </html>

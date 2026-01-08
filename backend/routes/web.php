@@ -5,6 +5,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\SignupController;
 use App\Http\Controllers\WholesaleController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthController;
 
 Route::get('/', function () {
     return view('index');
@@ -55,6 +56,8 @@ Route::post('/signup', [SignupController::class, 'store']);
 Route::get('/login', function () {
     return view('user-login');
 });
+
+Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/profile', function () {
     return view('profile');
