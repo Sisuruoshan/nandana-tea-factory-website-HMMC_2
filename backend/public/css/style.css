@@ -1159,6 +1159,27 @@ header.scrolled {
     color: var(--text-medium) !important;
 }
 
+/* Button Loading & Disabled States */
+.btn-success:disabled,
+.btn-secondary:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.btn-success:disabled {
+    background: linear-gradient(135deg, #49ca7d 0%, #5ee898 100%);
+}
+
+.fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 .editor-container {
     position: relative;
 }

@@ -366,46 +366,86 @@
         </div>
     </div>
 
-    <!-- Wholesale Inquiry Modal -->
+    <!-- Wholesale Inquiry Modal - Professional Reply Page -->
     <div id="ws-inquiry-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" id="ws-inquiry-close">&times;</span>
+        <div class="modal-content reply-modal">
+            <div class="modal-header reply-header">
+                <div>
+                    <h3>Respond to Wholesale Inquiry</h3>
+                    <p class="modal-subtitle">Professional business response management</p>
+                </div>
+                <span class="close-modal" id="ws-inquiry-close">&times;</span>
+            </div>
+            <form id="ws-inquiry-form" class="reply-form">
+                <input type="hidden" id="ws-inquiry-id">
+                
+                <!-- Company Information Section -->
+                <div class="reply-section">
+                    <div class="section-title">
+                        <i class="fa-solid fa-building"></i>
+                        <h4>Company Information</h4>
+                    </div>
+                    <div class="info-grid two-cols">
+                        <div class="form-group">
+                            <label for="ws-inquiry-name">Contact Person</label>
+                            <input type="text" id="ws-inquiry-name" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="ws-inquiry-company">Company Name</label>
+                            <input type="text" id="ws-inquiry-company" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="ws-inquiry-email">Email</label>
+                            <input type="email" id="ws-inquiry-email" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="ws-inquiry-phone">Phone</label>
+                            <input type="tel" id="ws-inquiry-phone" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="ws-inquiry-address">Business Address</label>
+                        <textarea id="ws-inquiry-address" rows="2" readonly class="message-box"></textarea>
+                    </div>
+                </div>
+
+                <!-- Inquiry Details Section -->
+                <div class="reply-section">
+                    <div class="section-title">
+                        <i class="fa-solid fa-list-check"></i>
+                        <h4>Inquiry Details</h4>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="ws-inquiry-details" rows="4" readonly class="message-box"></textarea>
+                    </div>
+                </div>
+
+                <!-- Reply Composition Section -->
+                <div class="reply-section reply-composition">
+                    <div class="section-title">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        <h4>Your Response</h4>
+                    </div>
+                    <div class="form-group">
+                        <label for="ws-inquiry-reply">Compose Reply</label>
+                        <div class="editor-container">
+                            <textarea id="ws-inquiry-reply" rows="5" placeholder="Write a professional response to the wholesale inquiry..." class="reply-editor"></textarea>
+                            <div class="char-count"><span id="ws-inquiry-reply-count">0</span>/1000 characters</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="form-actions reply-actions">
+                    <button type="button" class="btn btn-secondary" id="ws-inquiry-cancel">
+                        <i class="fa-solid fa-xmark"></i> Cancel
+                    </button>
+                    <button type="button" class="btn btn-success" id="ws-send-reply-btn">
+                        <i class="fa-solid fa-paper-plane"></i> Send Reply
+                    </button>
+                </div>
+            </form>
         </div>
-        <form id="ws-inquiry-form">
-            <input type="hidden" id="ws-inquiry-id">
-            <div class="form-group">
-                <label for="ws-inquiry-name">Name</label>
-                <input type="text" id="ws-inquiry-name" required>
-            </div>
-            <div class="form-group">
-                <label for="ws-inquiry-company">Company</label>
-                <input type="text" id="ws-inquiry-company" required>
-            </div>
-            <div class="form-group">
-                <label for="ws-inquiry-email">Email</label>
-                <input type="email" id="ws-inquiry-email" required>
-            </div>
-            <div class="form-group">
-                <label for="ws-inquiry-phone">Phone</label>
-                <input type="tel" id="ws-inquiry-phone" required>
-            </div>
-            <div class="form-group">
-                <label for="ws-inquiry-address">Address</label>
-                <textarea id="ws-inquiry-address" rows="2" required></textarea>
-            </div>
-            <div class="form-group">
-                <label for="ws-inquiry-details">Details</label>
-                <textarea id="ws-inquiry-details" rows="3" required></textarea>
-            </div>
-            <div class="form-group">
-                <label for="ws-inquiry-reply">Reply</label>
-                <textarea id="ws-inquiry-reply" rows="4" placeholder="Write a reply here..."></textarea>
-            </div>
-            <div class="form-actions">
-                <button type="button" class="btn btn-success" id="ws-send-reply-btn"><i class="fa-solid fa-paper-plane"></i> Send Reply</button>
-                <button type="button" class="btn btn-secondary" id="ws-inquiry-cancel">Cancel</button>
-            </div>
-        </form>
     </div>
 
     <script>
@@ -578,10 +618,16 @@
             function sendInquiryReply() {
                 const id = document.getElementById('inquiry-id').value;
                 const reply = document.getElementById('inquiry-reply').value.trim();
+                const sendBtn = document.getElementById('send-reply-btn');
+                
                 if (!reply) {
                     alert('Please enter a reply message.');
                     return;
                 }
+
+                // Disable button and show loading state
+                sendBtn.disabled = true;
+                sendBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
 
                 fetch(`/api/inquiries/${id}/reply`, {
                     method: 'POST',
@@ -593,13 +639,28 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    alert('Reply sent and saved.');
-                    closeInquiryModal();
-                    loadInquiries();
+                    // Show success message
+                    sendBtn.innerHTML = '<i class="fa-solid fa-check"></i> Sent Successfully!';
+                    sendBtn.style.background = 'linear-gradient(135deg, #5ee898 0%, #7bf5b0 100%)';
+                    
+                    setTimeout(() => {
+                        alert('Reply sent and saved successfully!');
+                        closeInquiryModal();
+                        loadInquiries();
+                        
+                        // Reset button
+                        sendBtn.disabled = false;
+                        sendBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Reply';
+                        sendBtn.style.background = '';
+                    }, 1000);
                 })
                 .catch(error => {
                     console.error('Error sending reply:', error);
                     alert('Unable to send reply. Please try again.');
+                    
+                    // Reset button
+                    sendBtn.disabled = false;
+                    sendBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Reply';
                 });
             }
 
@@ -685,10 +746,16 @@
             function sendWholesaleInquiryReply() {
                 const id = document.getElementById('ws-inquiry-id').value;
                 const reply = document.getElementById('ws-inquiry-reply').value.trim();
+                const sendBtn = document.getElementById('ws-send-reply-btn');
+                
                 if (!reply) {
                     alert('Please enter a reply message.');
                     return;
                 }
+
+                // Disable button and show loading state
+                sendBtn.disabled = true;
+                sendBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
 
                 fetch(`/api/wholesale-inquiries/${id}/reply`, {
                     method: 'POST',
@@ -700,13 +767,28 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    alert('Reply sent and saved.');
-                    closeWholesaleInquiryModal();
-                    loadWholesaleInquiries();
+                    // Show success message
+                    sendBtn.innerHTML = '<i class="fa-solid fa-check"></i> Sent Successfully!';
+                    sendBtn.style.background = 'linear-gradient(135deg, #5ee898 0%, #7bf5b0 100%)';
+                    
+                    setTimeout(() => {
+                        alert('Reply sent and saved successfully!');
+                        closeWholesaleInquiryModal();
+                        loadWholesaleInquiries();
+                        
+                        // Reset button
+                        sendBtn.disabled = false;
+                        sendBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Reply';
+                        sendBtn.style.background = '';
+                    }, 1000);
                 })
                 .catch(error => {
                     console.error('Error sending reply:', error);
                     alert('Unable to send reply. Please try again.');
+                    
+                    // Reset button
+                    sendBtn.disabled = false;
+                    sendBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Reply';
                 });
             }
 
