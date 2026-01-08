@@ -238,6 +238,12 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="ws-product-stock">Current Stock/Quantity</label>
+                    <input type="number" id="ws-product-stock" min="0" value="0" required>
+                    <small>Available quantity in inventory</small>
+                </div>
+
+                <div class="form-group">
                     <label for="ws-product-image">Image Path</label>
                     <input type="text" id="ws-product-image" placeholder="e.g., srs/black tea.jpg" required>
                 </div>
@@ -307,13 +313,79 @@
         function loadProducts() {
             const productsList = document.getElementById('products-list');
             if (!productsList) return;
-            productsList.innerHTML = '<p style="text-align: center; color: #666;">No products yet. Click "Add New Product" to create one.</p>';
+            
+            fetch('/api/products')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        productsList.innerHTML = '<p style="text-align: center; color: #666;">No products yet. Click "Add New Product" to create one.</p>';
+                    } else {
+                        productsList.innerHTML = data.map(product => `
+                            <div class="product-item">
+                                <div class="product-item-image">
+                                    <img src="${product.image || 'https://via.placeholder.com/100'}" alt="${product.name}">
+                                </div>
+                                <div class="product-item-details">
+                                    <h4>${product.name}</h4>
+                                    <p>${product.description}</p>
+                                    <p class="product-item-price">$${parseFloat(product.price).toFixed(2)}</p>
+                                    <p style="color: var(--text-medium); font-size: 0.85rem;">Stock: ${product.stock || 0} units</p>
+                                </div>
+                                <div class="product-item-actions">
+                                    <button class="btn-icon" onclick="editProduct(${product.id})" title="Edit">
+                                        <i class="fa-solid fa-edit"></i>
+                                    </button>
+                                    <button class="btn-icon delete-btn" onclick="deleteProduct(${product.id})" title="Delete">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading products:', error);
+                    productsList.innerHTML = '<p style="text-align: center; color: #666;">No products yet. Click "Add New Product" to create one.</p>';
+                });
         }
 
         function loadWholesaleProducts() {
             const wsProductsList = document.getElementById('ws-products-list');
             if (!wsProductsList) return;
-            wsProductsList.innerHTML = '<p style="text-align: center; color: #666;">No wholesale products yet. Click "Add Wholesale Product" to create one.</p>';
+            
+            fetch('/api/wholesale-products')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        wsProductsList.innerHTML = '<p style="text-align: center; color: #666;">No wholesale products yet. Click "Add Wholesale Product" to create one.</p>';
+                    } else {
+                        wsProductsList.innerHTML = data.map(product => `
+                            <div class="product-item">
+                                <div class="product-item-image">
+                                    <img src="${product.image || 'https://via.placeholder.com/100'}" alt="${product.name}">
+                                </div>
+                                <div class="product-item-details">
+                                    <h4>${product.name}</h4>
+                                    <p>${product.description}</p>
+                                    <p class="product-item-price">Retail: $${parseFloat(product.price).toFixed(2)} | Wholesale: $${parseFloat(product.wholesale_price || product.price).toFixed(2)}</p>
+                                    <p style="color: var(--text-medium); font-size: 0.85rem;">Stock: ${product.stock || 0} units</p>
+                                </div>
+                                <div class="product-item-actions">
+                                    <button class="btn-icon" onclick="editWholesaleProduct(${product.id})" title="Edit">
+                                        <i class="fa-solid fa-edit"></i>
+                                    </button>
+                                    <button class="btn-icon delete-btn" onclick="deleteWholesaleProduct(${product.id})" title="Delete">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading wholesale products:', error);
+                    wsProductsList.innerHTML = '<p style="text-align: center; color: #666;">No wholesale products yet. Click "Add Wholesale Product" to create one.</p>';
+                });
         }
 
 
@@ -368,6 +440,88 @@
                 }
             }
 
+        function editProduct(id) {
+            fetch(`/api/products`)
+                .then(response => response.json())
+                .then(products => {
+                    const product = products.find(p => p.id === id);
+                    if (!product) return;
+                    
+                    document.getElementById('modal-title').textContent = 'Edit Product';
+                    document.getElementById('product-id').value = product.id;
+                    document.getElementById('product-name').value = product.name;
+                    document.getElementById('product-description').value = product.description;
+                    document.getElementById('product-price').value = product.price;
+                    document.getElementById('product-image').value = product.image || '';
+                    document.getElementById('product-id-slug').value = product.slug;
+                    document.getElementById('product-origin').value = product.origin || '';
+                    document.getElementById('product-notes').value = product.notes || '';
+                    document.getElementById('product-brew').value = product.brewing_guide || '';
+                    document.getElementById('product-long-desc').value = product.long_description || '';
+                    
+                    productModal.style.display = 'block';
+                })
+                .catch(error => console.error('Error loading product:', error));
+        }
+
+        function deleteProduct(id) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                fetch(`/api/products/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Product deleted successfully');
+                    loadProducts();
+                })
+                .catch(error => console.error('Error deleting product:', error));
+            }
+        }
+
+        function editWholesaleProduct(id) {
+            fetch(`/api/wholesale-products`)
+                .then(response => response.json())
+                .then(products => {
+                    const product = products.find(p => p.id === id);
+                    if (!product) return;
+                    
+                    document.getElementById('ws-modal-title').textContent = 'Edit Wholesale Product';
+                    document.getElementById('ws-product-id').value = product.id;
+                    document.getElementById('ws-product-name').value = product.name;
+                    document.getElementById('ws-product-description').value = product.description;
+                    document.getElementById('ws-product-price').value = product.price;
+                    document.getElementById('ws-product-wholesale-price').value = product.wholesale_price || product.price;
+                    document.getElementById('ws-product-image').value = product.image || '';
+                    document.getElementById('ws-product-id-slug').value = product.slug;
+                    document.getElementById('ws-product-stock').value = product.stock || 0;
+                    
+                    wsProductModal.style.display = 'block';
+                })
+                .catch(error => console.error('Error loading wholesale product:', error));
+        }
+
+        function deleteWholesaleProduct(id) {
+            if (confirm('Are you sure you want to delete this wholesale product?')) {
+                fetch(`/api/wholesale-products/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Wholesale product deleted successfully');
+                    loadWholesaleProducts();
+                })
+                .catch(error => console.error('Error deleting wholesale product:', error));
+            }
+        }
+
         // Modal controls
         const productModal = document.getElementById('product-modal');
         const wsProductModal = document.getElementById('ws-product-modal');
@@ -379,6 +533,7 @@
             addProductBtn.addEventListener('click', () => {
                 document.getElementById('modal-title').textContent = 'Add New Product';
                 document.getElementById('product-form').reset();
+                document.getElementById('product-id').value = '';
                 productModal.style.display = 'block';
             });
         }
@@ -387,6 +542,7 @@
             addWsProductBtn.addEventListener('click', () => {
                 document.getElementById('ws-modal-title').textContent = 'Add Wholesale Product';
                 document.getElementById('ws-product-form').reset();
+                document.getElementById('ws-product-id').value = '';
                 wsProductModal.style.display = 'block';
             });
         }
@@ -413,16 +569,78 @@
         // Form submissions
         document.getElementById('product-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            alert('Product saved successfully!');
-            productModal.style.display = 'none';
-            loadProducts();
+            
+            const productId = document.getElementById('product-id').value;
+            const formData = {
+                name: document.getElementById('product-name').value,
+                description: document.getElementById('product-description').value,
+                price: parseFloat(document.getElementById('product-price').value),
+                image: document.getElementById('product-image').value,
+                slug: document.getElementById('product-id-slug').value,
+                origin: document.getElementById('product-origin').value,
+                notes: document.getElementById('product-notes').value,
+                brewing_guide: document.getElementById('product-brew').value,
+                long_description: document.getElementById('product-long-desc').value,
+            };
+            
+            const url = productId ? `/api/products/${productId}` : '/api/products';
+            const method = productId ? 'PUT' : 'POST';
+            
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(productId ? 'Product updated successfully!' : 'Product created successfully!');
+                productModal.style.display = 'none';
+                loadProducts();
+            })
+            .catch(error => {
+                console.error('Error saving product:', error);
+                alert('Error saving product. Please try again.');
+            });
         });
 
         document.getElementById('ws-product-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            alert('Wholesale product saved successfully!');
-            wsProductModal.style.display = 'none';
-            loadWholesaleProducts();
+            
+            const productId = document.getElementById('ws-product-id').value;
+            const formData = {
+                name: document.getElementById('ws-product-name').value,
+                description: document.getElementById('ws-product-description').value,
+                price: parseFloat(document.getElementById('ws-product-price').value),
+                wholesale_price: parseFloat(document.getElementById('ws-product-wholesale-price').value),
+                image: document.getElementById('ws-product-image').value,
+                slug: document.getElementById('ws-product-id-slug').value,
+                stock: parseInt(document.getElementById('ws-product-stock').value) || 0,
+            };
+            
+            const url = productId ? `/api/wholesale-products/${productId}` : '/api/wholesale-products';
+            const method = productId ? 'PUT' : 'POST';
+            
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(productId ? 'Wholesale product updated successfully!' : 'Wholesale product created successfully!');
+                wsProductModal.style.display = 'none';
+                loadWholesaleProducts();
+            })
+            .catch(error => {
+                console.error('Error saving wholesale product:', error);
+                alert('Error saving wholesale product. Please try again.');
+            });
         });
 
         // Close modal when clicking outside

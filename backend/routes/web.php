@@ -73,6 +73,18 @@ Route::get('/api/wholesale-inquiries', [AdminController::class, 'getWholesaleInq
 Route::delete('/api/inquiries/{id}', [AdminController::class, 'deleteInquiry']);
 Route::delete('/api/wholesale-inquiries/{id}', [AdminController::class, 'deleteWholesaleInquiry']);
 
+// Wholesale Products API
+Route::get('/api/wholesale-products', [AdminController::class, 'getWholesaleProducts']);
+Route::post('/api/wholesale-products', [AdminController::class, 'createWholesaleProduct']);
+Route::put('/api/wholesale-products/{id}', [AdminController::class, 'updateWholesaleProduct']);
+Route::delete('/api/wholesale-products/{id}', [AdminController::class, 'deleteWholesaleProduct']);
+
+// Retail Products API
+Route::get('/api/products', [AdminController::class, 'getProducts']);
+Route::post('/api/products', [AdminController::class, 'createProduct']);
+Route::put('/api/products/{id}', [AdminController::class, 'updateProduct']);
+Route::delete('/api/products/{id}', [AdminController::class, 'deleteProduct']);
+
 Route::get('/wholesale-signup', function () {
     return view('wholesale-signup');
 });
