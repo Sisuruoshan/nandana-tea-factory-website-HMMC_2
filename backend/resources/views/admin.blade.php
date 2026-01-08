@@ -16,7 +16,8 @@
                 <a href="#dashboard" class="active" data-section="dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
                 <a href="#products" data-section="products"><i class="fa-solid fa-boxes-stacked"></i> Retail Products</a>
                 <a href="#wsproducts" data-section="wsproducts"><i class="fa-solid fa-truck-ramp-box"></i> Wholesale Products</a>
-                <a href="#inquiries" data-section="inquiries"><i class="fa-solid fa-envelope"></i> Inquiries</a>
+                <a href="#inquiries" data-section="inquiries"><i class="fa-solid fa-envelope"></i> Customer Inquiries</a>
+                <a href="#wsinquiries" data-section="wsinquiries"><i class="fa-solid fa-inbox"></i> Wholesale Inquiries</a>
                 <a href="/"><i class="fa-solid fa-house"></i> View Site</a>
             </nav>
         </aside>
@@ -107,6 +108,34 @@
                             </thead>
                             <tbody id="inquiries-list">
                                 <!-- Inquiries will be injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+            
+            <!-- Wholesale Inquiries Section -->
+            <div id="wsinquiries-section" class="admin-section">
+                <section class="admin-inquiries">
+                    <h3>Wholesale Inquiries</h3>
+                    <div class="section-header">
+                        <button class="btn btn-primary" id="refresh-ws-inquiries-btn"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+                    </div>
+                    <div class="activity-table-wrapper">
+                        <table class="wholesale-table">
+                            <thead>
+                                <tr>
+                                    <th>Received</th>
+                                    <th>Name</th>
+                                    <th>Company</th>
+                                    <th>Email</th>
+                                    <th>Details</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ws-inquiries-list">
+                                <!-- Wholesale inquiries will be injected here -->
                             </tbody>
                         </table>
                     </div>
@@ -263,42 +292,120 @@
         </div>
     </div>
 
-    <!-- Inquiry Modal -->
+    <!-- Inquiry Modal - Professional Reply Page -->
     <div id="inquiry-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="inquiry-modal-title">View / Edit Inquiry</h3>
+        <div class="modal-content reply-modal">
+            <div class="modal-header reply-header">
+                <div>
+                    <h3 id="inquiry-modal-title">Respond to Customer Inquiry</h3>
+                    <p class="modal-subtitle">Professional response management</p>
+                </div>
                 <span class="close-modal" id="inquiry-close">&times;</span>
             </div>
-            <form id="inquiry-form">
+            <form id="inquiry-form" class="reply-form">
                 <input type="hidden" id="inquiry-id">
-                <div class="form-group">
-                    <label for="inquiry-name">Name</label>
-                    <input type="text" id="inquiry-name" required>
+                
+                <!-- Customer Information Section -->
+                <div class="reply-section">
+                    <div class="section-title">
+                        <i class="fa-solid fa-user-circle"></i>
+                        <h4>Customer Information</h4>
+                    </div>
+                    <div class="info-grid two-cols">
+                        <div class="form-group">
+                            <label for="inquiry-name">Name</label>
+                            <input type="text" id="inquiry-name" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="inquiry-email">Email</label>
+                            <input type="email" id="inquiry-email" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inquiry-subject">Subject</label>
+                        <input type="text" id="inquiry-subject" readonly>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="inquiry-email">Email</label>
-                    <input type="email" id="inquiry-email" required>
+
+                <!-- Original Message Section -->
+                <div class="reply-section">
+                    <div class="section-title">
+                        <i class="fa-solid fa-envelope-open"></i>
+                        <h4>Original Message</h4>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="inquiry-message" rows="4" readonly class="message-box"></textarea>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="inquiry-subject">Subject</label>
-                    <input type="text" id="inquiry-subject" required>
+
+                <!-- Reply Composition Section -->
+                <div class="reply-section reply-composition">
+                    <div class="section-title">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        <h4>Your Response</h4>
+                    </div>
+                    <div class="form-group">
+                        <label for="inquiry-reply">Compose Reply</label>
+                        <div class="editor-container">
+                            <textarea id="inquiry-reply" rows="5" placeholder="Write a professional response to the customer's inquiry..." class="reply-editor"></textarea>
+                            <div class="char-count"><span id="inquiry-reply-count">0</span>/1000 characters</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="inquiry-message">Message</label>
-                    <textarea id="inquiry-message" rows="5" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="inquiry-reply">Reply (draft)</label>
-                    <textarea id="inquiry-reply" rows="4" placeholder="Write a reply here. Use 'Send Reply' to open mail client."></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-primary" id="save-inquiry-btn"><i class="fa-solid fa-save"></i> Save</button>
-                    <button type="button" class="btn btn-success" id="send-reply-btn"><i class="fa-solid fa-paper-plane"></i> Send Reply</button>
-                    <button type="button" class="btn btn-secondary" id="inquiry-cancel">Cancel</button>
+
+                <!-- Action Buttons -->
+                <div class="form-actions reply-actions">
+                    <button type="button" class="btn btn-secondary" id="inquiry-cancel">
+                        <i class="fa-solid fa-xmark"></i> Cancel
+                    </button>
+                    <button type="button" class="btn btn-success" id="send-reply-btn">
+                        <i class="fa-solid fa-paper-plane"></i> Send Reply
+                    </button>
                 </div>
             </form>
         </div>
+    </div>
+
+    <!-- Wholesale Inquiry Modal -->
+    <div id="ws-inquiry-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="ws-inquiry-close">&times;</span>
+        </div>
+        <form id="ws-inquiry-form">
+            <input type="hidden" id="ws-inquiry-id">
+            <div class="form-group">
+                <label for="ws-inquiry-name">Name</label>
+                <input type="text" id="ws-inquiry-name" required>
+            </div>
+            <div class="form-group">
+                <label for="ws-inquiry-company">Company</label>
+                <input type="text" id="ws-inquiry-company" required>
+            </div>
+            <div class="form-group">
+                <label for="ws-inquiry-email">Email</label>
+                <input type="email" id="ws-inquiry-email" required>
+            </div>
+            <div class="form-group">
+                <label for="ws-inquiry-phone">Phone</label>
+                <input type="tel" id="ws-inquiry-phone" required>
+            </div>
+            <div class="form-group">
+                <label for="ws-inquiry-address">Address</label>
+                <textarea id="ws-inquiry-address" rows="2" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="ws-inquiry-details">Details</label>
+                <textarea id="ws-inquiry-details" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="ws-inquiry-reply">Reply</label>
+                <textarea id="ws-inquiry-reply" rows="4" placeholder="Write a reply here..."></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-success" id="ws-send-reply-btn"><i class="fa-solid fa-paper-plane"></i> Send Reply</button>
+                <button type="button" class="btn btn-secondary" id="ws-inquiry-cancel">Cancel</button>
+            </div>
+        </form>
     </div>
 
     <script>
@@ -324,6 +431,7 @@
             loadProducts();
             loadWholesaleProducts();
             loadInquiries();
+            loadWholesaleInquiries();
         });
 
         function loadProducts() {
@@ -426,6 +534,9 @@
                                     <td>${inquiry.subject}</td>
                                     <td><span class="message-preview">${inquiry.message.substring(0, 50)}...</span></td>
                                     <td>
+                                        <button class="btn-action" onclick="openInquiryModal(${inquiry.id})" title="Reply">
+                                            <i class="fa-solid fa-reply"></i>
+                                        </button>
                                         <button class="btn-action" onclick="deleteInquiry(${inquiry.id})" title="Delete">
                                             <i class="fa-solid fa-trash"></i>
                                         </button>
@@ -436,6 +547,60 @@
                         }
                     })
                     .catch(error => console.error('Error loading inquiries:', error));
+            }
+
+            function openInquiryModal(id) {
+                fetch(`/api/inquiries`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const inquiry = data.find(item => item.id === id);
+                        if (!inquiry) return;
+
+                        document.getElementById('inquiry-id').value = inquiry.id;
+                        document.getElementById('inquiry-name').value = inquiry.name;
+                        document.getElementById('inquiry-email').value = inquiry.email;
+                        document.getElementById('inquiry-subject').value = inquiry.subject;
+                        document.getElementById('inquiry-message').value = inquiry.message;
+                        document.getElementById('inquiry-reply').value = inquiry.reply || '';
+                        document.getElementById('inquiry-modal-title').textContent = `Reply to ${inquiry.name}`;
+
+                        inquiryModal.style.display = 'block';
+                        setTimeout(() => inquiryModal.classList.add('show'), 10);
+                    })
+                    .catch(error => console.error('Error loading inquiry', error));
+            }
+
+            function closeInquiryModal() {
+                inquiryModal.classList.remove('show');
+                setTimeout(() => inquiryModal.style.display = 'none', 200);
+            }
+
+            function sendInquiryReply() {
+                const id = document.getElementById('inquiry-id').value;
+                const reply = document.getElementById('inquiry-reply').value.trim();
+                if (!reply) {
+                    alert('Please enter a reply message.');
+                    return;
+                }
+
+                fetch(`/api/inquiries/${id}/reply`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    },
+                    body: JSON.stringify({ reply })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Reply sent and saved.');
+                    closeInquiryModal();
+                    loadInquiries();
+                })
+                .catch(error => {
+                    console.error('Error sending reply:', error);
+                    alert('Unable to send reply. Please try again.');
+                });
             }
 
             function deleteInquiry(id) {
@@ -453,6 +618,113 @@
                         loadInquiries();
                     })
                     .catch(error => console.error('Error deleting inquiry:', error));
+                }
+            }
+
+            function loadWholesaleInquiries() {
+                fetch('/api/wholesale-inquiries')
+                    .then(response => response.json())
+                    .then(data => {
+                        const inquiriesList = document.getElementById('ws-inquiries-list');
+                    
+                        if (!inquiriesList) return;
+                    
+                        if (data.length === 0) {
+                            inquiriesList.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #666;">No wholesale inquiries yet.</td></tr>';
+                        } else {
+                            inquiriesList.innerHTML = data.map(inquiry => `
+                                <tr>
+                                    <td>${new Date(inquiry.created_at).toLocaleDateString()}</td>
+                                    <td>${inquiry.name}</td>
+                                    <td>${inquiry.company}</td>
+                                    <td>${inquiry.email}</td>
+                                    <td><span class="message-preview">${inquiry.details.substring(0, 50)}...</span></td>
+                                    <td><span class="status-badge status-${inquiry.status}">${inquiry.status}</span></td>
+                                    <td>
+                                        <button class="btn-action" onclick="openWholesaleInquiryModal(${inquiry.id})" title="Reply">
+                                            <i class="fa-solid fa-reply"></i>
+                                        </button>
+                                        <button class="btn-action" onclick="deleteWholesaleInquiry(${inquiry.id})" title="Delete">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('');
+                        }
+                    })
+                    .catch(error => console.error('Error loading wholesale inquiries:', error));
+            }
+
+            function openWholesaleInquiryModal(id) {
+                fetch(`/api/wholesale-inquiries`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const inquiry = data.find(item => item.id === id);
+                        if (!inquiry) return;
+
+                        document.getElementById('ws-inquiry-id').value = inquiry.id;
+                        document.getElementById('ws-inquiry-name').value = inquiry.name;
+                        document.getElementById('ws-inquiry-company').value = inquiry.company;
+                        document.getElementById('ws-inquiry-email').value = inquiry.email;
+                        document.getElementById('ws-inquiry-phone').value = inquiry.phone;
+                        document.getElementById('ws-inquiry-address').value = inquiry.address;
+                        document.getElementById('ws-inquiry-details').value = inquiry.details;
+                        document.getElementById('ws-inquiry-reply').value = inquiry.reply || '';
+
+                        wsInquiryModal.style.display = 'block';
+                        setTimeout(() => wsInquiryModal.classList.add('show'), 10);
+                    })
+                    .catch(error => console.error('Error loading wholesale inquiry', error));
+            }
+
+            function closeWholesaleInquiryModal() {
+                wsInquiryModal.classList.remove('show');
+                setTimeout(() => wsInquiryModal.style.display = 'none', 200);
+            }
+
+            function sendWholesaleInquiryReply() {
+                const id = document.getElementById('ws-inquiry-id').value;
+                const reply = document.getElementById('ws-inquiry-reply').value.trim();
+                if (!reply) {
+                    alert('Please enter a reply message.');
+                    return;
+                }
+
+                fetch(`/api/wholesale-inquiries/${id}/reply`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    },
+                    body: JSON.stringify({ reply })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Reply sent and saved.');
+                    closeWholesaleInquiryModal();
+                    loadWholesaleInquiries();
+                })
+                .catch(error => {
+                    console.error('Error sending reply:', error);
+                    alert('Unable to send reply. Please try again.');
+                });
+            }
+
+            function deleteWholesaleInquiry(id) {
+                if (confirm('Are you sure you want to delete this wholesale inquiry?')) {
+                    fetch(`/api/wholesale-inquiries/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert('Wholesale inquiry deleted successfully');
+                        loadWholesaleInquiries();
+                    })
+                    .catch(error => console.error('Error deleting wholesale inquiry:', error));
                 }
             }
 
@@ -542,6 +814,7 @@
         const productModal = document.getElementById('product-modal');
         const wsProductModal = document.getElementById('ws-product-modal');
         const inquiryModal = document.getElementById('inquiry-modal');
+        const wsInquiryModal = document.getElementById('ws-inquiry-modal');
         const addProductBtn = document.getElementById('add-product-btn');
         const addWsProductBtn = document.getElementById('add-ws-product-btn');
 
@@ -578,9 +851,51 @@
             wsProductModal.style.display = 'none';
         });
 
-        document.getElementById('inquiry-cancel').addEventListener('click', () => {
-            inquiryModal.style.display = 'none';
-        });
+        // Inquiry modal controls
+        document.getElementById('save-inquiry-btn').addEventListener('click', sendInquiryReply);
+        document.getElementById('send-reply-btn').addEventListener('click', sendInquiryReply);
+        document.getElementById('inquiry-close').addEventListener('click', closeInquiryModal);
+        document.getElementById('inquiry-cancel').addEventListener('click', closeInquiryModal);
+
+        // Wholesale Inquiry modal controls
+        document.getElementById('ws-send-reply-btn').addEventListener('click', sendWholesaleInquiryReply);
+        document.getElementById('ws-inquiry-close').addEventListener('click', closeWholesaleInquiryModal);
+        document.getElementById('ws-inquiry-cancel').addEventListener('click', closeWholesaleInquiryModal);
+
+        // Refresh buttons
+        const refreshWsInquiriesBtn = document.getElementById('refresh-ws-inquiries-btn');
+        if (refreshWsInquiriesBtn) {
+            refreshWsInquiriesBtn.addEventListener('click', loadWholesaleInquiries);
+        }
+
+        // Character counters for reply textareas
+        const inquiryReplyElement = document.getElementById('inquiry-reply');
+        if (inquiryReplyElement) {
+            inquiryReplyElement.addEventListener('input', (e) => {
+                const count = e.target.value.length;
+                const countElement = document.getElementById('inquiry-reply-count');
+                if (countElement) {
+                    countElement.textContent = Math.min(count, 1000);
+                }
+                if (count > 1000) {
+                    e.target.value = e.target.value.substring(0, 1000);
+                }
+            });
+        }
+
+        const wsInquiryReplyElement = document.getElementById('ws-inquiry-reply');
+        if (wsInquiryReplyElement) {
+            wsInquiryReplyElement.addEventListener('input', (e) => {
+                const count = e.target.value.length;
+                const countElement = document.getElementById('ws-inquiry-reply-count');
+                if (countElement) {
+                    countElement.textContent = Math.min(count, 1000);
+                }
+                if (count > 1000) {
+                    e.target.value = e.target.value.substring(0, 1000);
+                }
+            });
+        }
 
         // Form submissions
         document.getElementById('product-form').addEventListener('submit', (e) => {
@@ -663,7 +978,7 @@
         window.addEventListener('click', (e) => {
             if (e.target === productModal) productModal.style.display = 'none';
             if (e.target === wsProductModal) wsProductModal.style.display = 'none';
-            if (e.target === inquiryModal) inquiryModal.style.display = 'none';
+            if (e.target === inquiryModal) closeInquiryModal();
         });
     </script>
 

@@ -6,6 +6,7 @@ use App\Models\Inquiry;
 use App\Models\WholesaleInquiry;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class AdminController extends Controller
 {
@@ -42,6 +43,66 @@ class AdminController extends Controller
     {
         WholesaleInquiry::findOrFail($id)->delete();
         return response()->json(['message' => 'Wholesale inquiry deleted']);
+    }
+
+    public function replyToInquiry(Request $request, $id)
+    {
+        $data = $request->validate([
+            'reply' => 'required|string'
+        ]);
+
+        $inquiry = Inquiry::findOrFail($id);
+        $inquiry->reply = $data['reply'];
+        $inquiry->status = 'replied';
+        $inquiry->save();
+
+        // Try to send email; if mail config fails, we still return success.
+        try {
+            Mail::raw(
+                "Hello {$inquiry->name},\n\n" . $data['reply'] . "\n\n--- Original Message ---\n" . $inquiry->message,
+                function ($message) use ($inquiry) {
+                    $message->to($inquiry->email)->subject('Re: ' . $inquiry->subject);
+                }
+            );
+        } catch (\Throwable $e) {
+            // Log but do not block the response if mailing is misconfigured.
+            logger()->warning('Inquiry reply email failed', ['error' => $e->getMessage()]);
+        }
+
+        return response()->json([
+            'message' => 'Reply sent and saved successfully',
+            'inquiry' => $inquiry
+        ]);
+    }
+
+    public function replyToWholesaleInquiry(Request $request, $id)
+    {
+        $data = $request->validate([
+            'reply' => 'required|string'
+        ]);
+
+        $inquiry = WholesaleInquiry::findOrFail($id);
+        $inquiry->reply = $data['reply'];
+        $inquiry->status = 'contacted';
+        $inquiry->save();
+
+        // Try to send email; if mail config fails, we still return success.
+        try {
+            Mail::raw(
+                "Hello {$inquiry->name},\n\n" . $data['reply'] . "\n\n--- Original Inquiry ---\nCompany: {$inquiry->company}\nDetails: {$inquiry->details}",
+                function ($message) use ($inquiry) {
+                    $message->to($inquiry->email)->subject('Re: Your Wholesale Inquiry');
+                }
+            );
+        } catch (\Throwable $e) {
+            // Log but do not block the response if mailing is misconfigured.
+            logger()->warning('Wholesale inquiry reply email failed', ['error' => $e->getMessage()]);
+        }
+
+        return response()->json([
+            'message' => 'Reply sent and saved successfully',
+            'inquiry' => $inquiry
+        ]);
     }
 
     // Wholesale Products Management

@@ -7,7 +7,7 @@
       "options": {
         "cwd": "${workspaceFolder}/backend"
       },
-      "command": "C:/Users/User/AppData/Local/Microsoft/WinGet/Packages/PHP.PHP.8.5_Microsoft.Winget.Source_8wekyb3d8bbwe/php.exe",
+      "command": "php",
       "args": ["artisan", "serve"],
       "isBackground": true,
       "problemMatcher": []

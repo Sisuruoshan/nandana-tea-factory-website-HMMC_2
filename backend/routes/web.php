@@ -72,6 +72,8 @@ Route::get('/api/inquiries', [AdminController::class, 'getInquiries']);
 Route::get('/api/wholesale-inquiries', [AdminController::class, 'getWholesaleInquiries']);
 Route::delete('/api/inquiries/{id}', [AdminController::class, 'deleteInquiry']);
 Route::delete('/api/wholesale-inquiries/{id}', [AdminController::class, 'deleteWholesaleInquiry']);
+Route::post('/api/inquiries/{id}/reply', [AdminController::class, 'replyToInquiry']);
+Route::post('/api/wholesale-inquiries/{id}/reply', [AdminController::class, 'replyToWholesaleInquiry']);
 
 // Wholesale Products API
 Route::get('/api/wholesale-products', [AdminController::class, 'getWholesaleProducts']);

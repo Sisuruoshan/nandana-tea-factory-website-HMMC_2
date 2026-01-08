@@ -21,6 +21,7 @@ return new class extends Migration
             $table->text('details');
             $table->string('status')->default('new'); // new, contacted, approved, rejected
             $table->text('admin_notes')->nullable();
+            $table->text('reply')->nullable();
             $table->timestamps();
         });
     }
