@@ -6,6 +6,7 @@ use App\Http\Controllers\SignupController;
 use App\Http\Controllers\WholesaleController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/', function () {
     return view('index');
@@ -63,9 +64,12 @@ Route::get('/login', function () {
 
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::get('/profile', function () {
-    return view('profile');
-});
+// Profile routes
+Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+Route::get('/edit-profile', [ProfileController::class, 'edit'])->name('edit-profile');
+Route::get('/api/profile', [ProfileController::class, 'getProfile']);
+Route::post('/api/profile/update', [ProfileController::class, 'update']);
+Route::post('/logout', [ProfileController::class, 'logout'])->name('logout');
 
 Route::get('/admin-login', function () {
     return view('admin-login');

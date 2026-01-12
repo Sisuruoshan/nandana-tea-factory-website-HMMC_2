@@ -18,7 +18,19 @@
             <a href="{{ url('/contact') }}">Contact</a>
         </nav>
         <div class="header-icons">
-            <a href="{{ url('/login') }}"><i class="fa-solid fa-user"></i></a>
+            @if(session()->has('user_signup_id'))
+                <!-- User is logged in -->
+                <a href="{{ url('/profile') }}" title="My Profile"><i class="fa-solid fa-user"></i></a>
+                <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                    @csrf
+                    <button type="submit" title="Logout" style="background: none; border: none; color: inherit; cursor: pointer; font-size: 1.2rem; padding: 0.5rem;">
+                        <i class="fa-solid fa-sign-out-alt"></i>
+                    </button>
+                </form>
+            @else
+                <!-- User is not logged in -->
+                <a href="{{ url('/login') }}" title="Login"><i class="fa-solid fa-user"></i></a>
+            @endif
         </div>
         <div class="hamburger-menu">
             <span class="bar"></span>

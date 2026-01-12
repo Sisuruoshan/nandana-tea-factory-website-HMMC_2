@@ -27,6 +27,6 @@ class AuthController extends Controller
         $request->session()->put('user_signup_id', $user->id);
         $request->session()->put('user_signup_name', $user->name);
 
-        return redirect('/')->with('success', 'Signed in successfully.');
+        return redirect('/profile')->with('success', 'Signed in successfully.');
     }
 }
