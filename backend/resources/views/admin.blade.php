@@ -505,7 +505,7 @@
                                 <div class="product-item-details">
                                     <h4>${product.name}</h4>
                                     <p>${product.description}</p>
-                                    <p class="product-item-price">$${parseFloat(product.price).toFixed(2)}</p>
+                                    <p class="product-item-price">Rs. ${parseFloat(product.price).toFixed(2)}</p>
                                     <p style="color: var(--text-medium); font-size: 0.85rem;">Stock: ${product.stock || 0} units</p>
                                 </div>
                                 <div class="product-item-actions">
@@ -544,7 +544,7 @@
                                 <div class="product-item-details">
                                     <h4>${product.name}</h4>
                                     <p>${product.description}</p>
-                                    <p class="product-item-price">Retail: $${parseFloat(product.price).toFixed(2)} | Wholesale: $${parseFloat(product.wholesale_price || product.price).toFixed(2)}</p>
+                                    <p class="product-item-price">Retail: Rs. ${parseFloat(product.price).toFixed(2)} | Wholesale: Rs. ${parseFloat(product.wholesale_price || product.price).toFixed(2)}</p>
                                     <p style="color: var(--text-medium); font-size: 0.85rem;">Stock: ${product.stock || 0} units</p>
                                 </div>
                                 <div class="product-item-actions">

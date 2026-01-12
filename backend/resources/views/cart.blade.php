@@ -121,7 +121,7 @@
     @include('partials.footer')
 
     <script>
-    function formatPrice(v){return `$${parseFloat(v||0).toFixed(2)}`;}
+    function formatPrice(v){return `Rs. ${parseFloat(v||0).toFixed(2)}`;}
 
     function getCart(){return JSON.parse(localStorage.getItem('cart')||'[]');}
 

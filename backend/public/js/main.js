@@ -339,7 +339,7 @@ function loadProducts() {
             <div class="product-item-details">
                 <h4>${product.name}</h4>
                 <p>${product.description}</p>
-                <p class="product-item-price">$${parseFloat(product.price).toFixed(2)}</p>
+                <p class="product-item-price">Rs. ${parseFloat(product.price).toFixed(2)}</p>
             </div>
             <div class="product-item-actions">
                 <button class="btn-icon edit-btn" onclick="editProduct('${product.id}')" title="Edit">
@@ -632,7 +632,7 @@ function renderWholesaleProducts() {
             <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/320x200?text=No+Image'">
             <h3>${p.name}</h3>
             <p>${p.description}</p>
-            <div class="price">Wholesale: $${parseFloat(p.wholesalePrice).toFixed(2)} / unit</div>
+            <div class="price">Wholesale: Rs. ${parseFloat(p.wholesalePrice).toFixed(2)} / unit</div>
             <div class="bulk-actions">
                 <label>Qty (min ${p.minQty})</label>
                 <div class="qty-control">
@@ -695,7 +695,7 @@ function renderWholesaleProducts() {
                 return;
             }
             const total = qty * parseFloat(p.wholesalePrice);
-            alert(`Added ${qty} x ${p.name} to bulk order. Total: $${total.toFixed(2)}`);
+            alert(`Added ${qty} x ${p.name} to bulk order. Total: Rs. ${total.toFixed(2)}`);
         });
     });
 }
@@ -735,7 +735,7 @@ function loadWholesaleAdminProducts() {
             <div class="product-item-details">
                 <h4>${p.name}</h4>
                 <p>${p.description}</p>
-                <p class="product-item-price">Retail: $${parseFloat(p.price).toFixed(2)} | Wholesale: $${parseFloat(p.wholesalePrice).toFixed(2)}</p>
+                <p class="product-item-price">Retail: Rs. ${parseFloat(p.price).toFixed(2)} | Wholesale: Rs. ${parseFloat(p.wholesalePrice).toFixed(2)}</p>
                 <p class="product-item-price">Min Qty: ${p.minQty}</p>
             </div>
             <div class="product-item-actions">
