@@ -842,7 +842,13 @@
                     document.getElementById('product-brew').value = product.brewing_guide || '';
                     document.getElementById('product-long-desc').value = product.long_description || '';
                     
-                    productModal.style.display = 'block';
+                    // Reset image file input and status
+                    const imageFileInput = document.getElementById('product-image-file');
+                    if (imageFileInput) imageFileInput.value = '';
+                    const imageStatus = document.getElementById('product-image-status');
+                    if (imageStatus) imageStatus.textContent = 'No file chosen';
+                    
+                    openModal(productModal);
                 })
                 .catch(error => console.error('Error loading product:', error));
         }
@@ -882,7 +888,13 @@
                     document.getElementById('ws-product-id-slug').value = product.slug;
                     document.getElementById('ws-product-stock').value = product.stock || 0;
                     
-                    wsProductModal.style.display = 'block';
+                    // Reset image file input and status
+                    const imageFileInput = document.getElementById('ws-product-image-file');
+                    if (imageFileInput) imageFileInput.value = '';
+                    const imageStatus = document.getElementById('ws-product-image-status');
+                    if (imageStatus) imageStatus.textContent = 'No file chosen';
+                    
+                    openModal(wsProductModal);
                 })
                 .catch(error => console.error('Error loading wholesale product:', error));
         }
@@ -1139,15 +1151,22 @@
                 },
                 body: JSON.stringify(formData)
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.message || `HTTP ${response.status}`);
+                    });
+                }
+                return response.json();
+            })
             .then(data => {
                 alert(productId ? 'Product updated successfully!' : 'Product created successfully!');
-                productModal.style.display = 'none';
+                closeModal(productModal);
                 loadProducts();
             })
             .catch(error => {
                 console.error('Error saving product:', error);
-                alert('Error saving product. Please try again.');
+                alert('Error saving product: ' + (error.message || 'Please try again.'));
             });
         });
 
@@ -1176,15 +1195,22 @@
                 },
                 body: JSON.stringify(formData)
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.message || `HTTP ${response.status}`);
+                    });
+                }
+                return response.json();
+            })
             .then(data => {
                 alert(productId ? 'Wholesale product updated successfully!' : 'Wholesale product created successfully!');
-                wsProductModal.style.display = 'none';
+                closeModal(wsProductModal);
                 loadWholesaleProducts();
             })
             .catch(error => {
                 console.error('Error saving wholesale product:', error);
-                alert('Error saving wholesale product. Please try again.');
+                alert('Error saving wholesale product: ' + (error.message || 'Please try again.'));
             });
         });
 
