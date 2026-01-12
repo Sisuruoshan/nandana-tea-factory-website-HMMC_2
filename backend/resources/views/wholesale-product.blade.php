@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details - Nandana Tea</title>
-  <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    
+    <title>Wholesale Product Details - Nandana Tea</title>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
@@ -31,8 +30,8 @@
 
     <main class="container">
         <section class="page-header">
-            <h1 id="pd-name">Product Details</h1>
-            <p id="pd-subtitle">Explore the flavors of Nandana Tea.</p>
+            <h1 id="pd-name">Wholesale Product Details</h1>
+            <p id="pd-subtitle">Exclusive wholesale pricing.</p>
         </section>
 
         <section class="product-detail">
@@ -42,13 +41,18 @@
             <div class="pd-info">
                 <h2 id="pd-title">Tea Name</h2>
                 <p id="pd-desc" class="pd-desc">Description</p>
-                <div class="pd-price" id="pd-price">$0.00</div>
+                <div class="pd-price">
+                    <span style="color: var(--text-medium);">Retail: <span id="pd-price-retail">$0.00</span></span>
+                    <br>
+                    <span style="font-size: 1.5rem; color: var(--accent-mint-green); font-weight: 700;">Wholesale: <span id="pd-price-wholesale">$0.00</span></span>
+                </div>
+                <p style="color: var(--text-medium); margin-top: 0.5rem;">Stock: <span id="pd-stock">0</span> units</p>
 
                 <div class="pd-actions">
                     <label for="pd-qty">Quantity</label>
-                    <input id="pd-qty" type="number" min="1" value="1">
+                    <input id="pd-qty" type="number" min="1" value="10">
                     <button id="pd-add" class="btn btn-primary"><i class="fa-solid fa-cart-plus"></i> Add to Cart</button>
-                    <button id="pd-order" class="btn btn-secondary"><i class="fa-solid fa-credit-card"></i> Place Order</button>
+                    <button id="pd-inquiry" class="btn btn-secondary"><i class="fa-solid fa-envelope"></i> Send Inquiry</button>
                 </div>
             </div>
         </section>
@@ -70,16 +74,8 @@
         </section>
     </main>
 
-    <footer>
-        <div class="container footer-content">
-            <p>© 2025 Nandana Tea Factory. All rights reserved.</p>
-            <div class="footer-links">
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-                <a href="{{ url('/contact') }}">Contact Us</a>
-            </div>
-        </div>
-    </footer>
+    @include('partials.footer')
+    <script src="{{ asset('js/main.js') }}"></script>
 
     <script>
     const placeholderImage = 'https://via.placeholder.com/400x320?text=Tea';
@@ -110,10 +106,12 @@
     }
 
     function renderProduct(product) {
-        document.getElementById('pd-name').textContent = product.name || 'Product Details';
+        document.getElementById('pd-name').textContent = product.name || 'Wholesale Product Details';
         document.getElementById('pd-title').textContent = product.name || '';
         document.getElementById('pd-desc').textContent = product.description || '';
-        document.getElementById('pd-price').textContent = formatPrice(product.price);
+        document.getElementById('pd-price-retail').textContent = formatPrice(product.price);
+        document.getElementById('pd-price-wholesale').textContent = formatPrice(product.wholesale_price || product.price);
+        document.getElementById('pd-stock').textContent = product.stock || 0;
 
         const img = document.getElementById('pd-image');
         img.src = resolveImage(product.image);
@@ -127,17 +125,24 @@
         const qtyInput = document.getElementById('pd-qty');
         document.getElementById('pd-add').onclick = () => {
             const qty = Math.max(1, parseInt(qtyInput.value || '1', 10));
-            const item = { id: product.id, slug: product.slug, name: product.name, price: Number(product.price), qty };
-            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const item = { 
+                id: product.id, 
+                slug: product.slug, 
+                name: product.name, 
+                price: Number(product.wholesale_price || product.price), 
+                qty,
+                isWholesale: true
+            };
+            const cart = JSON.parse(localStorage.getItem('wholesaleCart') || '[]');
             const existing = cart.find(c => c.id === item.id);
             if (existing) { existing.qty += qty; } else { cart.push(item); }
-            localStorage.setItem('cart', JSON.stringify(cart));
-            alert(`${product.name || 'Product'} added to cart (x${qty}).`);
+            localStorage.setItem('wholesaleCart', JSON.stringify(cart));
+            alert(`${product.name || 'Product'} added to wholesale cart (x${qty}).`);
         };
 
-        document.getElementById('pd-order').onclick = () => {
+        document.getElementById('pd-inquiry').onclick = () => {
             const qty = Math.max(1, parseInt(qtyInput.value || '1', 10));
-            const params = new URLSearchParams({ product: product.slug || product.id, qty: String(qty) });
+            const params = new URLSearchParams({ product: product.slug || product.id, qty: String(qty), type: 'wholesale' });
             window.location.href = `${contactUrl}?${params.toString()}`;
         };
     }
@@ -151,22 +156,19 @@
         }
 
         try {
-            const res = await fetch(`/api/products/slug/${encodeURIComponent(slug)}`);
+            const res = await fetch(`/api/wholesale-products/slug/${encodeURIComponent(slug)}`);
             if (!res.ok) throw new Error('Not found');
             const product = await res.json();
             renderProduct(product);
-            subtitle.textContent = 'Explore the flavors of Nandana Tea.';
+            subtitle.textContent = 'Exclusive wholesale pricing.';
         } catch (err) {
-            console.error('Unable to load product', err);
-            subtitle.textContent = 'Product not found. Please return to the products page.';
-            document.querySelector('.product-detail').innerHTML = '<p style="padding:1rem;">This product is unavailable.</p>';
+            console.error('Unable to load wholesale product', err);
+            subtitle.textContent = 'Product not found. Please return to the wholesale page.';
+            document.querySelector('.product-detail').innerHTML = '<p style="padding:1rem;">This wholesale product is unavailable.</p>';
         }
     }
 
     document.addEventListener('DOMContentLoaded', loadProduct);
     </script>
-    @include('partials.footer')
-    <script src="{{ asset('js/main.js') }}"></script>
-
 </body>
 </html>

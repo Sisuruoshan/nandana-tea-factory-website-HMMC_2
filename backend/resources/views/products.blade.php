@@ -22,7 +22,7 @@
     <div class="header-icons">
         <!-- Search Button -->
         <div class="search-cart-container">
-            <input type="text" id="product-search" placeholder="Search products..." class="search-bar" style="display: none;" aria-label="Search products" />
+            <input type="text" id="product-search" placeholder="Search products..." class="search-bar" aria-label="Search products" />
             <button id="search-btn" class="icon-btn" type="button" onclick="toggleSearch()">
             <i class="fa-solid fa-magnifying-glass"></i>
             </button>
@@ -89,58 +89,93 @@
             <a href="{{ url('/wholesale') }}" class="btn">Wholesale</a>
         </div>
         
-        <div class="product-grid">
-            <div class="product-card">
-                <img src="{{ asset('images/black tea.jpg') }}" alt="Black Tea">
-                <h3>Nandana Black Tea</h3>
-                <p>Rich, full-bodied black tea.</p>
-                <div class="price">$12.00</div>
-                <a href="{{ url('/product') }}?id=black-tea">View More</a>
-            </div>
-            <div class="product-card">
-                <img src="{{ asset('images/green tea.png') }}" alt="Green Tea">
-                <h3>Nandana Green Tea</h3>
-                <p>Delicate, refreshing green tea.</p>
-                <div class="price">$14.00</div>
-                <a href="{{ url('/product') }}?id=green-tea">View More</a>
-            </div>
-            <div class="product-card">
-                <img src="{{ asset('images/white tea.png') }}" alt="White Tea">
-                <h3>Nandana White Tea</h3>
-                <p>Rare, subtly sweet white tea.</p>
-                <div class="price">$18.00</div>
-                <a href="{{ url('/product') }}?id=white-tea">View More</a>
-            </div>
-            <div class="product-card">
-                <img src="{{ asset('images/oolong tea.png') }}" alt="Oolong Tea">
-                <h3>Nandana Oolong Tea</h3>
-                <p>Complex, aromatic oolong tea.</p>
-                <div class="price">$16.00</div>
-                <a href="{{ url('/product') }}?id=oolong-tea">View More</a>
-             </div>
-
-            <div class="product-card">
-                <img src="{{ asset('images/ahmad tea.png') }}" alt="Ahmad Tea">
-
-                <h3>Nandana Almond Tea</h3>
-                <p>Elegant, refined Ahmad Tea</p>
-                <div class="price">$17.00</div>
-                <a href="{{ url('/product') }}?id=almond-tea">View More</a>
-            </div>
-
-            <div class="product-card">
-                <img src="{{ asset('images/cinnamon tea.jpg') }}" alt="Cinnamon Tea">
-                <h3>Nandana Cinnamon Tea</h3>
-                <p>Warm, spicy Cinnamon Tea</p>
-                <div class="price">$19.00</div>
-                <a href="{{ url('/product') }}?id=cinnamon-tea">View More</a>
-            </div>
-            
-        </div>
+        <div class="product-grid" id="product-grid"></div>
+        <div id="product-loading" style="padding:20px;text-align:center;color:#555;">Loading products...</div>
         <div id="no-results" style="display:none;padding:20px;text-align:center;color:#555;">No matching products found.</div>
     </main>
 
     @include('partials.footer')
     <script src="{{ asset('js/main.js') }}"></script>
+
+    <script>
+        const placeholderImage = 'https://via.placeholder.com/240x180?text=Tea';
+
+        function resolveImage(path) {
+            if (!path) return placeholderImage;
+            if (path.startsWith('http')) return path;
+            return `/${path.replace(/^\//, '')}`;
+        }
+
+        function formatPrice(value) {
+            const num = Number(value) || 0;
+            return `$${num.toFixed(2)}`;
+        }
+
+        function renderProducts(products) {
+            const grid = document.getElementById('product-grid');
+            const loading = document.getElementById('product-loading');
+            const noResults = document.getElementById('no-results');
+            if (!grid || !loading || !noResults) return;
+
+            loading.style.display = 'none';
+
+            if (!products.length) {
+                grid.innerHTML = '';
+                noResults.style.display = 'block';
+                return;
+            }
+
+            noResults.style.display = 'none';
+            grid.innerHTML = products.map(p => `
+                <div class="product-card" data-name="${(p.name || '').toLowerCase()}" data-desc="${(p.description || '').toLowerCase()}">
+                    <img src="${resolveImage(p.image)}" alt="${p.name || 'Tea'}">
+                    <h3>${p.name || 'Tea'}</h3>
+                    <p>${p.description || ''}</p>
+                    <div class="price">${formatPrice(p.price)}</div>
+                    <a href="{{ url('/product') }}?id=${encodeURIComponent(p.slug)}">View More</a>
+                </div>
+            `).join('');
+        }
+
+        function filterProducts(query) {
+            const q = (query || '').trim().toLowerCase();
+            const cards = document.querySelectorAll('.product-card');
+            let anyVisible = false;
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name') || '';
+                const desc = card.getAttribute('data-desc') || '';
+                const matches = q === '' || name.includes(q) || desc.includes(q);
+                card.style.display = matches ? '' : 'none';
+                if (matches) anyVisible = true;
+            });
+            const noResults = document.getElementById('no-results');
+            if (noResults) {
+                noResults.style.display = anyVisible ? 'none' : 'block';
+            }
+        }
+
+        async function loadProducts() {
+            const loading = document.getElementById('product-loading');
+            if (loading) loading.style.display = 'block';
+            try {
+                const res = await fetch('/api/products');
+                if (!res.ok) throw new Error('Failed to load products');
+                const data = await res.json();
+                renderProducts(data || []);
+                filterProducts(document.getElementById('product-search')?.value || '');
+            } catch (err) {
+                console.error(err);
+                if (loading) loading.textContent = 'Unable to load products right now.';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProducts();
+            const searchBar = document.getElementById('product-search');
+            if (searchBar) {
+                searchBar.addEventListener('input', (e) => filterProducts(e.target.value));
+            }
+        });
+    </script>
 </body>
 </html>

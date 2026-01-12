@@ -66,9 +66,9 @@
                 <a href="#" class="btn active">Wholesale</a>
                 <a href="{{ url('/products') }}" class="btn">Retail</a>
             </div>
-            <div class="product-grid" id="wholesale-products-grid">
-                <!-- Rendered dynamically by main.js -->
-            </div>
+            <div class="product-grid" id="wholesale-products-grid"></div>
+            <div id="wholesale-loading" style="padding:20px;text-align:center;color:#555;">Loading wholesale products...</div>
+            <div id="wholesale-no-results" style="display:none;padding:20px;text-align:center;color:#555;">No wholesale products available.</div>
         </section>
 
         <section class="form-container" style="margin-top: 4rem; max-width: none;">
@@ -104,5 +104,94 @@
     @include('partials.footer')
     <script src="{{ asset('js/main.js') }}"></script>
     <script src="{{ asset('js/validation.js') }}"></script>
+
+    <script>
+        const placeholderImage = 'https://via.placeholder.com/240x180?text=Tea';
+
+        function resolveImage(path) {
+            if (!path) return placeholderImage;
+            if (path.startsWith('http')) return path;
+            return `/${path.replace(/^\//, '')}`;
+        }
+
+        function formatPrice(value) {
+            const num = Number(value) || 0;
+            return `$${num.toFixed(2)}`;
+        }
+
+        function renderWholesaleProducts(products) {
+            const grid = document.getElementById('wholesale-products-grid');
+            const loading = document.getElementById('wholesale-loading');
+            const noResults = document.getElementById('wholesale-no-results');
+            if (!grid || !loading || !noResults) return;
+
+            loading.style.display = 'none';
+
+            if (!products.length) {
+                grid.innerHTML = '';
+                noResults.style.display = 'block';
+                return;
+            }
+
+            noResults.style.display = 'none';
+            grid.innerHTML = products.map(p => `
+                <div class="product-card">
+                    <img src="${resolveImage(p.image)}" alt="${p.name || 'Tea'}">
+                    <h3>${p.name || 'Tea'}</h3>
+                    <p>${p.description || ''}</p>
+                    <div class="price">Retail: ${formatPrice(p.price)} | Wholesale: ${formatPrice(p.wholesale_price || p.price)}</div>
+                    <p style="color: var(--text-medium); font-size: 0.85rem;">Stock: ${p.stock || 0} units</p>
+                    <a href="{{ url('/wholesale-product') }}?id=${encodeURIComponent(p.slug)}">View More</a>
+                </div>
+            `).join('');
+        }
+
+        async function loadWholesaleProducts() {
+            const loading = document.getElementById('wholesale-loading');
+            if (loading) loading.style.display = 'block';
+            try {
+                const res = await fetch('/api/wholesale-products');
+                if (!res.ok) throw new Error('Failed to load wholesale products');
+                const data = await res.json();
+                renderWholesaleProducts(data || []);
+            } catch (err) {
+                console.error(err);
+                if (loading) loading.textContent = 'Unable to load wholesale products right now.';
+            }
+        }
+
+        // Check if user is logged in to wholesale section
+        const wholesaleProductsSection = document.getElementById('wholesale-products-section');
+        const loginSection = document.getElementById('login-section');
+        
+        // Simple check - in production, use proper session/auth
+        const isWholesaleLoggedIn = localStorage.getItem('wholesaleLoggedIn') === 'true';
+        
+        if (isWholesaleLoggedIn && wholesaleProductsSection) {
+            wholesaleProductsSection.style.display = 'block';
+            if (loginSection) loginSection.style.display = 'none';
+            loadWholesaleProducts();
+        }
+
+        // Handle wholesale login form
+        const loginForm = document.getElementById('wholesale-login-form');
+        if (loginForm) {
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                // Simple demo login - in production, validate against backend
+                localStorage.setItem('wholesaleLoggedIn', 'true');
+                window.location.reload();
+            });
+        }
+
+        // Handle logout
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                localStorage.removeItem('wholesaleLoggedIn');
+                window.location.reload();
+            });
+        }
+    </script>
 </body>
 </html>

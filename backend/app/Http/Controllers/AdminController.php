@@ -7,6 +7,7 @@ use App\Models\WholesaleInquiry;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -156,11 +157,31 @@ class AdminController extends Controller
         return response()->json(['message' => 'Wholesale product deleted']);
     }
 
+    public function getWholesaleProductBySlug(string $slug)
+    {
+        $product = Product::where('slug', $slug)
+            ->where('is_wholesale', true)
+            ->firstOrFail();
+
+        return response()->json($product);
+    }
+
     // Retail Products Management
     public function getProducts()
     {
         $products = Product::where('is_wholesale', false)->orWhereNull('is_wholesale')->get();
         return response()->json($products);
+    }
+
+    public function getProductBySlug(string $slug)
+    {
+        $product = Product::where('slug', $slug)
+            ->where(function ($query) {
+                $query->where('is_wholesale', false)->orWhereNull('is_wholesale');
+            })
+            ->firstOrFail();
+
+        return response()->json($product);
     }
 
     public function createProduct(Request $request)
@@ -211,5 +232,17 @@ class AdminController extends Controller
         $product = Product::findOrFail($id);
         $product->delete();
         return response()->json(['message' => 'Product deleted']);
+    }
+
+    public function uploadProductImage(Request $request)
+    {
+        $data = $request->validate([
+            'image' => 'required|image|max:3072', // max ~3MB
+        ]);
+
+        $path = $request->file('image')->store('products', 'public');
+        return response()->json([
+            'path' => Storage::url($path),
+        ]);
     }
 }

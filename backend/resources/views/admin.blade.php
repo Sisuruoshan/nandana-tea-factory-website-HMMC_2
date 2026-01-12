@@ -184,9 +184,15 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="product-image">Image Path</label>
-                        <input type="text" id="product-image" placeholder="e.g., srs/black tea.jpg" required>
-                        <small>Enter the path to the image file</small>
+                        <label for="product-image">Product Image</label>
+                        <div class="upload-drop" id="product-image-drop" style="border:2px dashed var(--border-color);padding:16px;border-radius:8px;background:var(--card-bg);cursor:pointer;text-align:center;transition:all 0.3s;">
+                            <p style="margin:0 0 10px 0;font-size:0.95rem;color:var(--text-light);">Drag & drop image here or</p>
+                            <button type="button" class="btn btn-secondary" id="product-image-browse" style="margin-bottom:8px;">Select File</button>
+                            <input type="file" id="product-image-file" accept="image/*" style="display:none;" />
+                            <div id="product-image-status" style="font-size:0.85rem;color:var(--text-medium);margin-top:4px;">No file chosen</div>
+                        </div>
+                        <input type="text" id="product-image" placeholder="Stored image path" required style="margin-top:8px;" readonly>
+                        <small>Image will be uploaded and path filled automatically.</small>
                     </div>
 
                     <div class="form-group">
@@ -273,8 +279,15 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="ws-product-image">Image Path</label>
-                    <input type="text" id="ws-product-image" placeholder="e.g., srs/black tea.jpg" required>
+                    <label for="ws-product-image">Product Image</label>
+                    <div class="upload-drop" id="ws-product-image-drop" style="border:2px dashed var(--border-color);padding:16px;border-radius:8px;background:var(--card-bg);cursor:pointer;text-align:center;transition:all 0.3s;">
+                        <p style="margin:0 0 10px 0;font-size:0.95rem;color:var(--text-light);">Drag & drop image here or</p>
+                        <button type="button" class="btn btn-secondary" id="ws-product-image-browse" style="margin-bottom:8px;">Select File</button>
+                        <input type="file" id="ws-product-image-file" accept="image/*" style="display:none;" />
+                        <div id="ws-product-image-status" style="font-size:0.85rem;color:var(--text-medium);margin-top:4px;">No file chosen</div>
+                    </div>
+                    <input type="text" id="ws-product-image" placeholder="Stored image path" required style="margin-top:8px;" readonly>
+                    <small>Image will be uploaded and path filled automatically.</small>
                 </div>
 
                 <div class="form-group">
@@ -892,7 +905,7 @@
             }
         }
 
-        // Modal controls
+        // Modal controls (wrapped in DOM ready guard already; add helpers + null guards)
         const productModal = document.getElementById('product-modal');
         const wsProductModal = document.getElementById('ws-product-modal');
         const inquiryModal = document.getElementById('inquiry-modal');
@@ -900,49 +913,168 @@
         const addProductBtn = document.getElementById('add-product-btn');
         const addWsProductBtn = document.getElementById('add-ws-product-btn');
 
+        const openModal = (modal) => {
+            if (!modal) return;
+            modal.style.display = 'block';
+            requestAnimationFrame(() => modal.classList.add('show'));
+        };
+
+        const closeModal = (modal) => {
+            if (!modal) return;
+            modal.classList.remove('show');
+            setTimeout(() => modal.style.display = 'none', 150);
+        };
+
         if (addProductBtn) {
             addProductBtn.addEventListener('click', () => {
-                document.getElementById('modal-title').textContent = 'Add New Product';
-                document.getElementById('product-form').reset();
-                document.getElementById('product-id').value = '';
-                productModal.style.display = 'block';
+                const form = document.getElementById('product-form');
+                if (form) form.reset();
+                const idInput = document.getElementById('product-id');
+                if (idInput) idInput.value = '';
+                const title = document.getElementById('modal-title');
+                if (title) title.textContent = 'Add New Product';
+                const status = document.getElementById('product-image-status');
+                if (status) status.textContent = 'No file chosen';
+                const imageInput = document.getElementById('product-image');
+                if (imageInput) imageInput.value = '';
+                openModal(productModal);
             });
         }
 
         if (addWsProductBtn) {
             addWsProductBtn.addEventListener('click', () => {
-                document.getElementById('ws-modal-title').textContent = 'Add Wholesale Product';
-                document.getElementById('ws-product-form').reset();
-                document.getElementById('ws-product-id').value = '';
-                wsProductModal.style.display = 'block';
+                const form = document.getElementById('ws-product-form');
+                if (form) form.reset();
+                const idInput = document.getElementById('ws-product-id');
+                if (idInput) idInput.value = '';
+                const title = document.getElementById('ws-modal-title');
+                if (title) title.textContent = 'Add Wholesale Product';
+                const status = document.getElementById('ws-product-image-status');
+                if (status) status.textContent = 'No file chosen';
+                const imageInput = document.getElementById('ws-product-image');
+                if (imageInput) imageInput.value = '';
+                openModal(wsProductModal);
             });
         }
 
         // Close modals
         document.querySelectorAll('.close-modal').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                e.target.closest('.modal').style.display = 'none';
+                closeModal(e.target.closest('.modal'));
             });
         });
 
-        document.getElementById('cancel-btn').addEventListener('click', () => {
-            productModal.style.display = 'none';
+        const cancelBtn = document.getElementById('cancel-btn');
+        if (cancelBtn) cancelBtn.addEventListener('click', () => closeModal(productModal));
+
+        const wsCancelBtn = document.getElementById('ws-cancel');
+        if (wsCancelBtn) wsCancelBtn.addEventListener('click', () => closeModal(wsProductModal));
+
+        // File upload helpers for images
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+        function setupImageUpload(opts) {
+            const drop = document.getElementById(opts.dropId);
+            const fileInput = document.getElementById(opts.fileInputId);
+            const browseBtn = document.getElementById(opts.browseBtnId);
+            const status = document.getElementById(opts.statusId);
+            const pathInput = document.getElementById(opts.pathInputId);
+
+            if (!drop || !fileInput || !browseBtn || !status || !pathInput) return;
+
+            const uploadFile = (file) => {
+                if (!file) return;
+                status.textContent = 'Uploading...';
+                const formData = new FormData();
+                formData.append('image', file);
+
+                fetch('/api/products/upload-image', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: formData
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error('Upload failed');
+                    return res.json();
+                })
+                .then(data => {
+                    pathInput.value = data.path || '';
+                    status.textContent = 'Uploaded';
+                })
+                .catch(err => {
+                    console.error(err);
+                    status.textContent = 'Upload failed. Try again.';
+                });
+            };
+
+            drop.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                drop.style.borderColor = 'var(--accent-mint-green)';
+                drop.style.background = 'rgba(73, 202, 125, 0.1)';
+            });
+
+            drop.addEventListener('dragleave', () => {
+                drop.style.borderColor = 'var(--border-color)';
+                drop.style.background = 'var(--card-bg)';
+            });
+
+            drop.addEventListener('drop', (e) => {
+                e.preventDefault();
+                drop.style.borderColor = 'var(--border-color)';
+                drop.style.background = 'var(--card-bg)';
+                const file = e.dataTransfer.files?.[0];
+                uploadFile(file);
+            });
+
+            browseBtn.addEventListener('click', () => fileInput.click());
+            drop.addEventListener('click', () => fileInput.click());
+
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files?.[0];
+                uploadFile(file);
+            });
+        }
+
+        setupImageUpload({
+            dropId: 'product-image-drop',
+            fileInputId: 'product-image-file',
+            browseBtnId: 'product-image-browse',
+            statusId: 'product-image-status',
+            pathInputId: 'product-image'
         });
 
-        document.getElementById('ws-cancel').addEventListener('click', () => {
-            wsProductModal.style.display = 'none';
+        setupImageUpload({
+            dropId: 'ws-product-image-drop',
+            fileInputId: 'ws-product-image-file',
+            browseBtnId: 'ws-product-image-browse',
+            statusId: 'ws-product-image-status',
+            pathInputId: 'ws-product-image'
         });
 
-        // Inquiry modal controls
-        document.getElementById('save-inquiry-btn').addEventListener('click', sendInquiryReply);
-        document.getElementById('send-reply-btn').addEventListener('click', sendInquiryReply);
-        document.getElementById('inquiry-close').addEventListener('click', closeInquiryModal);
-        document.getElementById('inquiry-cancel').addEventListener('click', closeInquiryModal);
+        // Inquiry modal controls (guard nulls to avoid breaking other UI like add product)
+        const saveInquiryBtn = document.getElementById('save-inquiry-btn');
+        if (saveInquiryBtn) saveInquiryBtn.addEventListener('click', sendInquiryReply);
+
+        const sendReplyBtn = document.getElementById('send-reply-btn');
+        if (sendReplyBtn) sendReplyBtn.addEventListener('click', sendInquiryReply);
+
+        const inquiryCloseBtn = document.getElementById('inquiry-close');
+        if (inquiryCloseBtn) inquiryCloseBtn.addEventListener('click', closeInquiryModal);
+
+        const inquiryCancelBtn = document.getElementById('inquiry-cancel');
+        if (inquiryCancelBtn) inquiryCancelBtn.addEventListener('click', closeInquiryModal);
 
         // Wholesale Inquiry modal controls
-        document.getElementById('ws-send-reply-btn').addEventListener('click', sendWholesaleInquiryReply);
-        document.getElementById('ws-inquiry-close').addEventListener('click', closeWholesaleInquiryModal);
-        document.getElementById('ws-inquiry-cancel').addEventListener('click', closeWholesaleInquiryModal);
+        const wsSendReplyBtn = document.getElementById('ws-send-reply-btn');
+        if (wsSendReplyBtn) wsSendReplyBtn.addEventListener('click', sendWholesaleInquiryReply);
+
+        const wsInquiryCloseBtn = document.getElementById('ws-inquiry-close');
+        if (wsInquiryCloseBtn) wsInquiryCloseBtn.addEventListener('click', closeWholesaleInquiryModal);
+
+        const wsInquiryCancelBtn = document.getElementById('ws-inquiry-cancel');
+        if (wsInquiryCancelBtn) wsInquiryCancelBtn.addEventListener('click', closeWholesaleInquiryModal);
 
         // Refresh buttons
         const refreshWsInquiriesBtn = document.getElementById('refresh-ws-inquiries-btn');

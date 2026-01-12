@@ -37,6 +37,10 @@ Route::get('/product', function () {
     return view('product');
 });
 
+Route::get('/wholesale-product', function () {
+    return view('wholesale-product');
+});
+
 Route::get('/cart', function () {
     return view('cart');
 });
@@ -77,15 +81,18 @@ Route::post('/api/wholesale-inquiries/{id}/reply', [AdminController::class, 'rep
 
 // Wholesale Products API
 Route::get('/api/wholesale-products', [AdminController::class, 'getWholesaleProducts']);
+Route::get('/api/wholesale-products/slug/{slug}', [AdminController::class, 'getWholesaleProductBySlug']);
 Route::post('/api/wholesale-products', [AdminController::class, 'createWholesaleProduct']);
 Route::put('/api/wholesale-products/{id}', [AdminController::class, 'updateWholesaleProduct']);
 Route::delete('/api/wholesale-products/{id}', [AdminController::class, 'deleteWholesaleProduct']);
 
 // Retail Products API
 Route::get('/api/products', [AdminController::class, 'getProducts']);
+Route::get('/api/products/slug/{slug}', [AdminController::class, 'getProductBySlug']);
 Route::post('/api/products', [AdminController::class, 'createProduct']);
 Route::put('/api/products/{id}', [AdminController::class, 'updateProduct']);
 Route::delete('/api/products/{id}', [AdminController::class, 'deleteProduct']);
+Route::post('/api/products/upload-image', [AdminController::class, 'uploadProductImage']);
 
 Route::get('/wholesale-signup', function () {
     return view('wholesale-signup');
