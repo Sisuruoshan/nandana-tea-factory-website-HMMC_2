@@ -836,7 +836,7 @@
                             <i class="fa-solid fa-save"></i>
                             <span>Save Changes</span>
                         </button>
-                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/profile'">
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/'">
                             <i class="fa-solid fa-times"></i>
                             <span>Cancel</span>
                         </button>
