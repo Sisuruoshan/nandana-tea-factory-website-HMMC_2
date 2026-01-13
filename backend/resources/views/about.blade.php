@@ -32,8 +32,11 @@
 
     <main class="container">
         <section class="page-header1">
+            <br>
             <h1>About Nandana Tea Factory</h1>
             <p>Discover the rich heritage and unwavering commitment to quality that defines Nandana Tea Factory, a premier Sri Lankan tea manufacturer and distributor.</p>
+            <br>
+            <br>
         </section>
 
         <section class="about-section">

@@ -52,7 +52,10 @@
                     <div class="form-group"><input type="text" name="subject" placeholder="Enter the subject" required></div>
                     <div class="form-group"><textarea name="message" rows="5" placeholder="Enter your message" required></textarea></div>
                     <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Message</button>
+                
                 </form>
+                <br>
+                 <br>
                 <div id="form-status" style="margin-top: 1rem; display: none;"></div>
             </div>
             <div class="contact-info">
