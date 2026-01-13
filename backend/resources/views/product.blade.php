@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Product Details - Nandana Tea</title>
   <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     
@@ -32,7 +33,7 @@
                 <a href="#"><i class="fa-solid fa-magnifying-glass"></i></a>
             @endif
             @if($currentUser)
-                <a href="{{ url('/cart') }}"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
+                <a href="{{ url('/cart') }}" class="cart-icon"><i class="fa-solid fa-cart-shopping"></i> <span class="cart-count">0</span></a>
                 <div class="user-profile-dropdown">
                     <button class="avatar-btn" onclick="toggleUserMenu()" aria-label="Profile menu">
                         @if($currentUser->avatar)
@@ -160,14 +161,37 @@
         document.getElementById('pd-brew').innerHTML = renderBrewSteps(product.brewing_guide);
 
         const qtyInput = document.getElementById('pd-qty');
-        document.getElementById('pd-add').onclick = () => {
+        document.getElementById('pd-add').onclick = async () => {
             const qty = Math.max(1, parseInt(qtyInput.value || '1', 10));
-            const item = { id: product.id, slug: product.slug, name: product.name, price: Number(product.price), qty };
-            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-            const existing = cart.find(c => c.id === item.id);
-            if (existing) { existing.qty += qty; } else { cart.push(item); }
-            localStorage.setItem('cart', JSON.stringify(cart));
-            alert(`${product.name || 'Product'} added to cart (x${qty}).`);
+            
+            try {
+                const response = await fetch('/api/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    },
+                    body: JSON.stringify({
+                        product_id: product.id,
+                        quantity: qty
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert(`${product.name || 'Product'} added to cart (x${qty}).`);
+                    updateCartCount();
+                } else if (response.status === 401) {
+                    alert('Please login to add items to cart.');
+                    window.location.href = '/login';
+                } else {
+                    alert(data.error || 'Failed to add item to cart.');
+                }
+            } catch (error) {
+                console.error('Error adding to cart:', error);
+                alert('Failed to add item to cart. Please try again.');
+            }
         };
 
         document.getElementById('pd-order').onclick = () => {
@@ -198,7 +222,24 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', loadProduct);
+    async function updateCartCount() {
+        try {
+            const res = await fetch('/api/cart');
+            if (!res.ok) throw new Error('Failed to fetch cart');
+            const data = await res.json();
+            const items = Array.isArray(data?.items) ? data.items : [];
+            const badge = document.querySelector('.cart-count');
+            if (badge) badge.textContent = String(items.length);
+        } catch (err) {
+            const badge = document.querySelector('.cart-count');
+            if (badge) badge.textContent = '0';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadProduct();
+        updateCartCount();
+    });
     </script>
     @include('partials.footer')
     <script src="{{ asset('js/main.js') }}"></script>

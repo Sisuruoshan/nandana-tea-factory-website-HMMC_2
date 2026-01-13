@@ -205,8 +205,23 @@
             }
         }
 
+        async function updateCartCount() {
+            try {
+                const res = await fetch('/api/cart');
+                if (!res.ok) throw new Error('Failed to fetch cart');
+                const data = await res.json();
+                const items = Array.isArray(data?.items) ? data.items : [];
+                const badge = document.querySelector('.cart-count');
+                if (badge) badge.textContent = String(items.length);
+            } catch (err) {
+                const badge = document.querySelector('.cart-count');
+                if (badge) badge.textContent = '0';
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             loadProducts();
+            updateCartCount();
             const searchBar = document.getElementById('product-search');
             if (searchBar) {
                 searchBar.addEventListener('input', (e) => filterProducts(e.target.value));

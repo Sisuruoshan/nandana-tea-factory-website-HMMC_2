@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Wholesale Product Details - Nandana Tea</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -158,21 +159,36 @@
         document.getElementById('pd-brew').innerHTML = renderBrewSteps(product.brewing_guide);
 
         const qtyInput = document.getElementById('pd-qty');
-        document.getElementById('pd-add').onclick = () => {
+        document.getElementById('pd-add').onclick = async () => {
             const qty = Math.max(1, parseInt(qtyInput.value || '1', 10));
-            const item = { 
-                id: product.id, 
-                slug: product.slug, 
-                name: product.name, 
-                price: Number(product.wholesale_price || product.price), 
-                qty,
-                isWholesale: true
-            };
-            const cart = JSON.parse(localStorage.getItem('wholesaleCart') || '[]');
-            const existing = cart.find(c => c.id === item.id);
-            if (existing) { existing.qty += qty; } else { cart.push(item); }
-            localStorage.setItem('wholesaleCart', JSON.stringify(cart));
-            alert(`${product.name || 'Product'} added to wholesale cart (x${qty}).`);
+            
+            try {
+                const response = await fetch('/api/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    },
+                    body: JSON.stringify({
+                        product_id: product.id,
+                        quantity: qty
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert(`${product.name || 'Product'} added to cart (x${qty}).`);
+                } else if (response.status === 401) {
+                    alert('Please login to add items to cart.');
+                    window.location.href = '/login';
+                } else {
+                    alert(data.error || 'Failed to add item to cart.');
+                }
+            } catch (error) {
+                console.error('Error adding to cart:', error);
+                alert('Failed to add item to cart. Please try again.');
+            }
         };
 
         document.getElementById('pd-inquiry').onclick = () => {
