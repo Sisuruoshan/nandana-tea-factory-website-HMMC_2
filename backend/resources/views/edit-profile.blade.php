@@ -721,6 +721,7 @@
 
                 <!-- Edit Profile Form -->
                 <form id="edit-profile-form">
+                    @csrf
                     <!-- Personal Information Section -->
                     <div class="form-section">
                         <div class="form-section-header">
@@ -981,19 +982,52 @@
             const avatarFile = document.getElementById('avatar-file');
             const avatarPreview = document.getElementById('avatar-preview');
 
-            avatarFile.addEventListener('change', function(e) {
+            avatarFile.addEventListener('change', async function(e) {
                 const file = e.target.files[0];
                 if (file) {
-                    if (file.size > 2 * 1024 * 1024) {
-                        showAlert('Image size must be less than 2MB', 'error');
+                    if (file.size > 5 * 1024 * 1024) { // 5MB max
+                        showAlert('Image size must be less than 5MB', 'error');
                         return;
                     }
 
+                    // Preview the image immediately
                     const reader = new FileReader();
                     reader.onload = function(event) {
                         avatarPreview.src = event.target.result;
                     };
                     reader.readAsDataURL(file);
+
+                    // Upload to server
+                    const formData = new FormData();
+                    formData.append('avatar', file);
+
+                    try {
+                        showAlert('Uploading avatar...', 'info');
+                        
+                        const response = await fetch('/api/profile/upload-avatar', {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                            }
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            showAlert('Avatar updated successfully!', 'success');
+                            // Update avatar preview with the server URL
+                            if (data.avatar_url) {
+                                avatarPreview.src = data.avatar_url;
+                            }
+                        } else {
+                            showAlert(data.message || 'Failed to upload avatar', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error uploading avatar:', error);
+                        showAlert('Failed to upload avatar. Please try again.', 'error');
+                    }
                 }
             });
 
@@ -1042,6 +1076,7 @@
                         body: formData,
                         headers: {
                             'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
                         }
                     });
 
