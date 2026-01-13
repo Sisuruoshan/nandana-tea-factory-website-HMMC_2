@@ -382,9 +382,6 @@
             }
         @endphp
         <div class="header-icons" style="display:flex;align-items:center;gap:12px;">
-            @if(!$currentUser)
-                <a href="{{ url('/products') }}"><i class="fa-solid fa-shopping-cart"></i> Cart</a>
-            @endif
             @if($currentUser)
                 <div class="user-profile-dropdown">
                     <button class="avatar-btn" onclick="toggleUserMenu()" aria-label="Profile menu">
@@ -480,10 +477,86 @@
     <script>
     function formatPrice(v){return `Rs. ${parseFloat(v||0).toFixed(2)}`;}
 
-    function getCart(){return JSON.parse(localStorage.getItem('cart')||'[]');}
+    // Fetch cart from backend
+    async function fetchCart() {
+        try {
+            const response = await fetch('/api/cart');
+            if (!response.ok) {
+                if (response.status === 401) {
+                    window.location.href = '/login';
+                    return null;
+                }
+                throw new Error('Failed to fetch cart');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching cart:', error);
+            return null;
+        }
+    }
 
-    function renderCart(){
-        const items = getCart();
+    async function updateQuantity(itemId, quantity) {
+        try {
+            const response = await fetch(`/api/cart/items/${itemId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                body: JSON.stringify({ quantity })
+            });
+            
+            if (!response.ok) throw new Error('Failed to update quantity');
+            return await response.json();
+        } catch (error) {
+            console.error('Error updating quantity:', error);
+            alert('Failed to update quantity. Please try again.');
+            return null;
+        }
+    }
+
+    async function removeItem(itemId) {
+        try {
+            const response = await fetch(`/api/cart/items/${itemId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                }
+            });
+            
+            if (!response.ok) throw new Error('Failed to remove item');
+            return await response.json();
+        } catch (error) {
+            console.error('Error removing item:', error);
+            alert('Failed to remove item. Please try again.');
+            return null;
+        }
+    }
+
+    async function clearCart() {
+        try {
+            const response = await fetch('/api/cart/clear', {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                }
+            });
+            
+            if (!response.ok) throw new Error('Failed to clear cart');
+            return await response.json();
+        } catch (error) {
+            console.error('Error clearing cart:', error);
+            alert('Failed to clear cart. Please try again.');
+            return null;
+        }
+    }
+
+    async function renderCart(){
+        const cartData = await fetchCart();
+        
+        if (!cartData) return;
+        
+        const items = cartData.items || [];
         const itemsContainer = document.getElementById('cart-items');
         const emptyEl = document.getElementById('cart-empty');
         const summaryEl = document.getElementById('cart-summary');
@@ -505,76 +578,79 @@
         emptyEl.style.display = 'none';
         summaryEl.style.display = 'block';
         
-        const totalItems = items.reduce((sum, i) => sum + i.qty, 0);
+        const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
         countInfoEl.textContent = `${totalItems} item${totalItems !== 1 ? 's' : ''} in cart`;
         
-        itemsContainer.innerHTML = items.map((it, idx) => `
+        itemsContainer.innerHTML = items.map((it) => `
             <div class="cart-item-card" data-id="${it.id}">
                 <div class="cart-item-image">
-                    ${it.image ? `<img src="${escapeHtml(it.image)}" alt="${escapeHtml(it.name)}">` : `<i class="fa-solid fa-leaf"></i>`}
+                    ${it.product_image ? `<img src="${escapeHtml(it.product_image)}" alt="${escapeHtml(it.product_name)}">` : `<i class="fa-solid fa-leaf"></i>`}
                 </div>
                 <div class="cart-item-details">
-                    <h3>${escapeHtml(it.name)}</h3>
-                    <p>${it.category ? escapeHtml(it.category) : 'Premium Tea'}</p>
+                    <h3>${escapeHtml(it.product_name)}</h3>
+                    <p>Premium Tea</p>
                 </div>
                 <div class="cart-item-price">${formatPrice(it.price)}</div>
                 <div class="cart-item-quantity">
-                    <button class="qty-btn qty-decrease" data-idx="${idx}">
+                    <button class="qty-btn qty-decrease" data-item-id="${it.id}" data-qty="${it.quantity}">
                         <i class="fa-solid fa-minus"></i>
                     </button>
-                    <input type="number" min="1" value="${it.qty}" data-idx="${idx}" class="cart-qty-input" readonly>
-                    <button class="qty-btn qty-increase" data-idx="${idx}">
+                    <input type="number" min="1" value="${it.quantity}" data-item-id="${it.id}" class="cart-qty-input" readonly>
+                    <button class="qty-btn qty-increase" data-item-id="${it.id}" data-qty="${it.quantity}">
                         <i class="fa-solid fa-plus"></i>
                     </button>
                 </div>
-                <div class="cart-item-total">${formatPrice(it.price * it.qty)}</div>
-                <button class="cart-item-remove" data-idx="${idx}" title="Remove item">
+                <div class="cart-item-total">${formatPrice(it.subtotal)}</div>
+                <button class="cart-item-remove" data-item-id="${it.id}" data-name="${escapeHtml(it.product_name)}" title="Remove item">
                     <i class="fa-solid fa-trash-alt"></i>
                 </button>
             </div>
         `).join('');
 
-        // Calculate subtotal and total
-        const subtotal = items.reduce((s, i) => s + (i.price * i.qty), 0);
-        subtotalEl.textContent = formatPrice(subtotal);
-        totalEl.textContent = formatPrice(subtotal);
+        // Display totals
+        subtotalEl.textContent = formatPrice(cartData.total);
+        totalEl.textContent = formatPrice(cartData.total);
 
         // Wire up quantity buttons
         document.querySelectorAll('.qty-increase').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const idx = parseInt(btn.dataset.idx, 10);
-                const cart = getCart();
-                cart[idx].qty++;
-                localStorage.setItem('cart', JSON.stringify(cart));
-                renderCart();
-                window.updateCartCount && window.updateCartCount();
+            btn.addEventListener('click', async (e) => {
+                const itemId = parseInt(btn.dataset.itemId, 10);
+                const currentQty = parseInt(btn.dataset.qty, 10);
+                const newQty = currentQty + 1;
+                
+                const result = await updateQuantity(itemId, newQty);
+                if (result) {
+                    await renderCart();
+                }
             });
         });
 
         document.querySelectorAll('.qty-decrease').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const idx = parseInt(btn.dataset.idx, 10);
-                const cart = getCart();
-                if (cart[idx].qty > 1) {
-                    cart[idx].qty--;
-                    localStorage.setItem('cart', JSON.stringify(cart));
-                    renderCart();
-                    window.updateCartCount && window.updateCartCount();
+            btn.addEventListener('click', async (e) => {
+                const itemId = parseInt(btn.dataset.itemId, 10);
+                const currentQty = parseInt(btn.dataset.qty, 10);
+                
+                if (currentQty > 1) {
+                    const newQty = currentQty - 1;
+                    const result = await updateQuantity(itemId, newQty);
+                    if (result) {
+                        await renderCart();
+                    }
                 }
             });
         });
 
         // Wire up remove buttons
         document.querySelectorAll('.cart-item-remove').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const idx = parseInt(btn.dataset.idx, 10);
-                const cart = getCart();
-                const itemName = cart[idx].name;
+            btn.addEventListener('click', async () => {
+                const itemId = parseInt(btn.dataset.itemId, 10);
+                const itemName = btn.dataset.name;
+                
                 if (confirm(`Remove "${itemName}" from cart?`)) {
-                    cart.splice(idx, 1);
-                    localStorage.setItem('cart', JSON.stringify(cart));
-                    renderCart();
-                    window.updateCartCount && window.updateCartCount();
+                    const result = await removeItem(itemId);
+                    if (result) {
+                        await renderCart();
+                    }
                 }
             });
         });
@@ -590,23 +666,36 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+        // Add CSRF token to meta tag if not present
+        if (!document.querySelector('meta[name="csrf-token"]')) {
+            const meta = document.createElement('meta');
+            meta.name = 'csrf-token';
+            meta.content = '{{ csrf_token() }}';
+            document.head.appendChild(meta);
+        }
+        
         renderCart();
         
-        document.getElementById('clear-cart').addEventListener('click', () => {
+        document.getElementById('clear-cart').addEventListener('click', async () => {
             if (!confirm('Are you sure you want to clear your cart? This action cannot be undone.')) return;
-            localStorage.removeItem('cart');
-            renderCart();
-            window.updateCartCount && window.updateCartCount();
+            
+            const result = await clearCart();
+            if (result) {
+                await renderCart();
+            }
         });
         
-        document.getElementById('checkout').addEventListener('click', () => {
-            const cart = getCart();
-            if (cart.length === 0) return alert('Cart is empty');
+        document.getElementById('checkout').addEventListener('click', async () => {
+            const cartData = await fetchCart();
+            
+            if (!cartData || cartData.items.length === 0) {
+                alert('Cart is empty');
+                return;
+            }
             
             // Simple checkout: open mail client with order summary
-            const lines = cart.map(i => `${i.qty} x ${i.name} - ${formatPrice(i.price * i.qty)}`);
-            const subtotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-            const body = `Thank you for your order!\n\n--- ORDER SUMMARY ---\n\n${lines.join('\n')}\n\n--- TOTAL ---\nSubtotal: ${formatPrice(subtotal)}\nShipping: To be calculated\nTaxes: To be calculated\n\nTotal: ${formatPrice(subtotal)}\n\nPlease reply with your delivery address and preferred payment method.`;
+            const lines = cartData.items.map(i => `${i.quantity} x ${i.product_name} - ${formatPrice(i.subtotal)}`);
+            const body = `Thank you for your order!\n\n--- ORDER SUMMARY ---\n\n${lines.join('\n')}\n\n--- TOTAL ---\nSubtotal: ${formatPrice(cartData.total)}\nShipping: To be calculated\nTaxes: To be calculated\n\nTotal: ${formatPrice(cartData.total)}\n\nPlease reply with your delivery address and preferred payment method.`;
             const mailto = `mailto:info@nandanatea.com?subject=${encodeURIComponent('New Order from Nandana Tea')}&body=${encodeURIComponent(body)}`;
             window.location.href = mailto;
         });

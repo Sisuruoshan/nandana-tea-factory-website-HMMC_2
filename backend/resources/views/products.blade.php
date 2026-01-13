@@ -36,13 +36,13 @@
                 <button id="search-btn" class="icon-btn" type="button" onclick="toggleSearch()">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
-                <a href="{{ url('/cart') }}" class="cart-icon">
-                <i class="fa-solid fa-shopping-cart"></i>
-                <span class="cart-count">0</span>
-                </a>
             </div>
         @endif
         @if($currentUser)
+            <a href="{{ url('/cart') }}" class="cart-icon" style="margin-right: 12px;">
+                <i class="fa-solid fa-shopping-cart"></i>
+                <span class="cart-count">0</span>
+            </a>
             <div class="user-profile-dropdown">
                 <button class="avatar-btn" onclick="toggleUserMenu()" aria-label="Profile menu">
                     @if($currentUser->avatar)

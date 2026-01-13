@@ -7,6 +7,7 @@ use App\Http\Controllers\WholesaleController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CartController;
 
 Route::get('/', function () {
     return view('index');
@@ -42,8 +43,14 @@ Route::get('/wholesale-product', function () {
     return view('wholesale-product');
 });
 
-Route::get('/cart', function () {
-    return view('cart');
+// Cart routes - require authentication
+Route::middleware(['user.session'])->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart');
+    Route::post('/api/cart/add', [CartController::class, 'addToCart']);
+    Route::put('/api/cart/items/{itemId}', [CartController::class, 'updateQuantity']);
+    Route::delete('/api/cart/items/{itemId}', [CartController::class, 'removeItem']);
+    Route::delete('/api/cart/clear', [CartController::class, 'clearCart']);
+    Route::get('/api/cart', [CartController::class, 'getCartData']);
 });
 
 Route::get('/wholesale', function () {

@@ -28,6 +28,6 @@ class AuthController extends Controller
         $request->session()->put('user_signup_name', $user->name);
         $request->session()->put('is_logged_in', true);
 
-        return redirect('/')->with('success', 'Signed in successfully.');
+        return redirect('/cart')->with('success', 'Signed in successfully.');
     }
 }

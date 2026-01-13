@@ -28,10 +28,10 @@
         @endphp
         <div class="header-icons" style="display:flex;align-items:center;gap:12px;">
             @if(!$currentUser)
-                <a href="{{ url('/cart') }}"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
                 <a href="#"><i class="fa-solid fa-magnifying-glass"></i></a>
             @endif
             @if($currentUser)
+                <a href="{{ url('/cart') }}"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
                 <div class="user-profile-dropdown">
                     <button class="avatar-btn" onclick="toggleUserMenu()" aria-label="Profile menu">
                         @if($currentUser->avatar)
