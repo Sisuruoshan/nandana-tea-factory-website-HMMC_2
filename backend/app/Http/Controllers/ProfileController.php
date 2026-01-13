@@ -87,8 +87,26 @@ class ProfileController extends Controller
             'email' => 'required|email|unique:user_signups,email,' . $user->id,
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
+            'current_password' => 'nullable|string',
             'password' => 'nullable|string|min:8|confirmed',
         ]);
+
+        // If password change is requested, verify current password
+        if (!empty($validated['password'])) {
+            if (empty($validated['current_password'])) {
+                return response()->json(
+                    ['message' => 'Current password is required to change your password', 'errors' => ['current_password' => 'Current password is required']],
+                    422
+                );
+            }
+
+            if (!Hash::check($validated['current_password'], $user->password)) {
+                return response()->json(
+                    ['message' => 'Current password is incorrect', 'errors' => ['current_password' => 'Current password does not match']],
+                    422
+                );
+            }
+        }
 
         // Update basic info
         $user->name = $validated['name'];

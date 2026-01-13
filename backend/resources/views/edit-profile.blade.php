@@ -798,6 +798,21 @@
                             </div>
                             <h3 class="form-section-title">Security & Password</h3>
                         </div>
+                        <div class="form-grid single">
+                            <div class="form-group password-field">
+                                <label class="form-label">
+                                    Current Password
+                                </label>
+                                <input type="password" id="current-password" name="current_password" class="form-input" placeholder="Enter your current password">
+                                <button type="button" class="password-toggle-btn" onclick="togglePassword('current-password', this)">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                                <span class="form-hint" id="current-password-msg">
+                                    <i class="fa-solid fa-lock"></i>
+                                    Required only if changing your password
+                                </span>
+                            </div>
+                        </div>
                         <div class="form-grid">
                             <div class="form-group password-field">
                                 <label class="form-label">
@@ -819,7 +834,7 @@
                                 <label class="form-label">
                                     Confirm New Password
                                 </label>
-                                <input type="password" id="confirm-password" name="confirm_password" class="form-input" placeholder="Confirm new password">
+                                <input type="password" id="confirm-password" name="password_confirmation" class="form-input" placeholder="Confirm new password">
                                 <button type="button" class="password-toggle-btn" onclick="togglePassword('confirm-password', this)">
                                     <i class="fa-solid fa-eye"></i>
                                 </button>
@@ -1045,6 +1060,7 @@
             // Form submission
             const form = document.getElementById('edit-profile-form');
             const saveBtn = document.getElementById('save-btn');
+            const currentPasswordInput = document.getElementById('current-password');
 
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
@@ -1052,8 +1068,13 @@
                 // Validate passwords if provided
                 const newPass = newPasswordInput.value;
                 const confirmPass = confirmPasswordInput.value;
+                const currentPass = currentPasswordInput.value;
 
                 if (newPass || confirmPass) {
+                    if (!currentPass) {
+                        showAlert('Current password is required to change your password', 'error');
+                        return;
+                    }
                     if (newPass !== confirmPass) {
                         showAlert('Passwords do not match', 'error');
                         return;
