@@ -29,11 +29,11 @@
             }
         @endphp
         <div class="header-icons" style="display:flex;align-items:center;gap:12px;">
-            @if(!$currentUser)
-                <a href="#"><i class="fa-solid fa-magnifying-glass"></i></a>
-            @endif
             @if($currentUser)
-                <a href="{{ url('/cart') }}" class="cart-icon"><i class="fa-solid fa-cart-shopping"></i> <span class="cart-count">0</span></a>
+                <a href="{{ url('/cart') }}" class="cart-icon" style="margin-right: 12px;">
+                    <i class="fa-solid fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
                 <div class="user-profile-dropdown">
                     <button class="avatar-btn" onclick="toggleUserMenu()" aria-label="Profile menu">
                         @if($currentUser->avatar)
@@ -228,8 +228,10 @@
             if (!res.ok) throw new Error('Failed to fetch cart');
             const data = await res.json();
             const items = Array.isArray(data?.items) ? data.items : [];
+            // Sum up all quantities instead of just counting unique products
+            const totalQuantity = items.reduce((sum, item) => sum + (item.quantity || 0), 0);
             const badge = document.querySelector('.cart-count');
-            if (badge) badge.textContent = String(items.length);
+            if (badge) badge.textContent = String(totalQuantity);
         } catch (err) {
             const badge = document.querySelector('.cart-count');
             if (badge) badge.textContent = '0';

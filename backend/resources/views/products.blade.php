@@ -211,8 +211,10 @@
                 if (!res.ok) throw new Error('Failed to fetch cart');
                 const data = await res.json();
                 const items = Array.isArray(data?.items) ? data.items : [];
+                // Sum up all quantities instead of just counting unique products
+                const totalQuantity = items.reduce((sum, item) => sum + (item.quantity || 0), 0);
                 const badge = document.querySelector('.cart-count');
-                if (badge) badge.textContent = String(items.length);
+                if (badge) badge.textContent = String(totalQuantity);
             } catch (err) {
                 const badge = document.querySelector('.cart-count');
                 if (badge) badge.textContent = '0';

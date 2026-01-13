@@ -1009,22 +1009,28 @@ function escapeHtml(str) {
 document.addEventListener('DOMContentLoaded', initializeInquiryManagement);
 
 /**
- * Cart helpers: update cart count in header and listen for storage changes
+ * Cart helpers: update cart count in header from API
  */
-function updateCartCount() {
-    const countEls = document.querySelectorAll('.cart-count');
-    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const totalQty = cart.reduce((s, i) => s + (parseInt(i.qty, 10) || 0), 0);
-    countEls.forEach(el => el.textContent = totalQty);
+async function updateCartCount() {
+    try {
+        const res = await fetch('/api/cart');
+        if (!res.ok) throw new Error('Failed to fetch cart');
+        const data = await res.json();
+        const items = Array.isArray(data?.items) ? data.items : [];
+        // Sum up all quantities instead of just counting unique products
+        const totalQuantity = items.reduce((sum, item) => sum + (item.quantity || 0), 0);
+        const countEls = document.querySelectorAll('.cart-count');
+        countEls.forEach(el => el.textContent = String(totalQuantity));
+    } catch (err) {
+        // If API fails (not logged in), set count to 0
+        const countEls = document.querySelectorAll('.cart-count');
+        countEls.forEach(el => el.textContent = '0');
+    }
 }
 
 window.updateCartCount = updateCartCount;
 
-// Update count on storage change (other tabs) and on load
-window.addEventListener('storage', (e) => {
-    if (e.key === 'cart') updateCartCount();
-});
-
+// Update count on page load
 document.addEventListener('DOMContentLoaded', () => {
     updateCartCount();
 });
