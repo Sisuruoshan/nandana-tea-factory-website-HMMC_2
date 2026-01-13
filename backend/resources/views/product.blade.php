@@ -106,17 +106,6 @@
         </section>
     </main>
 
-    <footer>
-        <div class="container footer-content">
-            <p>© 2025 Nandana Tea Factory. All rights reserved.</p>
-            <div class="footer-links">
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-                <a href="{{ url('/contact') }}">Contact Us</a>
-            </div>
-        </div>
-    </footer>
-
     <script>
     const placeholderImage = 'https://via.placeholder.com/400x320?text=Tea';
     const contactUrl = "{{ url('/contact') }}";
