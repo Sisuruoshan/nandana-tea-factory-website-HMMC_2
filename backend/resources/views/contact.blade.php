@@ -86,6 +86,8 @@
                     <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Message</button>
                 
                 </form>
+                <br>
+                <br>
                 <div id="form-status" style="margin-top: 1rem; display: none;"></div>
             </div>
             <div class="contact-info">
@@ -107,6 +109,7 @@
                     <div class="social-icons">
                         <a href="https://www.facebook.com/share/1Ay4bEF4K6/"><i class="fab fa-facebook-f"></i></a>
                         <a href="https://www.instagram.com/nandanatea?igsh=MTJsd3h5ZXpyaGFmbQ=="><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.youtube.com/@nandanatea735"><i class="fab fa-youtube"></i></a>
                     </div>
                 </div>
             </div>

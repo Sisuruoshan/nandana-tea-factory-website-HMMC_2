@@ -319,7 +319,10 @@ nav a:hover {
     text-align: center;
     padding: 8rem 1rem 2rem 1rem; 
     background-color:var(--secondary-dark-green);
-    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../srs/Factory.webp');
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../images/Factory.webp');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
    
     
 }
