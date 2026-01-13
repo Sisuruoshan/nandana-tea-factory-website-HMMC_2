@@ -65,9 +65,7 @@ Route::get('/signup', function () {
 
 Route::post('/signup', [SignupController::class, 'store']);
 
-Route::get('/login', function () {
-    return view('user-login');
-});
+Route::get('/login', [AuthController::class, 'showLoginForm']);
 
 Route::post('/login', [AuthController::class, 'login']);
 

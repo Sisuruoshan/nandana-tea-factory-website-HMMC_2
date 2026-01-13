@@ -93,6 +93,7 @@
 
         <form method="POST" action="{{ url('/login') }}" id="login-form">
             @csrf
+            <input type="hidden" name="redirect" value="{{ $redirect ?? session('intended_url', '/') }}">
             <div class="form-group">
                 <label>Email</label>
                 <input type="email" name="email" value="{{ old('email') }}" required>
