@@ -14,6 +14,7 @@ class UserSignup extends Model
         'password',
         'phone',
         'address',
+        'avatar',
     ];
 
     protected $hidden = [

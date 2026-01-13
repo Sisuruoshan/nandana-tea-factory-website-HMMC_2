@@ -19,18 +19,54 @@
             <a href="{{ url('/contact') }}">Contact</a>
         </nav>
 
-    <div class="header-icons">
-        <!-- Search Button -->
-        <div class="search-cart-container">
-            <input type="text" id="product-search" placeholder="Search products..." class="search-bar" aria-label="Search products" />
-            <button id="search-btn" class="icon-btn" type="button" onclick="toggleSearch()">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            </button>
-            <a href="{{ url('/cart') }}" class="cart-icon">
-            <i class="fa-solid fa-shopping-cart"></i>
-            <span class="cart-count">0</span>
-            </a>
-        </div>
+    @php
+        $currentUser = null;
+        if (session()->has('user_signup_id')) {
+            $currentUser = \App\Models\UserSignup::find(session()->get('user_signup_id'));
+        }
+        if (!$currentUser && auth()->check()) {
+            $currentUser = auth()->user();
+        }
+    @endphp
+    <div class="header-icons" style="display:flex;align-items:center;gap:12px;">
+        @if(!$currentUser)
+            <!-- Search Button (hidden when logged in) -->
+            <div class="search-cart-container">
+                <input type="text" id="product-search" placeholder="Search products..." class="search-bar" aria-label="Search products" />
+                <button id="search-btn" class="icon-btn" type="button" onclick="toggleSearch()">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+                <a href="{{ url('/cart') }}" class="cart-icon">
+                <i class="fa-solid fa-shopping-cart"></i>
+                <span class="cart-count">0</span>
+                </a>
+            </div>
+        @endif
+        @if($currentUser)
+            <div class="user-profile-dropdown">
+                <button class="avatar-btn" onclick="toggleUserMenu()" aria-label="Profile menu">
+                    @if($currentUser->avatar)
+                        <img src="{{ asset('storage/' . $currentUser->avatar) }}" alt="Profile Avatar" class="avatar-image">
+                    @else
+                        <i class="fa-solid fa-user-circle"></i>
+                    @endif
+                </button>
+                <div class="user-menu" id="userMenu">
+                    <a href="{{ url('/edit-profile') }}" class="user-menu-item">
+                        <i class="fa-solid fa-edit"></i> Edit Profile
+                    </a>
+                    <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+                        @csrf
+                        <button type="submit" class="user-menu-item logout-btn">
+                            <i class="fa-solid fa-sign-out-alt"></i> Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        @else
+            <a href="{{ url('/login') }}" title="Login"><i class="fa-solid fa-user"></i></a>
+        @endif
+    </div>
         <script>
             function toggleSearch() {
                 const searchBar = document.getElementById('product-search');

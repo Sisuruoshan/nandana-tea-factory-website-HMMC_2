@@ -19,9 +19,40 @@
             <a href="{{ url('/contact') }}">Contact</a>
         </nav>
 
+        @php
+            $currentUser = null;
+            if (session()->has('user_signup_id')) {
+                $currentUser = \App\Models\UserSignup::find(session()->get('user_signup_id'));
+            }
+            if (!$currentUser && auth()->check()) {
+                $currentUser = auth()->user();
+            }
+        @endphp
         <div class="header-icons">
-            <a href="#"><i class="fa-solid fa-user"></i></a>
-        </div>
+            @if($currentUser)
+                <div class="user-profile-dropdown">
+                    <button class="avatar-btn" onclick="toggleUserMenu()" aria-label="Profile menu">
+                        @if($currentUser->avatar)
+                            <img src="{{ asset('storage/' . $currentUser->avatar) }}" alt="Profile Avatar" class="avatar-image">
+                        @else
+                            <i class="fa-solid fa-user-circle"></i>
+                        @endif
+                    </button>
+                    <div class="user-menu" id="userMenu">
+                        <a href="{{ url('/edit-profile') }}" class="user-menu-item">
+                            <i class="fa-solid fa-edit"></i> Edit Profile
+                        </a>
+                        <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+                            @csrf
+                            <button type="submit" class="user-menu-item logout-btn">
+                                <i class="fa-solid fa-sign-out-alt"></i> Logout
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @else
+                <a href="{{ url('/login') }}" title="Login"><i class="fa-solid fa-user"></i></a>
+            @endif
         </div>
         <div class="hamburger-menu">
             <span class="bar"></span>
@@ -32,8 +63,11 @@
 
     <main class="container">
         <section class="page-header1">
+            <br>
             <h1>About Nandana Tea Factory</h1>
             <p>Discover the rich heritage and unwavering commitment to quality that defines Nandana Tea Factory, a premier Sri Lankan tea manufacturer and distributor.</p>
+            <br>
+            <br>
         </section>
 
         <section class="about-section">

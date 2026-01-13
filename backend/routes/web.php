@@ -69,6 +69,7 @@ Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
 Route::get('/edit-profile', [ProfileController::class, 'edit'])->name('edit-profile');
 Route::get('/api/profile', [ProfileController::class, 'getProfile']);
 Route::post('/api/profile/update', [ProfileController::class, 'update']);
+Route::post('/api/profile/upload-avatar', [ProfileController::class, 'uploadAvatar']);
 Route::post('/logout', [ProfileController::class, 'logout'])->name('logout');
 
 Route::get('/admin-login', function () {

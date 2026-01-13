@@ -3,7 +3,43 @@
  * Professional scripts for navigation, mobile menu, and admin interactivity.
  */
 
+// Ensure login icon is hidden when user dropdown is present
+function hideLoginIconIfLoggedIn() {
+    const userDropdown = document.querySelector('.user-profile-dropdown');
+    const loginLink = document.querySelector('.header-icons a[href="/login"]');
+    if (userDropdown && loginLink) {
+        loginLink.style.display = 'none';
+        loginLink.style.visibility = 'hidden';
+        loginLink.style.width = '0';
+        loginLink.style.height = '0';
+        loginLink.style.overflow = 'hidden';
+    }
+}
+
+// User profile dropdown toggle
+function toggleUserMenu() {
+    const userMenu = document.getElementById('userMenu');
+    if (userMenu) {
+        userMenu.classList.toggle('active');
+    }
+}
+
+// Close user menu when clicking outside
+document.addEventListener('click', function(event) {
+    const userMenu = document.getElementById('userMenu');
+    const avatarBtn = document.querySelector('.avatar-btn');
+    
+    if (userMenu && avatarBtn) {
+        if (!event.target.closest('.user-profile-dropdown')) {
+            userMenu.classList.remove('active');
+        }
+    }
+});
+
 document.addEventListener('DOMContentLoaded', () => {
+    // Hide login icon if user is logged in
+    hideLoginIconIfLoggedIn();
+    
     // Select essential DOM elements
     const header = document.querySelector('header');
     const hamburger = document.querySelector('.hamburger-menu');

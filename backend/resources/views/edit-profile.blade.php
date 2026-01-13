@@ -339,15 +339,37 @@
             <a href="{{ url('/about') }}">About Us</a>
             <a href="{{ url('/contact') }}">Contact</a>
         </nav>
+        @php
+            $currentUser = null;
+            if (session()->has('user_signup_id')) {
+                $currentUser = \App\Models\UserSignup::find(session()->get('user_signup_id'));
+            }
+            if (!$currentUser && auth()->check()) {
+                $currentUser = auth()->user();
+            }
+        @endphp
         <div class="header-icons">
-            @if(session()->has('user_signup_id'))
-                <a href="{{ url('/profile') }}" title="My Profile"><i class="fa-solid fa-user"></i></a>
-                <form action="{{ route('logout') }}" method="POST" style="display: inline;">
-                    @csrf
-                    <button type="submit" title="Logout" style="background: none; border: none; color: inherit; cursor: pointer; font-size: 1.2rem; padding: 0.5rem;">
-                        <i class="fa-solid fa-sign-out-alt"></i>
+            @if($currentUser)
+                <div class="user-profile-dropdown">
+                    <button class="avatar-btn" onclick="toggleUserMenu()" aria-label="Profile menu">
+                        @if($currentUser->avatar)
+                            <img src="{{ asset('storage/' . $currentUser->avatar) }}" alt="Profile Avatar" class="avatar-image">
+                        @else
+                            <i class="fa-solid fa-user-circle"></i>
+                        @endif
                     </button>
-                </form>
+                    <div class="user-menu" id="userMenu">
+                        <a href="{{ url('/edit-profile') }}" class="user-menu-item">
+                            <i class="fa-solid fa-edit"></i> Edit Profile
+                        </a>
+                        <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+                            @csrf
+                            <button type="submit" class="user-menu-item logout-btn">
+                                <i class="fa-solid fa-sign-out-alt"></i> Logout
+                            </button>
+                        </form>
+                    </div>
+                </div>
             @else
                 <a href="{{ url('/login') }}" title="Login"><i class="fa-solid fa-user"></i></a>
             @endif
@@ -377,7 +399,7 @@
                 <!-- Profile Header -->
                 <div class="edit-profile-header">
                     <div class="profile-avatar">
-                        <img id="avatar-preview" src="srs/avatar-placeholder.png" alt="Profile Avatar">
+                        <img id="avatar-preview" src="@if($user && $user->avatar){{ asset('storage/' . $user->avatar) }}@else{{ asset('srs/avatar-placeholder.png') }}@endif" alt="Profile Avatar">
                         <button type="button" class="avatar-upload-btn" title="Upload new avatar">
                             <i class="fa-solid fa-camera"></i>
                         </button>
@@ -637,7 +659,7 @@
 
                         // Load avatar if exists
                         if (user.avatar) {
-                            avatarPreview.src = user.avatar;
+                            avatarPreview.src = '/storage/' + user.avatar;
                         }
                     }
                 } catch (error) {

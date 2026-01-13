@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\UserSignup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -108,6 +109,38 @@ class ProfileController extends Controller
         return response()->json([
             'message' => 'Profile updated successfully',
             'user' => $user
+        ]);
+    }
+
+    /**
+     * Upload user avatar
+     */
+    public function uploadAvatar(Request $request)
+    {
+        if (!$this->checkAuth()) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $request->validate([
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB max
+        ]);
+
+        $user = $this->getAuthUser();
+
+        // Delete old avatar if exists
+        if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+            Storage::disk('public')->delete($user->avatar);
+        }
+
+        // Store new avatar
+        $path = $request->file('avatar')->store('avatars', 'public');
+        
+        $user->avatar = $path;
+        $user->save();
+
+        return response()->json([
+            'message' => 'Avatar uploaded successfully',
+            'avatar_url' => Storage::url($path)
         ]);
     }
 

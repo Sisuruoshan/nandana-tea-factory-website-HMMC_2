@@ -26,6 +26,7 @@ class AuthController extends Controller
         // Lightweight session login (non-guard)
         $request->session()->put('user_signup_id', $user->id);
         $request->session()->put('user_signup_name', $user->name);
+        $request->session()->put('is_logged_in', true);
 
         return redirect('/')->with('success', 'Signed in successfully.');
     }
