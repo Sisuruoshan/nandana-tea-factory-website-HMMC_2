@@ -29,15 +29,13 @@
         }
     @endphp
     <div class="header-icons" style="display:flex;align-items:center;gap:12px;">
-        @if(!$currentUser)
-            <!-- Search Button (hidden when logged in) -->
-            <div class="search-cart-container">
-                <input type="text" id="product-search" placeholder="Search products..." class="search-bar" aria-label="Search products" />
-                <button id="search-btn" class="icon-btn" type="button" onclick="toggleSearch()">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
-            </div>
-        @endif
+        <!-- Search Button (always visible) -->
+        <div class="search-cart-container">
+            <input type="text" id="product-search" placeholder="Search products..." class="search-bar" aria-label="Search products" />
+            <button id="search-btn" class="icon-btn" type="button" onclick="toggleSearch()">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+        </div>
         @if($currentUser)
             <a href="{{ url('/cart') }}" class="cart-icon" style="margin-right: 12px;">
                 <i class="fa-solid fa-shopping-cart"></i>

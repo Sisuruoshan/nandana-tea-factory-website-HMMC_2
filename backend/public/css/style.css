@@ -193,7 +193,8 @@ nav a:hover {
 
 .user-menu {
     position: absolute;
-    top: 50px;
+    /* Align dropdown snugly under the 40px avatar (reduce gap) */
+    top: 44px;
     right: 0;
     background: var(--secondary-dark-green);
     border: 1px solid var(--border-color);
@@ -204,6 +205,12 @@ nav a:hover {
     z-index: 1001;
     overflow: hidden;
 }
+
+/* Remove any unintended spacing between menu items */
+.user-menu > * { margin: 0; }
+.user-menu a.user-menu-item,
+.user-menu button.user-menu-item { margin: 0; display: flex; }
+.user-menu form { margin: 0; }
 
 .user-menu.active {
     display: block;
@@ -222,6 +229,11 @@ nav a:hover {
     cursor: pointer;
     width: 100%;
     text-align: left;
+    font-size: 0.95rem;
+}
+
+/* Smaller font size for Edit Profile only */
+.user-menu-item[href*="edit-profile"] {
     font-size: 0.95rem;
 }
 
