@@ -886,7 +886,8 @@ nav a:hover {
     border-bottom: 1px solid var(--border-color);
 }
 
-.modal-header h2 {
+.modal-header h2,
+.modal-header h3 {
     color: var(--text-light);
     margin: 0;
     font-size: 1.5rem;
@@ -934,12 +935,46 @@ nav a:hover {
     transition: all 0.3s ease;
 }
 
+.product-form input:read-only {
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--text-medium);
+    cursor: default;
+}
+
 .product-form input:focus,
 .product-form textarea:focus {
     outline: none;
     background: rgba(255, 255, 255, 0.08);
     border-color: var(--accent-mint-green);
     box-shadow: 0 0 0 3px rgba(73, 202, 125, 0.1);
+}
+
+.product-form small {
+    display: block;
+    margin-top: 0.4rem;
+    color: var(--text-medium);
+    font-size: 0.8rem;
+}
+
+.upload-drop {
+    border: 2px dashed var(--border-color);
+    padding: 16px;
+    border-radius: 8px;
+    background: var(--card-bg);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.upload-drop:hover {
+    border-color: var(--accent-mint-green);
+    background: rgba(73, 202, 125, 0.08);
+}
+
+.upload-drop p {
+    margin: 0 0 10px 0;
+    font-size: 0.95rem;
+    color: var(--text-light);
 }
 
 .form-row {

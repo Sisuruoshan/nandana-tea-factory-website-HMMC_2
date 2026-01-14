@@ -15,6 +15,10 @@ interface Product {
   image?: string
   stock: number
   isWholesale: boolean
+  origin?: string
+  notes?: string
+  brew?: string
+  longDesc?: string
 }
 
 export default function AdminPage() {
@@ -34,9 +38,30 @@ export default function AdminPage() {
     description: '',
     slug: '',
     price: '',
-    stock: '',
+    image: '',
+    origin: '',
+    notes: '',
+    brew: '',
+    longDesc: ''
+  })
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const [imageStatus, setImageStatus] = useState('No file chosen')
+  
+  // Wholesale product modal state
+  const [showWholesaleModal, setShowWholesaleModal] = useState(false)
+  const [editingWholesaleProduct, setEditingWholesaleProduct] = useState<Product | null>(null)
+  const [wholesaleForm, setWholesaleForm] = useState({
+    name: '',
+    description: '',
+    slug: '',
+    price: '',
+    wholesalePrice: '',
+    minQuantity: '10',
+    stock: '0',
     image: ''
   })
+  const [uploadingWholesaleImage, setUploadingWholesaleImage] = useState(false)
+  const [wholesaleImageStatus, setWholesaleImageStatus] = useState('No file chosen')
 
   useEffect(() => {
     const ok = typeof window !== 'undefined' && localStorage.getItem('adminLoggedIn') === 'true'
@@ -94,9 +119,13 @@ export default function AdminPage() {
       description: '',
       slug: '',
       price: '',
-      stock: '',
-      image: ''
+      image: '',
+      origin: '',
+      notes: '',
+      brew: '',
+      longDesc: ''
     })
+    setImageStatus('No file chosen')
     setShowProductModal(true)
   }
 
@@ -107,10 +136,152 @@ export default function AdminPage() {
       description: product.description,
       slug: product.slug,
       price: product.price.toString(),
+      image: product.image || '',
+      origin: product.origin || '',
+      notes: product.notes || '',
+      brew: product.brew || '',
+      longDesc: product.longDesc || ''
+    })
+    setImageStatus(product.image ? 'File selected' : 'No file chosen')
+    setShowProductModal(true)
+  }
+
+  const handleProductImageUpload = async (file: File) => {
+    setUploadingImage(true)
+    setImageStatus('Uploading...')
+    try {
+      const formData = new FormData()
+      formData.append('image', file)
+      const response = await fetch('/api/admin/products/upload-image', {
+        method: 'POST',
+        body: formData,
+      })
+      if (!response.ok) throw new Error('Upload failed')
+      const data = await response.json()
+      setProductForm({ ...productForm, image: data.path })
+      setImageStatus(`File: ${file.name}`)
+    } catch (error) {
+      console.error(error)
+      setImageStatus('Upload failed')
+    } finally {
+      setUploadingImage(false)
+    }
+  }
+
+  const handleProductImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file && file.type.startsWith('image/')) {
+      handleProductImageUpload(file)
+    } else if (file) {
+      setImageStatus('Please select an image file')
+    }
+  }
+
+  const handleProductDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    e.currentTarget.style.backgroundColor = 'rgba(73, 202, 125, 0.1)'
+  }
+
+  const handleProductDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    e.currentTarget.style.backgroundColor = ''
+  }
+
+  const handleProductDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    e.currentTarget.style.backgroundColor = ''
+    const file = e.dataTransfer.files?.[0]
+    if (file && file.type.startsWith('image/')) {
+      handleProductImageUpload(file)
+    }
+  }
+  
+  const openAddWholesaleModal = () => {
+    setEditingWholesaleProduct(null)
+    setWholesaleForm({
+      name: '',
+      description: '',
+      slug: '',
+      price: '',
+      wholesalePrice: '',
+      minQuantity: '10',
+      stock: '0',
+      image: ''
+    })
+    setWholesaleImageStatus('No file chosen')
+    setShowWholesaleModal(true)
+  }
+
+  const openEditWholesaleModal = (product: Product) => {
+    setEditingWholesaleProduct(product)
+    setWholesaleForm({
+      name: product.name,
+      description: product.description,
+      slug: product.slug,
+      price: product.price.toString(),
+      wholesalePrice: product.wholesalePrice?.toString() || '',
+      minQuantity: '10',
       stock: product.stock.toString(),
       image: product.image || ''
     })
-    setShowProductModal(true)
+    setWholesaleImageStatus(product.image ? 'File selected' : 'No file chosen')
+    setShowWholesaleModal(true)
+  }
+
+  const handleWholesaleImageUpload = async (file: File) => {
+    setUploadingWholesaleImage(true)
+    setWholesaleImageStatus('Uploading...')
+    try {
+      const formData = new FormData()
+      formData.append('image', file)
+      const response = await fetch('/api/admin/products/upload-image', {
+        method: 'POST',
+        body: formData,
+      })
+      if (!response.ok) throw new Error('Upload failed')
+      const data = await response.json()
+      setWholesaleForm({ ...wholesaleForm, image: data.path })
+      setWholesaleImageStatus(`File: ${file.name}`)
+    } catch (error) {
+      console.error(error)
+      setWholesaleImageStatus('Upload failed')
+    } finally {
+      setUploadingWholesaleImage(false)
+    }
+  }
+
+  const handleWholesaleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file && file.type.startsWith('image/')) {
+      handleWholesaleImageUpload(file)
+    } else if (file) {
+      setWholesaleImageStatus('Please select an image file')
+    }
+  }
+
+  const handleWholesaleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    e.currentTarget.style.backgroundColor = 'rgba(73, 202, 125, 0.1)'
+  }
+
+  const handleWholesaleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    e.currentTarget.style.backgroundColor = ''
+  }
+
+  const handleWholesaleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    e.currentTarget.style.backgroundColor = ''
+    const file = e.dataTransfer.files?.[0]
+    if (file && file.type.startsWith('image/')) {
+      handleWholesaleImageUpload(file)
+    }
   }
 
   const handleProductSubmit = async (e: React.FormEvent) => {
@@ -118,11 +289,24 @@ export default function AdminPage() {
     alert('Product save functionality to be implemented with backend API')
     setShowProductModal(false)
   }
+  
+  const handleWholesaleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    alert('Wholesale product save functionality to be implemented with backend API')
+    setShowWholesaleModal(false)
+  }
 
   const deleteProduct = async (id: number) => {
     if (!confirm('Are you sure you want to delete this product?')) return
     alert('Product delete functionality to be implemented with backend API')
     // await fetch(`/api/admin/products/${id}`, { method: 'DELETE' })
+    // refreshAll()
+  }
+  
+  const deleteWholesaleProduct = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this wholesale product?')) return
+    alert('Wholesale product delete functionality to be implemented with backend API')
+    // await fetch(`/api/admin/wholesale-products/${id}`, { method: 'DELETE' })
     // refreshAll()
   }
 
@@ -265,30 +449,55 @@ export default function AdminPage() {
 
           {section === 'wsproducts' && (
             <div id="wsproducts-section" className="admin-section active">
-              <section className="admin-products">
-                <div className="section-header">
-                  <h3>Wholesale Products</h3>
-                  <button className="btn btn-primary" onClick={refreshAll}>
-                    <i className="fa-solid fa-arrows-rotate"></i> Refresh
-                  </button>
-                </div>
-                <div className="products-list" id="ws-products-list">
-                  {wholesaleProducts.map((p) => (
-                    <div key={p.id} className="product-item" style={{ border: '1px solid var(--border-color)', borderRadius: 12, padding: 16, marginBottom: 12 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'center' }}>
-                        <div>
-                          <h4 style={{ margin: 0 }}>{p.name}</h4>
-                          <div style={{ color: 'var(--text-medium)', fontSize: 14 }}>{p.slug}</div>
+              <div className="section-header-top">
+                <h1 className="section-title">Wholesale Products</h1>
+                <button className="btn btn-add-product" onClick={openAddWholesaleModal}>
+                  <i className="fa-solid fa-plus"></i> Add Wholesale Product
+                </button>
+              </div>
+              
+              <div className="products-grid">
+                {wholesaleProducts.map((product) => (
+                  <div key={product.id} className="product-card-admin">
+                    <div className="product-card-content">
+                      <div className="product-image-admin">
+                        <Image
+                          src={resolveImage(product.image)}
+                          alt={product.name}
+                          width={100}
+                          height={100}
+                          style={{ objectFit: 'cover', borderRadius: '8px' }}
+                        />
+                      </div>
+                      <div className="product-details-admin">
+                        <h3 className="product-name-admin">{product.name}</h3>
+                        <p className="product-description-admin">{product.description}</p>
+                        <div className="product-price-admin">
+                          Retail: Rs. {Number(product.price || 0).toFixed(2)}<br />
+                          Wholesale: Rs. {Number(product.wholesalePrice ?? product.price ?? 0).toFixed(2)}
                         </div>
-                        <div style={{ fontWeight: 700 }}>
-                          Retail: Rs. {Number(p.price || 0).toFixed(2)}<br />
-                          Wholesale: Rs. {Number(p.wholesalePrice ?? p.price ?? 0).toFixed(2)}
-                        </div>
+                        <div className="product-stock-admin">Stock: {product.stock} units</div>
+                      </div>
+                      <div className="product-actions-admin">
+                        <button 
+                          className="btn-icon-admin btn-edit" 
+                          onClick={() => openEditWholesaleModal(product)}
+                          title="Edit"
+                        >
+                          <i className="fa-solid fa-pen"></i>
+                        </button>
+                        <button 
+                          className="btn-icon-admin btn-delete" 
+                          onClick={() => deleteWholesaleProduct(product.id)}
+                          title="Delete"
+                        >
+                          <i className="fa-solid fa-trash"></i>
+                        </button>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </section>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
@@ -387,76 +596,327 @@ export default function AdminPage() {
         <div className="modal-overlay" onClick={() => setShowProductModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>{editingProduct ? 'Edit Product' : 'Add New Product'}</h2>
-              <button className="modal-close" onClick={() => setShowProductModal(false)}>
-                <i className="fa-solid fa-times"></i>
+              <h3 id="modal-title">{editingProduct ? 'Edit Product' : 'Add New Product'}</h3>
+              <button className="close-modal" onClick={() => setShowProductModal(false)} style={{ cursor: 'pointer', background: 'none', border: 'none', color: 'var(--text-light)', fontSize: '1.5rem' }}>
+                &times;
               </button>
             </div>
             <form onSubmit={handleProductSubmit} className="product-form">
               <div className="form-group">
-                <label>Product Name *</label>
+                <label htmlFor="product-name">Product Name</label>
                 <input
                   type="text"
+                  id="product-name"
                   required
                   value={productForm.name}
                   onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
                 />
               </div>
+
               <div className="form-group">
-                <label>Description *</label>
+                <label htmlFor="product-description">Description</label>
                 <textarea
-                  required
+                  id="product-description"
                   rows={3}
+                  required
                   value={productForm.description}
                   onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
                 />
               </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Slug *</label>
-                  <input
-                    type="text"
-                    required
-                    value={productForm.slug}
-                    onChange={(e) => setProductForm({ ...productForm, slug: e.target.value })}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Price (Rs.) *</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    required
-                    value={productForm.price}
-                    onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
-                  />
-                </div>
+
+              <div className="form-group">
+                <label htmlFor="product-price">Price (Rs.)</label>
+                <input
+                  type="number"
+                  id="product-price"
+                  step="0.01"
+                  required
+                  value={productForm.price}
+                  onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
+                />
               </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Stock *</label>
-                  <input
-                    type="number"
-                    required
-                    value={productForm.stock}
-                    onChange={(e) => setProductForm({ ...productForm, stock: e.target.value })}
+
+              <div className="form-group">
+                <label htmlFor="product-image">Product Image</label>
+                <div 
+                  className="upload-drop" 
+                  id="product-image-drop"
+                  onDragOver={handleProductDragOver}
+                  onDragLeave={handleProductDragLeave}
+                  onDrop={handleProductDrop}
+                  style={{
+                    border: '2px dashed var(--border-color)',
+                    padding: '16px',
+                    borderRadius: '8px',
+                    background: 'var(--card-bg)',
+                    cursor: 'pointer',
+                    textAlign: 'center',
+                    transition: 'all 0.3s'
+                  }}
+                >
+                  <p style={{ margin: '0 0 10px 0', fontSize: '0.95rem', color: 'var(--text-light)' }}>Drag & drop image here or</p>
+                  <button 
+                    type="button" 
+                    className="btn btn-secondary" 
+                    id="product-image-browse"
+                    onClick={() => document.getElementById('product-image-file')?.click()}
+                    style={{ marginBottom: '8px' }}
+                  >
+                    Select File
+                  </button>
+                  <input 
+                    type="file" 
+                    id="product-image-file" 
+                    accept="image/*" 
+                    style={{ display: 'none' }}
+                    onChange={handleProductImageChange}
                   />
+                  <div id="product-image-status" style={{ fontSize: '0.85rem', color: 'var(--text-medium)', marginTop: '4px' }}>
+                    {imageStatus}
+                  </div>
                 </div>
-                <div className="form-group">
-                  <label>Image URL</label>
-                  <input
-                    type="text"
-                    value={productForm.image}
-                    onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
-                  />
-                </div>
+                <input 
+                  type="text" 
+                  id="product-image" 
+                  placeholder="Stored image path" 
+                  required
+                  value={productForm.image}
+                  onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
+                  style={{ marginTop: '8px' }}
+                  readOnly
+                />
+                <small>Image will be uploaded and path filled automatically.</small>
               </div>
-              <div className="modal-actions">
+
+              <div className="form-group">
+                <label htmlFor="product-id-slug">Product ID (URL slug)</label>
+                <input
+                  type="text"
+                  id="product-id-slug"
+                  placeholder="e.g., black-tea"
+                  required
+                  value={productForm.slug}
+                  onChange={(e) => setProductForm({ ...productForm, slug: e.target.value })}
+                />
+                <small>Used in product URLs - lowercase with hyphens</small>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="product-origin">Origin</label>
+                <textarea
+                  id="product-origin"
+                  rows={2}
+                  placeholder="e.g., Harvested from Sri Lankan highland gardens..."
+                  value={productForm.origin}
+                  onChange={(e) => setProductForm({ ...productForm, origin: e.target.value })}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="product-notes">Notes</label>
+                <textarea
+                  id="product-notes"
+                  rows={2}
+                  placeholder="e.g., Malty and bold with a clean finish..."
+                  value={productForm.notes}
+                  onChange={(e) => setProductForm({ ...productForm, notes: e.target.value })}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="product-brew">Brewing Guide</label>
+                <textarea
+                  id="product-brew"
+                  rows={4}
+                  placeholder="Enter each brewing step on a new line, e.g.:
+2–3 g per 250 ml
+95°C water
+Steep 3–4 minutes
+Enjoy plain or with milk"
+                  value={productForm.brew}
+                  onChange={(e) => setProductForm({ ...productForm, brew: e.target.value })}
+                />
+                <small>Enter each brewing step on a new line</small>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="product-long-desc">About this Tea</label>
+                <textarea
+                  id="product-long-desc"
+                  rows={4}
+                  placeholder="Detailed description about the tea..."
+                  value={productForm.longDesc}
+                  onChange={(e) => setProductForm({ ...productForm, longDesc: e.target.value })}
+                />
+              </div>
+
+              <div className="form-actions">
+                <button type="submit" className="btn btn-primary">
+                  <i className="fa-solid fa-save"></i> {editingProduct ? 'Update Product' : 'Save Product'}
+                </button>
                 <button type="button" className="btn btn-secondary" onClick={() => setShowProductModal(false)}>
                   Cancel
                 </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      
+      {/* Wholesale Product Modal */}
+      {showWholesaleModal && (
+        <div className="modal-overlay" onClick={() => setShowWholesaleModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>{editingWholesaleProduct ? 'Edit Wholesale Product' : 'Add Wholesale Product'}</h3>
+              <button className="close-modal" onClick={() => setShowWholesaleModal(false)} style={{ cursor: 'pointer', background: 'none', border: 'none', color: 'var(--text-light)', fontSize: '1.5rem' }}>
+                &times;
+              </button>
+            </div>
+            <form onSubmit={handleWholesaleSubmit} className="product-form">
+              <div className="form-group">
+                <label htmlFor="ws-product-name">Product Name</label>
+                <input
+                  type="text"
+                  id="ws-product-name"
+                  required
+                  value={wholesaleForm.name}
+                  onChange={(e) => setWholesaleForm({ ...wholesaleForm, name: e.target.value })}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="ws-product-description">Description</label>
+                <textarea
+                  id="ws-product-description"
+                  rows={3}
+                  required
+                  value={wholesaleForm.description}
+                  onChange={(e) => setWholesaleForm({ ...wholesaleForm, description: e.target.value })}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="ws-product-price">Retail Price (Rs.)</label>
+                <input
+                  type="number"
+                  id="ws-product-price"
+                  step="0.01"
+                  required
+                  value={wholesaleForm.price}
+                  onChange={(e) => setWholesaleForm({ ...wholesaleForm, price: e.target.value })}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="ws-product-wholesale-price">Wholesale Price (Rs.)</label>
+                <input
+                  type="number"
+                  id="ws-product-wholesale-price"
+                  step="0.01"
+                  required
+                  value={wholesaleForm.wholesalePrice}
+                  onChange={(e) => setWholesaleForm({ ...wholesaleForm, wholesalePrice: e.target.value })}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="ws-product-minqty">Minimum Quantity</label>
+                <input
+                  type="number"
+                  id="ws-product-minqty"
+                  min="1"
+                  required
+                  value={wholesaleForm.minQuantity}
+                  onChange={(e) => setWholesaleForm({ ...wholesaleForm, minQuantity: e.target.value })}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="ws-product-stock">Current Stock/Quantity</label>
+                <input
+                  type="number"
+                  id="ws-product-stock"
+                  min="0"
+                  required
+                  value={wholesaleForm.stock}
+                  onChange={(e) => setWholesaleForm({ ...wholesaleForm, stock: e.target.value })}
+                />
+                <small>Available quantity in inventory</small>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="ws-product-image">Product Image</label>
+                <div 
+                  className="upload-drop" 
+                  id="ws-product-image-drop"
+                  onDragOver={handleWholesaleDragOver}
+                  onDragLeave={handleWholesaleDragLeave}
+                  onDrop={handleWholesaleDrop}
+                  style={{
+                    border: '2px dashed var(--border-color)',
+                    padding: '16px',
+                    borderRadius: '8px',
+                    background: 'var(--card-bg)',
+                    cursor: 'pointer',
+                    textAlign: 'center',
+                    transition: 'all 0.3s'
+                  }}
+                >
+                  <p style={{ margin: '0 0 10px 0', fontSize: '0.95rem', color: 'var(--text-light)' }}>
+                    Drag & drop image here or
+                  </p>
+                  <button 
+                    type="button" 
+                    className="btn btn-secondary" 
+                    id="ws-product-image-browse"
+                    onClick={() => document.getElementById('ws-product-image-file')?.click()}
+                    style={{ marginBottom: '8px' }}
+                  >
+                    Select File
+                  </button>
+                  <input 
+                    type="file" 
+                    id="ws-product-image-file" 
+                    accept="image/*" 
+                    style={{ display: 'none' }}
+                    onChange={handleWholesaleImageChange}
+                  />
+                  <div id="ws-product-image-status" style={{ fontSize: '0.85rem', color: 'var(--text-medium)', marginTop: '4px' }}>
+                    {wholesaleImageStatus}
+                  </div>
+                </div>
+                <input 
+                  type="text" 
+                  id="ws-product-image" 
+                  placeholder="Stored image path" 
+                  required
+                  value={wholesaleForm.image}
+                  onChange={(e) => setWholesaleForm({ ...wholesaleForm, image: e.target.value })}
+                  style={{ marginTop: '8px' }}
+                  readOnly
+                />
+                <small>Image will be uploaded and path filled automatically.</small>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="ws-product-id-slug">Product ID (URL slug)</label>
+                <input
+                  type="text"
+                  id="ws-product-id-slug"
+                  placeholder="e.g., black-tea"
+                  required
+                  value={wholesaleForm.slug}
+                  onChange={(e) => setWholesaleForm({ ...wholesaleForm, slug: e.target.value })}
+                />
+              </div>
+
+              <div className="form-actions">
                 <button type="submit" className="btn btn-primary">
-                  {editingProduct ? 'Update Product' : 'Add Product'}
+                  <i className="fa-solid fa-save"></i> Save Wholesale Product
+                </button>
+                <button type="button" className="btn btn-secondary" onClick={() => setShowWholesaleModal(false)}>
+                  Cancel
                 </button>
               </div>
             </form>
