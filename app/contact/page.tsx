@@ -40,7 +40,7 @@ export default function ContactPage() {
   }
 
   return (
-    <main className="container" style={{ paddingTop: '8rem' }}>
+    <main className="container" style={{ paddingTop: '8rem', paddingBottom: '4rem' }}>
       <div className="contact-grid">
         <div className="contact-form">
           <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '3rem', marginBottom: '1rem' }}>
