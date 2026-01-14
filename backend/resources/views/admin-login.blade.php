@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Nandana Tea Factory</title>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: #012403;
+        }
+        .login-card {
+            background: #0c422c;
+            padding: 2.5rem;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            border: 1px solid #334f4e;
+        }
+        @media (max-width: 600px) {
+            .login-container { background-attachment: scroll; padding: 1.2rem; }
+            .login-card { padding: 1.1rem; border-radius: 10px; }
+            .login-card i { font-size: 2.2rem; }
+            .login-card h2 { font-size: 1.15rem; margin: .6rem 0; }
+            .form-group input { padding: .65rem .75rem; }
+            .btn { font-size: .95rem; }
+        }
+    </style>
+</head>
+<body class="login-container">
+    <div class="login-card">
+        <i class="fa-solid fa-leaf" style="color: var(--accent-mint-green); font-size: 3rem;"></i>
+        <h2 style="margin: 1rem 0;">Admin Sign In</h2>
+        <form id="admin-login-form">
+            <div class="form-group" style="text-align: left;">
+                <label>Username</label>
+                <input type="text" id="admin-email" required>
+            </div>
+            <div class="form-group" style="text-align: left;">
+                <label>Password</label>
+                <input type="password" id="admin-pass" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Sign In</button>
+        </form>
+        <div style="margin-top:1rem;text-align:center;color:var(--text-medium)">
+            <a href="user-login.html" class="btn btn-secondary">Back</a>
+        </div>
+    </div>
+
+    <script>
+        // Simple client-side admin check (change as needed)
+        const ADMIN_USERNAME = 'admin';
+        const ADMIN_PASS = 'nandana2025';
+
+        document.getElementById('admin-login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('admin-email').value.trim();
+            const pass = document.getElementById('admin-pass').value;
+            if (username === ADMIN_USERNAME && pass === ADMIN_PASS) {
+                // Redirect to Laravel admin view route
+                window.location.href = '/admin';
+            } else {
+                alert('Invalid admin credentials');
+            }
+        });
+    </script>
+    <script src="{{ asset('js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login - Nandana Tea Factory</title>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --card-bg: rgba(12,66,44,0.95);
+            --card-border: #334f4e;
+            --accent: var(--accent-mint-green, #4fdc9b);
+            --text-light: #ffffff;
+            --text-medium: #cfe6dc;
+        }
+        html,body{height:100%;}
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+            background: url('srs/tea4.jpg') no-repeat center center/cover;
+            background-attachment: fixed;
+            position: relative;
+        }
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: inherit;
+            filter: blur(2px);
+            z-index: -1;
+            background-attachment: fixed;
+        }
+        .login-card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+            color: var(--text-light);
+            position: relative;
+            z-index: 1;
+        }
+        .login-card i { color: var(--accent); font-size: 3rem; display:block; margin:0 auto; }
+        .login-card h2 { margin: 1rem 0; font-size: 1.5rem; }
+
+        .form-group { margin-bottom: 1rem; text-align: left; }
+        .form-group label { display:block; margin-bottom: .35rem; color:var(--text-light); font-size: .95rem; }
+        .form-group input {
+            width: 100%;
+            padding: .75rem .9rem;
+            border-radius: 8px;
+            border: 1px solid #2e6b57;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        .btn { display:inline-block; text-decoration:none; cursor:pointer; border-radius:8px; padding:.75rem 1rem; font-size:1rem; }
+        .btn-primary { background: var(--accent); color:#052a1f; width:100%; border: none; }
+        .btn-secondary { background: transparent; color:var(--text-light); border:1px solid rgba(255,255,255,0.12); padding:.5rem .75rem; border-radius:8px; }
+
+        .signup-link { margin-top: 1rem; text-align:center; color: var(--text-medium); }
+
+        @media (max-width: 600px) {
+            .login-container { background-attachment: scroll; padding: 1.2rem; }
+            .login-card { padding: 1.1rem; border-radius: 10px; }
+            .login-card i { font-size: 2.2rem; }
+            .login-card h2 { font-size: 1.15rem; margin: .6rem 0; }
+            .form-group input { padding: .65rem .75rem; }
+            .btn { font-size: .95rem; }
+        }
+    </style>
+</head>
+<body class="login-container">
+    <div class="login-card">
+        <i class="fa-solid fa-leaf"></i>
+        <h2>Welcome Back</h2>
+
+        @if(session('success'))
+            <div class="alert success">{{ session('success') }}</div>
+        @endif
+        @if($errors->any())
+            <div class="alert error"><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
+        @endif
+
+        <form method="POST" action="{{ url('/login') }}" id="login-form">
+            @csrf
+            <input type="hidden" name="redirect" value="{{ $redirect ?? session('intended_url', '/') }}">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" value="{{ old('email') }}" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Sign In</button>
+        </form>
+        <div class="signup-link">
+            <a href="{{ url('/signup') }}" class="btn btn-secondary">Create an account</a>
+        </div>
+    </div>
+
+    <script src="{{ asset('js/main.js') }}"></script>
+</body>
+</html>
