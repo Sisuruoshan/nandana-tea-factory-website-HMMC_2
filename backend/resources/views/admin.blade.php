@@ -27,8 +27,12 @@
             <div id="dashboard-section" class="admin-section active">
                 <section class="admin-stats">
                     <div class="stat-card">
-                        <h3>Total Products</h3>
-                        <p class="stat-number" id="total-products">6</p>
+                        <h3>Retail Products</h3>
+                        <p class="stat-number" id="total-retail-products">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Wholesale Products</h3>
+                        <p class="stat-number" id="total-wholesale-products">0</p>
                     </div>
                     <div class="stat-card">
                         <h3>New Inquiries</h3>
@@ -36,7 +40,7 @@
                     </div>
                     <div class="stat-card">
                         <h3>Wholesale Requests</h3>
-                        <p class="stat-number">5</p>
+                        <p class="stat-number" id="wholesale-inquiry-count">0</p>
                     </div>
                 </section>
 
@@ -494,6 +498,12 @@
             fetch('/api/products')
                 .then(response => response.json())
                 .then(data => {
+                    // Update retail products count in dashboard
+                    const retailCountElement = document.getElementById('total-retail-products');
+                    if (retailCountElement) {
+                        retailCountElement.textContent = data.length;
+                    }
+                    
                     if (data.length === 0) {
                         productsList.innerHTML = '<p style="text-align: center; color: #666;">No products yet. Click "Add New Product" to create one.</p>';
                     } else {
@@ -533,6 +543,12 @@
             fetch('/api/wholesale-products')
                 .then(response => response.json())
                 .then(data => {
+                    // Update wholesale products count in dashboard
+                    const wholesaleCountElement = document.getElementById('total-wholesale-products');
+                    if (wholesaleCountElement) {
+                        wholesaleCountElement.textContent = data.length;
+                    }
+                    
                     if (data.length === 0) {
                         wsProductsList.innerHTML = '<p style="text-align: center; color: #666;">No wholesale products yet. Click "Add Wholesale Product" to create one.</p>';
                     } else {
@@ -700,6 +716,12 @@
                     .then(response => response.json())
                     .then(data => {
                         const inquiriesList = document.getElementById('ws-inquiries-list');
+                        const wholesaleInquiryCount = document.getElementById('wholesale-inquiry-count');
+                        
+                        // Update wholesale inquiry count in dashboard
+                        if (wholesaleInquiryCount) {
+                            wholesaleInquiryCount.textContent = data.length;
+                        }
                     
                         if (!inquiriesList) return;
                     
