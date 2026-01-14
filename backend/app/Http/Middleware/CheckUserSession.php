@@ -16,8 +16,18 @@ class CheckUserSession
     public function handle(Request $request, Closure $next): Response
     {
         if (!$request->session()->has('user_signup_id')) {
-            if ($request->expectsJson()) {
-                return response()->json(['error' => 'Unauthorized'], 401);
+            // Check if this is an API route (starts with /api/)
+            $path = $request->path();
+            $isApiRoute = str_starts_with($path, 'api/');
+            
+            if ($request->expectsJson() || $isApiRoute) {
+                // Check if this is a cart-related endpoint
+                if ($request->is('api/cart/*') || $request->is('api/cart') || $path === 'api/cart/add') {
+                    return response()->json(['error' => 'Login to add items to the cart'], 401)
+                        ->header('Content-Type', 'application/json');
+                }
+                return response()->json(['error' => 'Unauthorized'], 401)
+                    ->header('Content-Type', 'application/json');
             }
             return redirect('/login')->with('error', 'Please login to access this page.');
         }

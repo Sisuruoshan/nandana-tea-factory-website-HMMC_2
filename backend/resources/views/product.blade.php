@@ -5,9 +5,147 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Product Details - Nandana Tea</title>
-  <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .alert-container {
+            position: fixed;
+            top: 6rem;
+            right: 2rem;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 400px;
+        }
+
+        .alert {
+            padding: 1.25rem 1.5rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .alert-success {
+            background: rgba(40, 167, 69, 0.95);
+            border: 1px solid #28a745;
+            color: white;
+        }
+
+        .alert-error {
+            background: rgba(220, 53, 69, 0.95);
+            border: 1px solid #dc3545;
+            color: white;
+        }
+
+        .alert-info {
+            background: rgba(23, 162, 184, 0.95);
+            border: 1px solid #17a2b8;
+            color: white;
+        }
+
+        .alert-warning {
+            background: rgba(73, 202, 125, 0.95);
+            border: 1px solid #49ca7d;
+            color: white;
+        }
+
+        .alert-icon {
+            font-size: 1.3rem;
+            min-width: 24px;
+        }
+
+        .alert-content {
+            flex: 1;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .alert-close {
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            font-size: 1.2rem;
+            opacity: 0.8;
+            padding: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .alert-close:hover {
+            opacity: 1;
+        }
+
+        .alert-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .alert-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .alert-btn-primary {
+            background: rgba(12, 46, 25, 0.8);
+            color: white;
+            border: 1px solid rgba(12, 46, 25, 0.9);
+        }
+
+        .alert-btn-primary:hover {
+            background: rgba(12, 46, 25, 1);
+            border-color: rgba(73, 202, 125, 0.8);
+        }
+
+        .alert-btn-secondary {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .alert-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .alert-content-wrapper {
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .alert-container {
+                top: 5rem;
+                right: 1rem;
+                left: 1rem;
+                max-width: none;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -65,6 +203,9 @@
         </div>
     </header>
 
+    <!-- Alert Container -->
+    <div class="alert-container" id="alert-container"></div>
+
     <main class="container">
         <section class="page-header">
             <h1 id="pd-name">Product Details</h1>
@@ -109,6 +250,97 @@
     <script>
     const placeholderImage = 'https://via.placeholder.com/400x320?text=Tea';
     const contactUrl = "{{ url('/contact') }}";
+
+    // Alert notification system
+    function showAlert(message, type = 'info', duration = 5000, actions = null) {
+        const container = document.getElementById('alert-container');
+        if (!container) return;
+
+        const alertId = 'alert-' + Date.now();
+        const iconMap = {
+            'success': 'fa-circle-check',
+            'error': 'fa-circle-exclamation',
+            'warning': 'fa-triangle-exclamation',
+            'info': 'fa-circle-info'
+        };
+
+        const actionsHtml = actions ? `
+            <div class="alert-actions">
+                ${actions.map(action => `
+                    <button type="button" class="alert-btn ${action.class || 'alert-btn-primary'}" onclick="${action.onclick}">
+                        ${action.label}
+                    </button>
+                `).join('')}
+            </div>
+        ` : '';
+
+        const alert = document.createElement('div');
+        alert.id = alertId;
+        alert.className = `alert alert-${type}`;
+        alert.innerHTML = `
+            <i class="fa-solid ${iconMap[type] || iconMap.info} alert-icon"></i>
+            <div class="alert-content-wrapper">
+                <div class="alert-content">${message}</div>
+                ${actionsHtml}
+            </div>
+            <button type="button" class="alert-close" onclick="document.getElementById('${alertId}').remove()">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        `;
+        container.appendChild(alert);
+
+        // Auto remove after duration (only if no actions, or if actions are provided, don't auto-remove)
+        if (duration > 0 && !actions) {
+            setTimeout(() => {
+                const alertEl = document.getElementById(alertId);
+                if (alertEl) {
+                    alertEl.style.animation = 'slideIn 0.3s ease reverse';
+                    setTimeout(() => alertEl.remove(), 300);
+                }
+            }, duration);
+        }
+    }
+
+    // Function to show login required alert with action buttons
+    function showLoginAlert(message) {
+        const container = document.getElementById('alert-container');
+        if (!container) return;
+
+        const alertId = 'alert-' + Date.now();
+        const iconMap = {
+            'warning': 'fa-triangle-exclamation'
+        };
+
+        const removeAlert = () => {
+            const alertEl = document.getElementById(alertId);
+            if (alertEl) {
+                alertEl.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => alertEl.remove(), 300);
+            }
+        };
+
+        const alert = document.createElement('div');
+        alert.id = alertId;
+        alert.className = 'alert alert-warning';
+        alert.innerHTML = `
+            <i class="fa-solid ${iconMap.warning} alert-icon"></i>
+            <div class="alert-content-wrapper">
+                <div class="alert-content">${message}</div>
+                <div class="alert-actions">
+                    <button type="button" class="alert-btn alert-btn-primary" onclick="window.location.href='/login'">
+                        Go to Login
+                    </button>
+                    <button type="button" class="alert-btn alert-btn-secondary" onclick="document.getElementById('${alertId}').remove()">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+            <button type="button" class="alert-close" onclick="document.getElementById('${alertId}').remove()">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        `;
+        container.appendChild(alert);
+    }
 
     function getParam(name) {
         const url = new URL(window.location.href);
@@ -158,6 +390,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Accept': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
                     },
                     body: JSON.stringify({
@@ -166,20 +399,25 @@
                     })
                 });
 
-                const data = await response.json();
+                let data = {};
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    // If response is not JSON, use empty object
+                    console.error('Failed to parse JSON response:', e);
+                }
                 
                 if (response.ok) {
-                    alert(`${product.name || 'Product'} added to cart (x${qty}).`);
+                    showAlert(`${product.name || 'Product'} added to cart (x${qty}).`, 'success');
                     updateCartCount();
                 } else if (response.status === 401) {
-                    alert('Please login to add items to cart.');
-                    window.location.href = '/login';
+                    showLoginAlert(data.error || 'Login to add items to the cart');
                 } else {
-                    alert(data.error || 'Failed to add item to cart.');
+                    showAlert(data.error || 'Failed to add item to cart.', 'error');
                 }
             } catch (error) {
                 console.error('Error adding to cart:', error);
-                alert('Failed to add item to cart. Please try again.');
+                showLoginAlert('Login to add items to the cart');
             }
         };
 
