@@ -694,11 +694,7 @@
                 return;
             }
             
-            // Simple checkout: open mail client with order summary
-            const lines = cartData.items.map(i => `${i.quantity} x ${i.product_name} - ${formatPrice(i.subtotal)}`);
-            const body = `Thank you for your order!\n\n--- ORDER SUMMARY ---\n\n${lines.join('\n')}\n\n--- TOTAL ---\nSubtotal: ${formatPrice(cartData.total)}\nShipping: To be calculated\nTaxes: To be calculated\n\nTotal: ${formatPrice(cartData.total)}\n\nPlease reply with your delivery address and preferred payment method.`;
-            const mailto = `mailto:info@nandanatea.com?subject=${encodeURIComponent('New Order from Nandana Tea')}&body=${encodeURIComponent(body)}`;
-            window.location.href = mailto;
+            window.location.href = '/payment';
         });
     });
     </script>

@@ -421,10 +421,35 @@
             }
         };
 
-        document.getElementById('pd-order').onclick = () => {
+        document.getElementById('pd-order').onclick = async () => {
             const qty = Math.max(1, parseInt(qtyInput.value || '1', 10));
-            const params = new URLSearchParams({ product: product.slug || product.id, qty: String(qty) });
-            window.location.href = `${contactUrl}?${params.toString()}`;
+            
+            // Check if user is logged in
+            try {
+                const response = await fetch('/api/cart', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    }
+                });
+
+                if (response.status === 401) {
+                    // User is not logged in
+                    showLoginAlert('Login to place an order');
+                    return;
+                }
+
+                // User is logged in, proceed to payment
+                const params = new URLSearchParams({ 
+                    product: product.slug || product.id, 
+                    qty: String(qty) 
+                });
+                window.location.href = `/payment?${params.toString()}`;
+            } catch (error) {
+                console.error('Error checking login status:', error);
+                showLoginAlert('Login to place an order');
+            }
         };
     }
 

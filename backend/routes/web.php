@@ -8,6 +8,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\PaymentController;
 
 Route::get('/', function () {
     return view('index');
@@ -51,6 +52,11 @@ Route::middleware(['user.session'])->group(function () {
     Route::delete('/api/cart/items/{itemId}', [CartController::class, 'removeItem']);
     Route::delete('/api/cart/clear', [CartController::class, 'clearCart']);
     Route::get('/api/cart', [CartController::class, 'getCartData']);
+});
+
+// Payment routes - require authentication
+Route::middleware(['user.session'])->group(function () {
+    Route::get('/payment', [PaymentController::class, 'index'])->name('payment');
 });
 
 Route::get('/wholesale', function () {
