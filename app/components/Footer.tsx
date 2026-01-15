@@ -28,11 +28,11 @@ export default function Footer() {
           <Link href="/terms">Terms of Service</Link>
           <a href="mailto:info@nandanatea.com">info@nandanatea.com</a>
           <a href="tel:+94112223344">+94 11 222 3344</a>
+          <p>No: 123, Nandana Tea Factory,  Akuressa, Sri Lanka</p>
         </div>
       </div>
       <div className="container footer-bottom">
         <p>© {new Date().getFullYear()} Nandana Tea Factory. All rights reserved.</p>
-        <p>123 Tea Estate Road, Akuressa, Sri Lanka</p>
       </div>
     </footer>
   )
