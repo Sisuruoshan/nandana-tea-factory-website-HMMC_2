@@ -7,7 +7,7 @@ export async function DELETE(
 ) {
   try {
     await prisma.wholesaleInquiry.delete({
-      where: { id: parseInt(params.id) },
+      where: { id: params.id },
     })
 
     return NextResponse.json({ message: 'Wholesale inquiry deleted' })
@@ -36,7 +36,7 @@ export async function POST(
     }
 
     const inquiry = await prisma.wholesaleInquiry.update({
-      where: { id: parseInt(params.id) },
+      where: { id: params.id },
       data: {
         reply,
         status: 'contacted',

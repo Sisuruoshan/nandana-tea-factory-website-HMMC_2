@@ -38,10 +38,11 @@ export default function SignupPage() {
           router.push('/login')
         }, 2000)
       } else {
-        setError(data.error || 'Failed to create account')
+        setError(data.error || `Failed to create account (Status: ${res.status})`)
       }
     } catch (error) {
-      setError('An error occurred. Please try again.')
+      console.error('Signup request error:', error)
+      setError('Network error. Please check your connection and try again.')
     } finally {
       setLoading(false)
     }

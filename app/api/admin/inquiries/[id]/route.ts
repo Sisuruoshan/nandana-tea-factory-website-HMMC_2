@@ -7,7 +7,7 @@ export async function DELETE(
 ) {
   try {
     await prisma.inquiry.delete({
-      where: { id: parseInt(params.id) },
+      where: { id: params.id },
     })
 
     return NextResponse.json({ message: 'Inquiry deleted' })
@@ -36,7 +36,7 @@ export async function POST(
     }
 
     const inquiry = await prisma.inquiry.update({
-      where: { id: parseInt(params.id) },
+      where: { id: params.id },
       data: {
         reply,
         status: 'replied',

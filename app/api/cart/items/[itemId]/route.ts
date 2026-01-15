@@ -19,7 +19,7 @@ export async function PUT(
     }
 
     const cartItem = await prisma.cartItem.findUnique({
-      where: { id: parseInt(params.itemId) },
+      where: { id: params.itemId },
       include: { cart: true },
     })
 
@@ -93,7 +93,7 @@ export async function DELETE(
     const user = await requireAuth()
 
     const cartItem = await prisma.cartItem.findUnique({
-      where: { id: parseInt(params.itemId) },
+      where: { id: params.itemId },
       include: { cart: true },
     })
 
