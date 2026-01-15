@@ -6,12 +6,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id                Int       @id @default(autoincrement())
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
   name              String
   email             String    @unique
   emailVerifiedAt   DateTime? @map("email_verified_at")
@@ -28,7 +28,7 @@ model User {
 }
 
 model UserSignup {
-  id        Int       @id @default(autoincrement())
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   email     String    @unique
   password  String
@@ -43,29 +43,29 @@ model UserSignup {
 }
 
 model Product {
-  id              Int       @id @default(autoincrement())
+  id              String     @id @default(auto()) @map("_id") @db.ObjectId
   name            String
   description     String
-  slug            String    @unique
+  slug            String     @unique
   price           Float
-  wholesalePrice  Float?    @map("wholesale_price")
+  wholesalePrice  Float?     @map("wholesale_price")
   image           String?
   origin          String?
   notes           String?
-  brewingGuide    String?   @map("brewing_guide")
-  longDescription String?   @map("long_description")
-  stock           Int       @default(0)
-  isWholesale     Boolean   @default(false) @map("is_wholesale")
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @updatedAt @map("updated_at")
+  brewingGuide    String?    @map("brewing_guide")
+  longDescription String?    @map("long_description")
+  stock           Int        @default(0)
+  isWholesale     Boolean    @default(false) @map("is_wholesale")
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @updatedAt @map("updated_at")
   cartItems       CartItem[]
 
   @@map("products")
 }
 
 model Cart {
-  id         Int        @id @default(autoincrement())
-  userId     Int        @map("user_id")
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String     @map("user_id") @db.ObjectId
   totalAmount Float     @default(0) @map("total_amount")
   createdAt  DateTime   @default(now()) @map("created_at")
   updatedAt  DateTime   @updatedAt @map("updated_at")
@@ -76,22 +76,22 @@ model Cart {
 }
 
 model CartItem {
-  id        Int      @id @default(autoincrement())
-  cartId    Int      @map("cart_id")
-  productId Int      @map("product_id")
-  quantity  Int      @default(1)
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  cartId    String    @map("cart_id") @db.ObjectId
+  productId String    @map("product_id") @db.ObjectId
+  quantity  Int       @default(1)
   price     Float
   subtotal  Float
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  cart      Cart      @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@map("cart_items")
 }
 
 model Inquiry {
-  id        Int       @id @default(autoincrement())
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   email     String
   subject   String
@@ -105,7 +105,7 @@ model Inquiry {
 }
 
 model WholesaleInquiry {
-  id         Int       @id @default(autoincrement())
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
   name       String
   company    String
   email      String
@@ -122,8 +122,8 @@ model WholesaleInquiry {
 }
 
 model Order {
-  id             Int       @id @default(autoincrement())
-  userId         Int?      @map("user_id")
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String?   @map("user_id") @db.ObjectId
   customerName   String    @map("customer_name")
   customerEmail  String    @map("customer_email")
   customerPhone  String?   @map("customer_phone")
@@ -139,8 +139,8 @@ model Order {
 }
 
 model Session {
-  id           String   @id
-  userId       Int?     @map("user_id")
+  id           String   @id @map("_id")
+  userId       String?  @map("user_id") @db.ObjectId
   ipAddress    String?  @map("ip_address")
   userAgent    String?  @map("user_agent")
   payload      String
@@ -150,7 +150,7 @@ model Session {
 }
 
 model PasswordResetToken {
-  email     String   @id
+  email     String   @id @map("_id")
   token     String
   createdAt DateTime? @map("created_at")
 

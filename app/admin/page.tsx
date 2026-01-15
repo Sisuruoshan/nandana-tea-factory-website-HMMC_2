@@ -42,7 +42,8 @@ export default function AdminPage() {
     origin: '',
     notes: '',
     brew: '',
-    longDesc: ''
+    longDesc: '',
+    stock: '0'
   })
   const [uploadingImage, setUploadingImage] = useState(false)
   const [imageStatus, setImageStatus] = useState('No file chosen')
@@ -123,7 +124,8 @@ export default function AdminPage() {
       origin: '',
       notes: '',
       brew: '',
-      longDesc: ''
+      longDesc: '',
+      stock: '0'
     })
     setImageStatus('No file chosen')
     setShowProductModal(true)
@@ -140,7 +142,8 @@ export default function AdminPage() {
       origin: product.origin || '',
       notes: product.notes || '',
       brew: product.brew || '',
-      longDesc: product.longDesc || ''
+      longDesc: product.longDesc || '',
+      stock: product.stock?.toString() || '0'
     })
     setImageStatus(product.image ? 'File selected' : 'No file chosen')
     setShowProductModal(true)
@@ -286,28 +289,129 @@ export default function AdminPage() {
 
   const handleProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    alert('Product save functionality to be implemented with backend API')
-    setShowProductModal(false)
+    
+    if (!productForm.name || !productForm.slug || !productForm.price) {
+      alert('Please fill in required fields: Name, Slug, and Price')
+      return
+    }
+
+    try {
+      const method = editingProduct ? 'PUT' : 'POST'
+      const payload = {
+        ...(editingProduct && { id: editingProduct.id }),
+        name: productForm.name,
+        description: productForm.description,
+        slug: productForm.slug,
+        price: productForm.price,
+        image: productForm.image,
+        origin: productForm.origin,
+        notes: productForm.notes,
+        brewingGuide: productForm.brew,
+        longDescription: productForm.longDesc,
+        stock: parseInt(productForm.stock) || 0,
+        isWholesale: false,
+      }
+
+      const response = await fetch('/api/admin/products', {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        alert(data.message || 'Product saved successfully!')
+        setShowProductModal(false)
+        refreshAll()
+      } else {
+        alert('Error: ' + (data.error || 'Failed to save product'))
+      }
+    } catch (error: any) {
+      console.error('Error saving product:', error)
+      alert('Error saving product: ' + error.message)
+    }
   }
   
   const handleWholesaleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    alert('Wholesale product save functionality to be implemented with backend API')
-    setShowWholesaleModal(false)
+    
+    if (!wholesaleForm.name || !wholesaleForm.slug || !wholesaleForm.price || !wholesaleForm.wholesalePrice) {
+      alert('Please fill in required fields: Name, Slug, Price, and Wholesale Price')
+      return
+    }
+
+    try {
+      const method = editingWholesaleProduct ? 'PUT' : 'POST'
+      const payload = {
+        ...(editingWholesaleProduct && { id: editingWholesaleProduct.id }),
+        name: wholesaleForm.name,
+        description: wholesaleForm.description,
+        slug: wholesaleForm.slug,
+        price: wholesaleForm.price,
+        wholesalePrice: wholesaleForm.wholesalePrice,
+        image: wholesaleForm.image,
+        stock: parseInt(wholesaleForm.stock) || 0,
+        isWholesale: true,
+      }
+
+      const response = await fetch('/api/admin/products', {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        alert(data.message || 'Product saved successfully!')
+        setShowWholesaleModal(false)
+        refreshAll()
+      } else {
+        alert('Error: ' + (data.error || 'Failed to save product'))
+      }
+    } catch (error: any) {
+      console.error('Error saving product:', error)
+      alert('Error saving product: ' + error.message)
+    }
   }
 
   const deleteProduct = async (id: number) => {
     if (!confirm('Are you sure you want to delete this product?')) return
-    alert('Product delete functionality to be implemented with backend API')
-    // await fetch(`/api/admin/products/${id}`, { method: 'DELETE' })
-    // refreshAll()
+    
+    try {
+      const response = await fetch(`/api/admin/products?id=${id}`, { method: 'DELETE' })
+      const data = await response.json()
+      
+      if (response.ok) {
+        alert('Product deleted successfully!')
+        refreshAll()
+      } else {
+        alert('Error: ' + (data.error || 'Failed to delete product'))
+      }
+    } catch (error: any) {
+      console.error('Error deleting product:', error)
+      alert('Error deleting product: ' + error.message)
+    }
   }
   
   const deleteWholesaleProduct = async (id: number) => {
     if (!confirm('Are you sure you want to delete this wholesale product?')) return
-    alert('Wholesale product delete functionality to be implemented with backend API')
-    // await fetch(`/api/admin/wholesale-products/${id}`, { method: 'DELETE' })
-    // refreshAll()
+    
+    try {
+      const response = await fetch(`/api/admin/products?id=${id}`, { method: 'DELETE' })
+      const data = await response.json()
+      
+      if (response.ok) {
+        alert('Product deleted successfully!')
+        refreshAll()
+      } else {
+        alert('Error: ' + (data.error || 'Failed to delete product'))
+      }
+    } catch (error: any) {
+      console.error('Error deleting product:', error)
+      alert('Error deleting product: ' + error.message)
+    }
   }
 
   const resolveImage = (path?: string) => {
@@ -747,6 +851,17 @@ Enjoy plain or with milk"
                   placeholder="Detailed description about the tea..."
                   value={productForm.longDesc}
                   onChange={(e) => setProductForm({ ...productForm, longDesc: e.target.value })}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="product-stock">Stock Quantity</label>
+                <input
+                  type="number"
+                  id="product-stock"
+                  min="0"
+                  value={productForm.stock}
+                  onChange={(e) => setProductForm({ ...productForm, stock: e.target.value })}
                 />
               </div>
 

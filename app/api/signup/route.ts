@@ -7,6 +7,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { name, email, password, phone, address } = body
 
+    // Validate required fields
     if (!name || !email || !password) {
       return NextResponse.json(
         { error: 'Name, email, and password are required' },
@@ -14,6 +15,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Validate password length
     if (password.length < 6) {
       return NextResponse.json(
         { error: 'Password must be at least 6 characters' },
@@ -21,10 +23,28 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { error: 'Invalid email format' },
+        { status: 400 }
+      )
+    }
+
     // Check if user already exists
-    const existingUser = await prisma.userSignup.findUnique({
-      where: { email },
-    })
+    let existingUser
+    try {
+      existingUser = await prisma.userSignup.findUnique({
+        where: { email },
+      })
+    } catch (dbError: any) {
+      console.error('Database connection error:', dbError.message)
+      return NextResponse.json(
+        { error: 'Database connection failed. Please try again later.' },
+        { status: 503 }
+      )
+    }
 
     if (existingUser) {
       return NextResponse.json(
@@ -33,17 +53,43 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const hashedPassword = await hashPassword(password)
+    // Hash password
+    let hashedPassword
+    try {
+      hashedPassword = await hashPassword(password)
+    } catch (hashError: any) {
+      console.error('Password hashing error:', hashError.message)
+      return NextResponse.json(
+        { error: 'Internal server error' },
+        { status: 500 }
+      )
+    }
 
-    const user = await prisma.userSignup.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-        phone: phone || null,
-        address: address || null,
-      },
-    })
+    // Create user
+    let user
+    try {
+      user = await prisma.userSignup.create({
+        data: {
+          name,
+          email,
+          password: hashedPassword,
+          phone: phone || null,
+          address: address || null,
+        },
+      })
+    } catch (createError: any) {
+      console.error('User creation error:', createError.message)
+      if (createError.code === 'P2002') {
+        return NextResponse.json(
+          { error: 'Email already registered' },
+          { status: 400 }
+        )
+      }
+      return NextResponse.json(
+        { error: 'Failed to create account. Please try again.' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({
       success: true,
@@ -56,14 +102,8 @@ export async function POST(request: NextRequest) {
     })
   } catch (error: any) {
     console.error('Signup error:', error)
-    if (error.code === 'P2002') {
-      return NextResponse.json(
-        { error: 'Email already registered' },
-        { status: 400 }
-      )
-    }
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'An unexpected error occurred. Please try again.' },
       { status: 500 }
     )
   }

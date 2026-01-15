@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs'
 import { prisma } from './prisma'
 
 export interface SessionUser {
-  id: number
+  id: string
   name: string
   email: string
 }
