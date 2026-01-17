@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile } from 'fs/promises'
-import { join } from 'path'
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,25 +14,13 @@ export async function POST(request: NextRequest) {
 
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-
-    // Generate unique filename
-    const timestamp = Date.now()
-    const filename = `product_${timestamp}_${file.name}`
-    const filepath = join(process.cwd(), 'public', 'uploads', filename)
-
-    // Ensure uploads directory exists
-    const fs = require('fs')
-    const uploadsDir = join(process.cwd(), 'public', 'uploads')
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true })
-    }
-
-    await writeFile(filepath, buffer)
-
-    const imageUrl = `/uploads/${filename}`
+    const base64 = buffer.toString('base64')
+    const mimeType = file.type || 'image/png'
+    const dataUrl = `data:${mimeType};base64,${base64}`
 
     return NextResponse.json({
-      path: imageUrl,
+      path: dataUrl,
+      buffer: buffer,
     })
   } catch (error) {
     console.error('Upload image error:', error)

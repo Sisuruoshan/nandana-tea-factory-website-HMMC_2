@@ -49,7 +49,7 @@ model Product {
   slug            String     @unique
   price           Float
   wholesalePrice  Float?     @map("wholesale_price")
-  image           String?
+  image           Bytes?
   origin          String?
   notes           String?
   brewingGuide    String?    @map("brewing_guide")
