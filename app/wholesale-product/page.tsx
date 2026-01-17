@@ -28,7 +28,13 @@ export default function WholesaleProductPage() {
 
   const load = async (s: string) => {
     try {
-      const res = await fetch(`/api/wholesale-products/${encodeURIComponent(s)}`)
+      // Add caching to wholesale product fetch
+      const res = await fetch(`/api/wholesale-products/${encodeURIComponent(s)}`, {
+        next: { revalidate: 60 }, // Revalidate every 60 seconds
+        headers: {
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+        },
+      })
       if (!res.ok) throw new Error('Not found')
       const data = await res.json()
       setProduct(data)
@@ -103,6 +109,8 @@ export default function WholesaleProductPage() {
             width={400}
             height={320}
             style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
+            loading="lazy"
+            priority={false}
           />
         </div>
         <div className="pd-info">

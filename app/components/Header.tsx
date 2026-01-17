@@ -48,10 +48,11 @@ export default function Header() {
   const checkSession = async () => {
     try {
       setSessionChecked(false)
+      // Use cache with short TTL to reduce server load
       const res = await fetch('/api/auth/session', { 
-        cache: 'no-store',
+        next: { revalidate: 30 }, // Revalidate every 30 seconds
         headers: {
-          'Cache-Control': 'no-cache',
+          'Cache-Control': 'private, max-age=30',
         }
       })
       const data = await res.json()
@@ -70,7 +71,13 @@ export default function Header() {
   const updateCartCount = async () => {
     if (!user) return
     try {
-      const res = await fetch('/api/cart')
+      // Cache cart count briefly to reduce API calls
+      const res = await fetch('/api/cart', {
+        next: { revalidate: 10 }, // Revalidate every 10 seconds
+        headers: {
+          'Cache-Control': 'private, max-age=10',
+        }
+      })
       if (res.ok) {
         const data = await res.json()
         const totalQuantity = data.items?.reduce((sum: number, item: any) => sum + (item.quantity || 0), 0) || 0
@@ -84,12 +91,19 @@ export default function Header() {
   useEffect(() => {
     if (user) {
       updateCartCount()
+      // Update cart count periodically when user is logged in (every 30 seconds)
+      const interval = setInterval(updateCartCount, 30000)
+      return () => clearInterval(interval)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
   useEffect(() => {
-    checkSession()
+    // Debounce session check slightly to avoid too frequent calls
+    const timeoutId = setTimeout(() => {
+      checkSession()
+    }, 100)
+    return () => clearTimeout(timeoutId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname])
 
@@ -217,6 +231,8 @@ export default function Header() {
                       className="avatar-image"
                       width={32}
                       height={32}
+                      loading="lazy"
+                      style={{ borderRadius: '50%' }}
                     />
                   ) : (
                     <i className="fa-solid fa-user-circle"></i>

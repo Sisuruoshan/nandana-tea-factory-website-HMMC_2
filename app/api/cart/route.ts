@@ -4,30 +4,46 @@ import { requireAuth } from '@/lib/auth'
 
 const FALLBACK_IMAGE = '/images/image.png'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   try {
     const user = await requireAuth()
 
+    // Optimize query: only select needed fields
     const cart = await prisma.cart.findFirst({
       where: { userId: user.id },
-      include: {
+      select: {
+        totalAmount: true,
         items: {
-          include: {
-            product: true,
+          select: {
+            id: true,
+            productId: true,
+            quantity: true,
+            price: true,
+            subtotal: true,
+            product: {
+              select: {
+                name: true,
+                image: true,
+              },
+            },
           },
         },
       },
     })
 
     if (!cart) {
-      return NextResponse.json({
+      const response = NextResponse.json({
         items: [],
         total: 0,
         count: 0,
       })
+      response.headers.set('Cache-Control', 'private, max-age=10, stale-while-revalidate=30')
+      return response
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       items: cart.items.map((item) => ({
         id: item.id,
         product_id: item.productId,
@@ -40,6 +56,11 @@ export async function GET(request: NextRequest) {
       total: Number(cart.totalAmount),
       count: cart.items.length,
     })
+    
+    // Cache cart data briefly
+    response.headers.set('Cache-Control', 'private, max-age=10, stale-while-revalidate=30')
+    
+    return response
   } catch (error: any) {
     if (error.message === 'Unauthorized') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

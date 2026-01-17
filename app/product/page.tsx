@@ -187,7 +187,13 @@ export default function ProductPage() {
 
   const loadProduct = async (slug: string) => {
     try {
-      const res = await fetch(`/api/products/${slug}`)
+      // Add caching to product fetch
+      const res = await fetch(`/api/products/${slug}`, {
+        next: { revalidate: 60 }, // Revalidate every 60 seconds
+        headers: {
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+        },
+      })
       if (res.ok) {
         const data = await res.json()
         setProduct(data)

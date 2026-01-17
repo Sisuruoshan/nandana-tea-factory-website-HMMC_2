@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 60 // Revalidate every 60 seconds
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
@@ -13,12 +16,28 @@ export async function GET(request: NextRequest) {
       where.isWholesale = false
     }
 
+    // Optimize query: only select needed fields
     const products = await prisma.product.findMany({
       where,
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        slug: true,
+        price: true,
+        image: true,
+        stock: true,
+        isWholesale: true,
+      },
       orderBy: { createdAt: 'desc' },
     })
 
-    return NextResponse.json(products)
+    const response = NextResponse.json(products)
+    
+    // Add caching headers
+    response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120')
+    
+    return response
   } catch (error) {
     console.error('Get products error:', error)
     return NextResponse.json(

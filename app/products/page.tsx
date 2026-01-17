@@ -34,7 +34,13 @@ export default function ProductsPage() {
 
   const loadProducts = async () => {
     try {
-      const res = await fetch('/api/products?is_wholesale=false')
+      // Add cache and deduplication
+      const res = await fetch('/api/products?is_wholesale=false', {
+        next: { revalidate: 60 }, // Revalidate every 60 seconds
+        headers: {
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+        },
+      })
       if (res.ok) {
         const data = await res.json()
         setProducts(data)
@@ -94,6 +100,9 @@ export default function ProductsPage() {
                 width={240}
                 height={180}
                 style={{ objectFit: 'cover' }}
+                loading="lazy"
+                placeholder="blur"
+                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
               />
               <h3>{product.name}</h3>
               <p>{product.description}</p>
