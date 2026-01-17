@@ -133,7 +133,7 @@ export default function Header() {
             <>
               {pathname === '/products' && (
                 <>
-                  <div style={{ position: 'relative', marginRight: '2px' }}>
+                  <div style={{ position: 'relative', marginRight: '2px', width: '24px', height: '24px' }}>
                     {showSearch ? (
                       <input
                         type="text"
@@ -155,7 +155,10 @@ export default function Header() {
                           fontSize: '14px',
                           width: '200px',
                           background: 'transparent',
-                          color: 'inherit'
+                          color: 'inherit',
+                          position: 'absolute',
+                          right: '0',
+                          zIndex: '10'
                         }}
                       />
                     ) : (
