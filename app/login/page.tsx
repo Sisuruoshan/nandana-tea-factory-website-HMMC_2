@@ -1,13 +1,33 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const redirect = searchParams.get('redirect') || '/'
+  const [redirect, setRedirect] = useState<string>('/')
+
+  // Determine redirect URL: use query param, or fall back to referrer, or default to /
+  useEffect(() => {
+    const queryRedirect = searchParams.get('redirect')
+    if (queryRedirect) {
+      setRedirect(queryRedirect)
+    } else if (typeof window !== 'undefined' && document.referrer) {
+      // Extract path from referrer URL
+      try {
+        const referrerUrl = new URL(document.referrer)
+        const referrerPath = referrerUrl.pathname + referrerUrl.search
+        // Only redirect to non-login/signup pages
+        if (!referrerPath.includes('/login') && !referrerPath.includes('/signup')) {
+          setRedirect(referrerPath)
+        }
+      } catch (e) {
+        // If referrer parsing fails, keep default '/'
+      }
+    }
+  }, [searchParams])
   
   const [formData, setFormData] = useState({
     email: '',

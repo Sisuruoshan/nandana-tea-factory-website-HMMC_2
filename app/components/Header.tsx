@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import Image from 'next/image'
 
 export default function Header() {
@@ -10,13 +10,12 @@ export default function Header() {
   const [cartCount, setCartCount] = useState(0)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
+  const [sessionChecked, setSessionChecked] = useState(false)
   const headerRef = useRef<HTMLElement | null>(null)
   const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
-    checkSession()
-    updateCartCount()
-
     // Match original "header.scrolled" behavior
     const onScroll = () => {
       const headerEl = headerRef.current
@@ -46,17 +45,21 @@ export default function Header() {
 
   const checkSession = async () => {
     try {
-      const res = await fetch('/api/auth/session')
+      setSessionChecked(false)
+      const res = await fetch('/api/auth/session', { cache: 'no-store' })
       const data = await res.json()
       if (data.user) {
         setUser(data.user)
       }
     } catch (error) {
       console.error('Session check error:', error)
+    } finally {
+      setSessionChecked(true)
     }
   }
 
   const updateCartCount = async () => {
+    if (!user) return
     try {
       const res = await fetch('/api/cart')
       if (res.ok) {
@@ -68,6 +71,18 @@ export default function Header() {
       console.error('Cart count error:', error)
     }
   }
+
+  useEffect(() => {
+    if (user) {
+      updateCartCount()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user])
+
+  useEffect(() => {
+    checkSession()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname])
 
   const handleLogout = async () => {
     try {
@@ -92,54 +107,6 @@ export default function Header() {
         <Link href="/about">About Us</Link>
         <Link href="/contact">Contact</Link>
       </nav>
-      <div className="header-icons" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        {user ? (
-          <>
-            <Link href="/cart" className="cart-icon" style={{ marginRight: '12px' }}>
-              <i className="fa-solid fa-shopping-cart"></i>
-              {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
-            </Link>
-            <div className="user-profile-dropdown">
-              <button
-                className="avatar-btn"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setUserMenuOpen((v) => !v)
-                }}
-                aria-label="Profile menu"
-              >
-                {user.avatar ? (
-                  <Image
-                    src={user.avatar}
-                    alt="Profile Avatar"
-                    className="avatar-image"
-                    width={32}
-                    height={32}
-                  />
-                ) : (
-                  <i className="fa-solid fa-user-circle"></i>
-                )}
-              </button>
-              <div className={`user-menu ${userMenuOpen ? 'active' : ''}`} id="userMenu">
-                  <Link href="/edit-profile" className="user-menu-item">
-                    <i className="fa-solid fa-edit"></i> Edit Profile
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="user-menu-item logout-btn"
-                  >
-                    <i className="fa-solid fa-sign-out-alt"></i> Logout
-                  </button>
-                </div>
-            </div>
-          </>
-        ) : (
-          <Link href="/login" title="Login">
-            <i className="fa-solid fa-user"></i>
-          </Link>
-        )}
-      </div>
       <div
         className={`hamburger-menu ${mobileNavOpen ? 'is-active' : ''}`}
         onClick={() => setMobileNavOpen((v) => !v)}
@@ -150,6 +117,56 @@ export default function Header() {
         <span className="bar"></span>
         <span className="bar"></span>
         <span className="bar"></span>
+      </div>
+      <div className="header-icons" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        {sessionChecked && (
+          user ? (
+            <>
+              <Link href="/cart" className="cart-icon" style={{ marginRight: '12px' }}>
+                <i className="fa-solid fa-shopping-cart"></i>
+                {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+              </Link>
+              <div className="user-profile-dropdown">
+                <button
+                  className="avatar-btn"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setUserMenuOpen((v) => !v)
+                  }}
+                  aria-label="Profile menu"
+                >
+                  {user.avatar ? (
+                    <Image
+                      src={user.avatar}
+                      alt="Profile Avatar"
+                      className="avatar-image"
+                      width={32}
+                      height={32}
+                    />
+                  ) : (
+                    <i className="fa-solid fa-user-circle"></i>
+                  )}
+                </button>
+                <div className={`user-menu ${userMenuOpen ? 'active' : ''}`} id="userMenu">
+                    <Link href="/edit-profile" className="user-menu-item">
+                      <i className="fa-solid fa-edit"></i> Edit Profile
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="user-menu-item logout-btn"
+                    >
+                      <i className="fa-solid fa-sign-out-alt"></i> Logout
+                    </button>
+                  </div>
+              </div>
+            </>
+          ) : (
+            <Link href={`/login?redirect=${encodeURIComponent(pathname)}`} title="Login">
+              <i className="fa-solid fa-user"></i>
+            </Link>
+          )
+        )}
       </div>
     </header>
   )
