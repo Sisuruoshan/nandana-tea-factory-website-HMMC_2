@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth, createSession } from '@/lib/auth'
-import { writeFile } from 'fs/promises'
-import { join } from 'path'
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,29 +15,33 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: 'File size must be less than 5MB' },
+        { status: 400 }
+      )
+    }
+
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+    if (!validTypes.includes(file.type)) {
+      return NextResponse.json(
+        { error: 'Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed' },
+        { status: 400 }
+      )
+    }
+
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
-    // Generate unique filename
-    const timestamp = Date.now()
-    const filename = `avatar_${user.id}_${timestamp}_${file.name}`
-    const filepath = join(process.cwd(), 'public', 'uploads', filename)
+    // Convert image to base64
+    const base64Image = `data:${file.type};base64,${buffer.toString('base64')}`
 
-    // Ensure uploads directory exists
-    const fs = require('fs')
-    const uploadsDir = join(process.cwd(), 'public', 'uploads')
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true })
-    }
-
-    await writeFile(filepath, buffer)
-
-    const avatarUrl = `/uploads/${filename}`
-
-    // Update user avatar in database
+    // Update user avatar in database with base64 string
     const updatedUser = await prisma.userSignup.update({
       where: { id: user.id },
-      data: { avatar: avatarUrl },
+      data: { avatar: base64Image },
       select: {
         id: true,
         name: true,
@@ -59,7 +61,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: 'Avatar uploaded successfully',
-      avatar_url: avatarUrl,
+      avatar_url: base64Image,
     })
   } catch (error: any) {
     if (error.message === 'Unauthorized') {
