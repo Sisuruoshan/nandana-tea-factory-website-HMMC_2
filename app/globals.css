@@ -351,7 +351,7 @@ nav a:hover {
 
 .page-header {
     text-align: center;
-    padding: 8rem 1rem 2rem 1rem; 
+    padding: 1rem 1rem 1rem 1rem; 
     
     
 }
@@ -467,7 +467,7 @@ nav a:hover {
 /* --- Products Page --- */
 .product-controls {
     text-align: center;
-    margin: 2rem 0;
+    margin: 0.5rem 0;
 }
 .product-controls .btn {
     background: transparent;
@@ -475,6 +475,8 @@ nav a:hover {
     border: 1px solid var(--border-color);
     border-radius: 30px;
     margin: 0 0.5rem;
+    min-width: 120px;
+    padding: 0.5rem 1.5rem;
 }
 .product-controls .btn.active {
     background: var(--accent-mint-green);
