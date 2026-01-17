@@ -33,4 +33,4 @@ export async function GET() {
     console.error('Session check error:', error)
     return NextResponse.json({ user: null })
   }
-}}
+}
