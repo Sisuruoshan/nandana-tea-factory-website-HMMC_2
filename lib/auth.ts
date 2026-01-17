@@ -6,6 +6,7 @@ export interface SessionUser {
   id: string
   name: string
   email: string
+  avatar?: string | null
 }
 
 export async function hashPassword(password: string): Promise<string> {

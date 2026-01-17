@@ -46,10 +46,17 @@ export default function Header() {
   const checkSession = async () => {
     try {
       setSessionChecked(false)
-      const res = await fetch('/api/auth/session', { cache: 'no-store' })
+      const res = await fetch('/api/auth/session', { 
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+        }
+      })
       const data = await res.json()
       if (data.user) {
         setUser(data.user)
+      } else {
+        setUser(null)
       }
     } catch (error) {
       console.error('Session check error:', error)
@@ -122,10 +129,6 @@ export default function Header() {
         {sessionChecked && (
           user ? (
             <>
-              <Link href="/cart" className="cart-icon" style={{ marginRight: '12px' }}>
-                <i className="fa-solid fa-shopping-cart"></i>
-                {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
-              </Link>
               <div className="user-profile-dropdown">
                 <button
                   className="avatar-btn"
