@@ -36,7 +36,7 @@ export default function WholesaleSignupPage() {
           email: formData.email,
           phone: formData.phone || undefined,
           address: formData.address || undefined,
-          // Note: backend stores this as an inquiry (like Laravel did), not a real auth account
+          // Note: backend stores this as an inquiry, not a real auth account
         }),
       })
 

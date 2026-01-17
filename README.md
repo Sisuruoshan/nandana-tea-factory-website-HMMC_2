@@ -1,6 +1,6 @@
 # Nandana Tea Factory Website - Next.js
 
-This is the Next.js version of the Nandana Tea Factory website, converted from Laravel.
+A modern Next.js e-commerce website for Nandana Tea Factory.
 
 ## Features
 
@@ -14,7 +14,7 @@ This is the Next.js version of the Nandana Tea Factory website, converted from L
 ## Prerequisites
 
 - Node.js 18+ and npm/yarn
-- SQLite database (or configure another database in `.env`)
+- MongoDB database
 
 ## Setup Instructions
 
@@ -29,7 +29,7 @@ This is the Next.js version of the Nandana Tea Factory website, converted from L
    ```
    
    Edit `.env` and configure:
-   - `DATABASE_URL` - Database connection string (default: `file:./database/database.sqlite`)
+   - `DATABASE_URL` - MongoDB connection string
    - `NEXTAUTH_SECRET` - A random secret string for session management
 
 3. **Set up the database:**
@@ -38,12 +38,7 @@ This is the Next.js version of the Nandana Tea Factory website, converted from L
    npx prisma db push
    ```
 
-4. **Copy images from Laravel backend:**
-   ```bash
-   cp -r backend/public/images public/
-   ```
-
-5. **Run the development server:**
+4. **Run the development server:**
    ```bash
    npm run dev
    ```
@@ -72,14 +67,6 @@ This is the Next.js version of the Nandana Tea Factory website, converted from L
 - `/api/profile` - User profile management
 - `/api/admin/*` - Admin operations
 
-## Database Migration
-
-If you have existing data from the Laravel backend, you can migrate it:
-
-1. Export data from Laravel database
-2. Import into SQLite database
-3. Or use Prisma migrations to recreate the schema
-
 ## Production Deployment
 
 1. Build the application:
@@ -94,16 +81,7 @@ If you have existing data from the Laravel backend, you can migrate it:
 
 ## Notes
 
-- Authentication uses cookie-based sessions (simplified implementation)
+- Authentication uses cookie-based sessions
 - File uploads are stored in `public/uploads/`
-- The database uses SQLite by default (can be changed to PostgreSQL/MySQL)
-- Images should be copied from the Laravel `public/images/` directory
-
-## Differences from Laravel Version
-
-- Uses Next.js App Router instead of Blade templates
-- TypeScript instead of PHP
-- Prisma ORM instead of Eloquent
-- Cookie-based sessions instead of Laravel sessions
-- React Server Components and Client Components
-- API routes use Next.js Route Handlers
+- The database uses MongoDB with Prisma ORM
+- Images are stored in `public/images/` directory
