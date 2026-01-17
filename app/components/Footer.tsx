@@ -1,8 +1,12 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 export default function Footer() {
+  const pathname = usePathname()
   return (
-    <footer>
+    <footer className={pathname === '/' ? '' : 'footer-with-bg'}>
       <div className="container footer-content footer-grid">
         <div className="footer-brand">
           <div className="footer-logo"><i className="fa-solid fa-leaf"></i> Nandana Tea</div>
