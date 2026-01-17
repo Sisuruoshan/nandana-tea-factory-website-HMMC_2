@@ -59,10 +59,13 @@ const styles = {
     borderRadius: '18px',
     padding: '18px',
     border: '1px solid rgba(255,255,255,0.06)',
+    overflow: 'hidden',
+    aspectRatio: '16 / 10',
+    maxHeight: '420px',
   },
   image: {
     width: '100%',
-    height: '100%',
+    height: 'auto',
     borderRadius: '14px',
     objectFit: 'cover' as const,
   },
@@ -239,8 +242,10 @@ export default function ProductPage() {
 
   const resolveImage = (path: string | null) => {
     if (!path) return '/images/image.png'
+    if (path.startsWith('data:')) return path
     if (path.startsWith('http')) return path
-    return `/${path.replace(/^\//, '')}`
+    const cleaned = path.replace(/^public\//, '').replace(/^\//, '')
+    return `/${cleaned}`
   }
 
   const parseBrewingGuide = (text: string | null): string[] => {
