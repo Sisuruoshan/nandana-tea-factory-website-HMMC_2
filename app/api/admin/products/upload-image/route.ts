@@ -20,7 +20,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       path: dataUrl,
-      buffer: buffer,
     })
   } catch (error) {
     console.error('Upload image error:', error)

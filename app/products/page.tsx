@@ -50,6 +50,7 @@ export default function ProductsPage() {
 
   const resolveImage = (path: string | null) => {
     if (!path) return '/images/image.png'
+    if (path.startsWith('data:')) return path
     if (path.startsWith('http')) return path
     return `/${path.replace(/^\//, '')}`
   }
