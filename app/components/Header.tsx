@@ -141,7 +141,7 @@ export default function Header() {
                   {user.avatar ? (
                     <Image
                       src={user.avatar}
-                      alt="Profile Avatar"
+                      alt="Profile Picture"
                       className="avatar-image"
                       width={32}
                       height={32}

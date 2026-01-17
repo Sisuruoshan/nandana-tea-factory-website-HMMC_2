@@ -152,7 +152,7 @@ export default function EditProfilePage() {
     uploadFormData.append('avatar', file)
 
     try {
-      showAlert('Uploading avatar...', 'info')
+      showAlert('Uploading profile picture...', 'info')
 
       const response = await fetch('/api/profile/upload-avatar', {
         method: 'POST',
@@ -162,16 +162,16 @@ export default function EditProfilePage() {
       const data = await response.json()
 
       if (response.ok) {
-        showAlert('Avatar updated successfully!', 'success')
+        showAlert('Profile picture updated successfully!', 'success')
         if (data.avatar_url && avatarPreviewRef.current) {
           avatarPreviewRef.current.src = data.avatar_url
         }
       } else {
-        showAlert(data.message || 'Failed to upload avatar', 'error')
+        showAlert(data.message || 'Failed to upload profile picture', 'error')
       }
     } catch (error) {
-      console.error('Error uploading avatar:', error)
-      showAlert('Failed to upload avatar. Please try again.', 'error')
+      console.error('Error uploading profile picture:', error)
+      showAlert('Failed to upload profile picture. Please try again.', 'error')
     }
   }
 
@@ -302,13 +302,13 @@ export default function EditProfilePage() {
                 ref={avatarPreviewRef}
                 className="profile-avatar"
                 src={user.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%2249ca7d%22%3E%3Cpath d=%22M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z%22/%3E%3C/svg%3E'}
-                alt="Profile Avatar"
+                alt="Profile Picture"
               />
               <button
                 type="button"
                 className="avatar-upload-overlay"
                 onClick={() => avatarFileRef.current?.click()}
-                title="Change avatar"
+                title="Change profile picture"
               >
                 <i className="fa-solid fa-camera"></i>
               </button>
