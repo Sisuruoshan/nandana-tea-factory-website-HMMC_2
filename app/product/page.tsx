@@ -19,15 +19,162 @@ interface Product {
   stock: number
 }
 
+const styles = {
+  page: {
+    background: 'radial-gradient(circle at 20% 20%, rgba(26, 91, 52, 0.18), transparent 35%), radial-gradient(circle at 80% 0%, rgba(32, 110, 62, 0.22), transparent 40%), #0c2416',
+    minHeight: '100vh',
+    color: '#e7f4eb',
+  },
+  container: {
+    maxWidth: '1250px',
+    margin: '0 auto',
+    padding: '120px 32px 90px',
+  },
+  heroHeading: {
+    fontFamily: 'var(--font-heading)',
+    fontSize: '3rem',
+    fontWeight: 700,
+    marginBottom: '8px',
+    textAlign: 'center' as const,
+  },
+  heroSub: {
+    color: '#bed7c8',
+    textAlign: 'center' as const,
+    marginBottom: '48px',
+    fontSize: '1.05rem',
+  },
+  layout: {
+    display: 'grid',
+    gridTemplateColumns: 'minmax(0, 1.08fr) minmax(0, 0.92fr)',
+    gap: '38px',
+    alignItems: 'center',
+    background: 'linear-gradient(135deg, rgba(13, 40, 24, 0.86), rgba(9, 30, 18, 0.92))',
+    borderRadius: '22px',
+    padding: '26px',
+    boxShadow: '0 24px 70px rgba(0,0,0,0.35)',
+    border: '1px solid rgba(255,255,255,0.04)',
+  },
+  imageWrap: {
+    background: 'linear-gradient(145deg, rgba(30, 86, 54, 0.45), rgba(16, 49, 31, 0.7))',
+    borderRadius: '18px',
+    padding: '18px',
+    border: '1px solid rgba(255,255,255,0.06)',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    borderRadius: '14px',
+    objectFit: 'cover' as const,
+  },
+  productTitle: {
+    fontFamily: 'var(--font-heading)',
+    fontSize: '2.4rem',
+    marginBottom: '10px',
+  },
+  productSub: {
+    color: '#9fc3ae',
+    marginBottom: '16px',
+    fontSize: '1.02rem',
+  },
+  price: {
+    fontSize: '2rem',
+    fontWeight: 800,
+    color: '#4ade80',
+    marginBottom: '20px',
+  },
+  qtyRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    marginBottom: '18px',
+  },
+  qtyInput: {
+    width: '80px',
+    height: '44px',
+    borderRadius: '12px',
+    border: '1px solid rgba(255,255,255,0.12)',
+    background: 'rgba(12, 36, 22, 0.8)',
+    color: '#e7f4eb',
+    textAlign: 'center' as const,
+    fontSize: '1.05rem',
+  },
+  ctaRow: {
+    display: 'flex',
+    gap: '12px',
+    alignItems: 'center',
+    flexWrap: 'wrap' as const,
+    marginBottom: '18px',
+  },
+  primaryBtn: {
+    background: '#22c55e',
+    color: '#0c2416',
+    border: 'none',
+    borderRadius: '12px',
+    padding: '14px 18px',
+    fontWeight: 800,
+    cursor: 'pointer',
+    minWidth: '180px',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '10px',
+    boxShadow: '0 12px 35px rgba(34, 197, 94, 0.28)',
+  },
+  ghostBtn: {
+    background: 'transparent',
+    color: '#e7f4eb',
+    border: '1px solid rgba(255,255,255,0.14)',
+    borderRadius: '12px',
+    padding: '14px 18px',
+    fontWeight: 700,
+    cursor: 'pointer',
+    minWidth: '180px',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '10px',
+  },
+  metaCard: {
+    background: 'rgba(12, 36, 22, 0.78)',
+    borderRadius: '14px',
+    padding: '18px',
+    border: '1px solid rgba(255,255,255,0.06)',
+  },
+  detailsGrid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '24px',
+    marginTop: '26px',
+  },
+  detailCard: {
+    background: 'rgba(12, 36, 22, 0.86)',
+    border: '1px solid rgba(255,255,255,0.06)',
+    borderRadius: '16px',
+    padding: '22px',
+  },
+  detailTitle: {
+    fontFamily: 'var(--font-heading)',
+    fontSize: '1.35rem',
+    marginBottom: '12px',
+  },
+  list: {
+    margin: 0,
+    paddingLeft: '20px',
+    lineHeight: 1.8,
+    color: '#c9dfd1',
+  },
+}
+
 export default function ProductPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const productSlug = searchParams.get('id')
-  
+
   const [product, setProduct] = useState<Product | null>(null)
   const [quantity, setQuantity] = useState(1)
   const [loading, setLoading] = useState(true)
   const [addingToCart, setAddingToCart] = useState(false)
+  const [message, setMessage] = useState<string | null>(null)
 
   useEffect(() => {
     if (productSlug) {
@@ -52,10 +199,11 @@ export default function ProductPage() {
     }
   }
 
-  const addToCart = async () => {
+  const addToCart = async (redirectToCart: boolean) => {
     if (!product) return
 
     setAddingToCart(true)
+    setMessage(null)
     try {
       const res = await fetch('/api/cart', {
         method: 'POST',
@@ -67,16 +215,19 @@ export default function ProductPage() {
       })
 
       if (res.ok) {
-        alert('Product added to cart!')
-        router.push('/cart')
+        if (redirectToCart) {
+          router.push('/cart')
+        } else {
+          setMessage('Added to cart.')
+        }
       } else if (res.status === 401) {
         router.push('/login?redirect=' + encodeURIComponent(`/product?id=${product.slug}`))
       } else {
         const data = await res.json()
-        alert(data.error || 'Failed to add to cart')
+        setMessage(data.error || 'Failed to add to cart')
       }
     } catch (error) {
-      alert('An error occurred. Please try again.')
+      setMessage('An error occurred. Please try again.')
     } finally {
       setAddingToCart(false)
     }
@@ -92,10 +243,21 @@ export default function ProductPage() {
     return `/${path.replace(/^\//, '')}`
   }
 
+  const parseBrewingGuide = (text: string | null): string[] => {
+    if (!text) {
+      return ['Steep 2-3 min', '94 c boiling water', 'drink']
+    }
+    const parts = text
+      .split(/\r?\n|•|;|\u2022|\.|,/)
+      .map((s) => s.trim())
+      .filter(Boolean)
+    return parts.length ? parts : ['Steep 2-3 min', '94 c boiling water', 'drink']
+  }
+
   if (loading) {
     return (
-      <main style={{ paddingTop: '8rem', minHeight: '60vh' }}>
-        <div className="container">
+      <main style={styles.page}>
+        <div style={styles.container}>
           <p>Loading product...</p>
         </div>
       </main>
@@ -104,8 +266,8 @@ export default function ProductPage() {
 
   if (!product) {
     return (
-      <main style={{ paddingTop: '8rem', minHeight: '60vh' }}>
-        <div className="container">
+      <main style={styles.page}>
+        <div style={styles.container}>
           <p>Product not found</p>
           <Link href="/products">Back to Products</Link>
         </div>
@@ -114,90 +276,101 @@ export default function ProductPage() {
   }
 
   return (
-    <main style={{ paddingTop: '8rem', minHeight: '60vh' }}>
-      <div className="container">
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', marginBottom: '3rem' }}>
-          <div>
+    <main style={styles.page}>
+      <div style={styles.container}>
+        <div style={styles.heroHeading}>{product.name}</div>
+        <div style={styles.heroSub}>Explore the flavors of Nandana Tea.</div>
+
+        <div style={styles.layout}>
+          <div style={styles.imageWrap}>
             <Image
               src={resolveImage(product.image)}
               alt={product.name}
-              width={500}
-              height={400}
-              style={{ width: '100%', height: 'auto', borderRadius: '12px' }}
+              width={680}
+              height={520}
+              style={styles.image}
+              priority
             />
           </div>
+
           <div>
-            <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '2.5rem', marginBottom: '1rem' }}>
-              {product.name}
-            </h1>
-            <p style={{ fontSize: '1.2rem', color: 'var(--text-medium)', marginBottom: '1.5rem' }}>
-              {product.description}
-            </p>
-            <div style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--accent-mint-green)', marginBottom: '2rem' }}>
-              {formatPrice(product.price)}
-            </div>
+            <h1 style={styles.productTitle}>{product.name}</h1>
+            <p style={styles.productSub}>{product.description || 'Premium quality green tea - updated version'}</p>
+            <div style={styles.price}>{formatPrice(product.price)}</div>
+
             {product.stock > 0 ? (
               <>
-                <div style={{ marginBottom: '1rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.5rem' }}>Quantity:</label>
-                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                    <button
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="qty-btn"
-                    >
-                      -
-                    </button>
-                    <span style={{ fontSize: '1.2rem' }}>{quantity}</span>
-                    <button
-                      onClick={() => setQuantity(quantity + 1)}
-                      className="qty-btn"
-                    >
-                      +
-                    </button>
-                  </div>
+                <div style={styles.qtyRow}>
+                  <span style={{ color: '#cde5d5', minWidth: '78px' }}>Quantity</span>
+                  <input
+                    type="number"
+                    min={1}
+                    value={quantity}
+                    onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
+                    style={styles.qtyInput}
+                  />
                 </div>
-                <button
-                  onClick={addToCart}
-                  className="btn btn-primary"
-                  disabled={addingToCart}
-                  style={{ width: '100%', padding: '1rem', fontSize: '1.1rem' }}
-                >
-                  {addingToCart ? 'Adding...' : 'Add to Cart'}
-                </button>
+
+                <div style={styles.ctaRow}>
+                  <button
+                    onClick={() => addToCart(true)}
+                    style={{ ...styles.primaryBtn, opacity: addingToCart ? 0.7 : 1 }}
+                    disabled={addingToCart}
+                  >
+                    <i className="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+                    {addingToCart ? 'Adding...' : 'Add to Cart'}
+                  </button>
+                  <button
+                    onClick={() => addToCart(true)}
+                    style={styles.ghostBtn}
+                    disabled={addingToCart}
+                  >
+                    <i className="fa-solid fa-lock" aria-hidden="true"></i>
+                    Place Order
+                  </button>
+                </div>
+                {message && <div style={{ color: '#9de6b4', marginBottom: '12px' }}>{message}</div>}
               </>
             ) : (
-              <p style={{ color: 'var(--error-color)' }}>Out of Stock</p>
+              <p style={{ color: '#fca5a5', marginBottom: '18px' }}>Out of Stock</p>
             )}
+
+            <div style={styles.metaCard}>
+              {product.longDescription && (
+                <p style={{ lineHeight: 1.7, color: '#c9dfd1' }}>{product.longDescription}</p>
+              )}
+              {!product.longDescription && (
+                <p style={{ color: '#c9dfd1' }}>Sourced from lush highlands, crafted for a smooth and aromatic cup every time.</p>
+              )}
+            </div>
           </div>
         </div>
 
-        {product.longDescription && (
-          <div style={{ marginBottom: '2rem' }}>
-            <h2 style={{ marginBottom: '1rem' }}>Description</h2>
-            <p style={{ lineHeight: '1.8' }}>{product.longDescription}</p>
+        <section style={styles.detailsGrid}>
+          <div style={styles.detailCard}>
+            <h3 style={styles.detailTitle}>Origin & Notes</h3>
+            <div style={{ color: '#c9dfd1' }}>
+              <p>{product.origin || '—'}</p>
+              {product.notes && <p>{product.notes}</p>}
+            </div>
           </div>
-        )}
 
-        {product.origin && (
-          <div style={{ marginBottom: '2rem' }}>
-            <h2 style={{ marginBottom: '1rem' }}>Origin</h2>
-            <p>{product.origin}</p>
+          <div style={styles.detailCard}>
+            <h3 style={styles.detailTitle}>Brewing Guide</h3>
+            <ul style={styles.list}>
+              {parseBrewingGuide(product.brewingGuide).map((step, i) => (
+                <li key={i}>{step}</li>
+              ))}
+            </ul>
           </div>
-        )}
 
-        {product.brewingGuide && (
-          <div style={{ marginBottom: '2rem' }}>
-            <h2 style={{ marginBottom: '1rem' }}>Brewing Guide</h2>
-            <p style={{ whiteSpace: 'pre-line' }}>{product.brewingGuide}</p>
+          <div style={{ ...styles.detailCard, gridColumn: '1 / -1' }}>
+            <h3 style={styles.detailTitle}>About this Tea</h3>
+            <p style={{ color: '#c9dfd1' }}>
+              {product.longDescription || 'High quality green tea'}
+            </p>
           </div>
-        )}
-
-        {product.notes && (
-          <div style={{ marginBottom: '2rem' }}>
-            <h2 style={{ marginBottom: '1rem' }}>Notes</h2>
-            <p>{product.notes}</p>
-          </div>
-        )}
+        </section>
       </div>
     </main>
   )

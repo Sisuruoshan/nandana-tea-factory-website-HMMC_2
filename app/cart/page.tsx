@@ -15,6 +15,131 @@ interface CartItem {
   subtotal: number
 }
 
+const styles = {
+  page: {
+    background: 'radial-gradient(circle at 18% 20%, rgba(26, 91, 52, 0.16), transparent 36%), radial-gradient(circle at 82% 8%, rgba(32, 110, 62, 0.18), transparent 32%), #0c2416',
+    minHeight: '100vh',
+    color: '#e7f4eb',
+  },
+  container: {
+    maxWidth: '1220px',
+    margin: '0 auto',
+    padding: '120px 28px 80px',
+  },
+  hero: {
+    textAlign: 'center' as const,
+    marginBottom: '36px',
+    position: 'relative' as const,
+  },
+  heroTitle: {
+    fontFamily: 'var(--font-heading)',
+    fontSize: '2.7rem',
+    marginBottom: '6px',
+  },
+  heroSub: {
+    color: '#bed7c8',
+    fontSize: '1.02rem',
+  },
+  layout: {
+    display: 'grid',
+    gridTemplateColumns: 'minmax(0, 1.15fr) minmax(0, 0.85fr)',
+    gap: '24px',
+  },
+  card: {
+    background: 'linear-gradient(145deg, rgba(12, 36, 22, 0.92), rgba(12, 36, 22, 0.78))',
+    borderRadius: '18px',
+    padding: '18px',
+    border: '1px solid rgba(255,255,255,0.06)',
+    boxShadow: '0 18px 45px rgba(0,0,0,0.32)',
+  },
+  item: {
+    display: 'grid',
+    gridTemplateColumns: '90px 1fr auto auto auto',
+    gap: '16px',
+    alignItems: 'center',
+    padding: '14px',
+    borderRadius: '14px',
+    background: 'rgba(15, 43, 25, 0.72)',
+    border: '1px solid rgba(255,255,255,0.05)',
+    marginBottom: '14px',
+  },
+  qtyBox: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    background: '#0f2b19',
+    border: '1px solid rgba(255,255,255,0.08)',
+    borderRadius: '10px',
+    padding: '8px 10px',
+  },
+  qtyButton: {
+    width: '30px',
+    height: '30px',
+    borderRadius: '8px',
+    border: '1px solid rgba(255,255,255,0.08)',
+    background: '#123820',
+    color: '#e7f4eb',
+    cursor: 'pointer',
+  },
+  price: {
+    color: '#4ade80',
+    fontWeight: 700,
+  },
+  trashBtn: {
+    background: 'none',
+    border: 'none',
+    color: '#f87171',
+    cursor: 'pointer',
+    fontSize: '1rem',
+  },
+  summary: {
+    background: 'linear-gradient(135deg, rgba(12, 36, 22, 0.9), rgba(10, 30, 18, 0.92))',
+    borderRadius: '18px',
+    padding: '20px',
+    border: '1px solid rgba(255,255,255,0.08)',
+    boxShadow: '0 18px 45px rgba(0,0,0,0.32)',
+  },
+  summaryRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginBottom: '10px',
+    color: '#d5e7dc',
+  },
+  summaryTotal: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: '12px',
+    paddingTop: '14px',
+    borderTop: '1px solid rgba(255,255,255,0.08)',
+    fontWeight: 800,
+    color: '#4ade80',
+    fontSize: '1.2rem',
+  },
+  primaryBtn: {
+    width: '100%',
+    padding: '14px',
+    borderRadius: '12px',
+    border: 'none',
+    background: '#22c55e',
+    color: '#0c2416',
+    fontWeight: 800,
+    cursor: 'pointer',
+    marginTop: '12px',
+  },
+  secondaryBtn: {
+    width: '100%',
+    padding: '13px',
+    borderRadius: '12px',
+    border: '1px solid rgba(255,255,255,0.14)',
+    background: 'transparent',
+    color: '#e7f4eb',
+    fontWeight: 700,
+    cursor: 'pointer',
+    marginTop: '10px',
+  },
+}
+
 export default function CartPage() {
   const router = useRouter()
   const [cartItems, setCartItems] = useState<CartItem[]>([])
@@ -102,21 +227,25 @@ export default function CartPage() {
 
   if (loading) {
     return (
-      <main style={{ paddingTop: '8rem', minHeight: '60vh' }}>
-        <div className="container">
+      <main style={styles.page}>
+        <div style={styles.container}>
           <p>Loading cart...</p>
         </div>
       </main>
     )
   }
 
+  const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0)
+
   return (
-    <main style={{ paddingTop: '8rem', minHeight: '60vh' }}>
-      <div className="container">
-        <div className="page-header">
-          <h1>Shopping Cart</h1>
-          <p>Review your items before checkout</p>
-        </div>
+    <main style={styles.page}>
+      <div style={styles.container}>
+        <header style={styles.hero}>
+          <div style={{ fontSize: '2.6rem' }}>
+            Your Shopping Cart
+          </div>
+          <div style={styles.heroSub}>{itemCount} {itemCount === 1 ? 'item' : 'items'} in cart</div>
+        </header>
 
         {cartItems.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '4rem 0' }}>
@@ -126,73 +255,90 @@ export default function CartPage() {
             </Link>
           </div>
         ) : (
-          <div className="cart-wrapper">
-            <div className="cart-items-section">
+          <div style={styles.layout}>
+            <section style={styles.card}>
               {cartItems.map((item) => (
-                <div key={item.id} className="cart-item-card">
-                  <div className="cart-item-image">
+                <div key={item.id} style={styles.item}>
+                  <div>
                     <Image
                       src={resolveImage(item.product_image)}
                       alt={item.product_name}
-                      width={100}
-                      height={100}
-                      style={{ objectFit: 'cover' }}
+                      width={90}
+                      height={90}
+                      style={{ borderRadius: '12px', objectFit: 'cover' }}
                     />
                   </div>
-                  <div className="cart-item-details">
-                    <h3>{item.product_name}</h3>
-                    <p>{formatPrice(item.price)} each</p>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: '1.05rem' }}>{item.product_name}</div>
+                    <div style={{ color: '#9fc3ae', fontSize: '0.95rem', marginTop: '4px' }}>Premium Tea</div>
                   </div>
-                  <div className="cart-item-quantity">
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      className="qty-btn"
-                    >
-                      -
-                    </button>
-                    <span>{item.quantity}</span>
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      className="qty-btn"
-                    >
-                      +
-                    </button>
+                  <div style={styles.price}>{formatPrice(item.price)}</div>
+                  <div>
+                    <div style={styles.qtyBox}>
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        style={styles.qtyButton}
+                        aria-label="Decrease quantity"
+                      >
+                        -
+                      </button>
+                      <span style={{ minWidth: '12px', textAlign: 'center' }}>{item.quantity}</span>
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        style={styles.qtyButton}
+                        aria-label="Increase quantity"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
-                  <div className="cart-item-subtotal">
+                  <div style={{ ...styles.price, minWidth: '82px', textAlign: 'right' }}>
                     {formatPrice(item.subtotal)}
                   </div>
                   <button
                     onClick={() => removeItem(item.id)}
-                    className="remove-btn"
+                    style={styles.trashBtn}
                     title="Remove item"
+                    aria-label={`Remove ${item.product_name}`}
                   >
-                    <i className="fa-solid fa-trash"></i>
+                    <i className="fa-solid fa-trash" aria-hidden="true"></i>
                   </button>
                 </div>
               ))}
-              <button onClick={clearCart} className="btn btn-secondary" style={{ alignSelf: 'flex-start' }}>
+              <button onClick={clearCart} style={styles.secondaryBtn}>
                 Clear Cart
               </button>
-            </div>
+            </section>
 
-            <div className="cart-summary">
-              <h2>Order Summary</h2>
-              <div className="summary-row">
+            <aside style={styles.summary}>
+              <h2 style={{ fontFamily: 'var(--font-heading)', marginBottom: '14px' }}>Order Summary</h2>
+              <div style={styles.summaryRow}>
                 <span>Subtotal</span>
                 <span>{formatPrice(total)}</span>
               </div>
-              <div className="summary-row">
+              <div style={styles.summaryRow}>
                 <span>Shipping</span>
                 <span>Calculated at checkout</span>
               </div>
-              <div className="summary-row total">
+              <div style={styles.summaryRow}>
+                <span>Taxes</span>
+                <span>Calculated at checkout</span>
+              </div>
+              <div style={styles.summaryTotal}>
                 <span>Total</span>
                 <span>{formatPrice(total)}</span>
               </div>
-              <Link href="/payment" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
-                Proceed to Checkout
+              <Link href="/payment" style={{ textDecoration: 'none' }}>
+                <button style={styles.primaryBtn}>
+                  <i className="fa-solid fa-lock" aria-hidden="true"></i>
+                  Proceed to Checkout
+                </button>
               </Link>
-            </div>
+              <button onClick={clearCart} style={styles.secondaryBtn}>
+                <i className="fa-solid fa-trash" aria-hidden="true"></i>
+                Clear Cart
+              </button>
+            </aside>
           </div>
         )}
       </div>
