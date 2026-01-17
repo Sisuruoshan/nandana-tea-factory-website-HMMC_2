@@ -56,6 +56,7 @@ export default function ProductsPage() {
 
   return (
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     <main className="container" style={{ paddingTop: '8rem' }}>
       <section className="page-header">
         <h1>Our Teas</h1>
@@ -65,6 +66,8 @@ export default function ProductsPage() {
         <Link href="/products" className="btn active">Retail</Link>
         <Link href="/wholesale" className="btn">Wholesale</Link>
 =======
+=======
+>>>>>>> Stashed changes
     <main style={{ paddingBottom: '4rem', minHeight: '100vh' }}>
       <div style={{ textAlign: 'center', paddingTop: '6rem', paddingBottom: '2rem' }}>
         <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '3rem', color: 'var(--text-light)', margin: '0 0 1.5rem 0' }}>Our Teas</h1>
@@ -73,6 +76,9 @@ export default function ProductsPage() {
           <Link href="/products" className="btn active">Retail</Link>
           <Link href="/wholesale" className="btn">Wholesale</Link>
         </div>
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
       </div>
 
