@@ -22,6 +22,16 @@ export default function ProductsPage() {
     loadProducts()
   }, [])
 
+  useEffect(() => {
+    const handleHeaderSearch = (event: CustomEvent) => {
+      setSearchQuery(event.detail)
+    }
+    window.addEventListener('headerSearch', handleHeaderSearch as EventListener)
+    return () => {
+      window.removeEventListener('headerSearch', handleHeaderSearch as EventListener)
+    }
+  }, [])
+
   const loadProducts = async () => {
     try {
       const res = await fetch('/api/products?is_wholesale=false')

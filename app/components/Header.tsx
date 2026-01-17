@@ -11,6 +11,8 @@ export default function Header() {
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [sessionChecked, setSessionChecked] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showSearch, setShowSearch] = useState(false)
   const headerRef = useRef<HTMLElement | null>(null)
   const router = useRouter()
   const pathname = usePathname()
@@ -130,28 +132,71 @@ export default function Header() {
           user ? (
             <>
               {pathname === '/products' && (
-                <Link href="/cart" title="Cart" style={{ position: 'relative', fontSize: '20px', marginRight: '8px' }}>
-                  <i className="fa-solid fa-shopping-cart"></i>
-                  {cartCount > 0 && (
-                    <span style={{
-                      position: 'absolute',
-                      top: '-8px',
-                      right: '-8px',
-                      background: '#2ecc71',
-                      color: 'white',
-                      borderRadius: '50%',
-                      width: '18px',
-                      height: '18px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '11px',
-                      fontWeight: 'bold'
-                    }}>
-                      {cartCount}
-                    </span>
-                  )}
-                </Link>
+                <>
+                  <div style={{ position: 'relative', marginRight: '2px' }}>
+                    {showSearch ? (
+                      <input
+                        type="text"
+                        placeholder="Search products..."
+                        value={searchQuery}
+                        onChange={(e) => {
+                          setSearchQuery(e.target.value)
+                          const event = new CustomEvent('headerSearch', { detail: e.target.value })
+                          window.dispatchEvent(event)
+                        }}
+                        onBlur={() => {
+                          if (!searchQuery) setShowSearch(false)
+                        }}
+                        autoFocus
+                        style={{
+                          padding: '6px 10px',
+                          border: '1px solid rgba(255, 255, 255, 0.3)',
+                          borderRadius: '4px',
+                          fontSize: '14px',
+                          width: '200px',
+                          background: 'transparent',
+                          color: 'inherit'
+                        }}
+                      />
+                    ) : (
+                      <button
+                        onClick={() => setShowSearch(true)}
+                        title="Search"
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontSize: '20px',
+                          color: 'inherit'
+                        }}
+                      >
+                        <i className="fa-solid fa-search"></i>
+                      </button>
+                    )}
+                  </div>
+                  <Link href="/cart" title="Cart" style={{ position: 'relative', fontSize: '20px', marginRight: '8px' }}>
+                    <i className="fa-solid fa-shopping-cart"></i>
+                    {cartCount > 0 && (
+                      <span style={{
+                        position: 'absolute',
+                        top: '-8px',
+                        right: '-8px',
+                        background: '#2ecc71',
+                        color: 'white',
+                        borderRadius: '50%',
+                        width: '18px',
+                        height: '18px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '11px',
+                        fontWeight: 'bold'
+                      }}>
+                        {cartCount}
+                      </span>
+                    )}
+                  </Link>
+                </>
               )}
               <div className="user-profile-dropdown">
                 <button
