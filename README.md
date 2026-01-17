@@ -1,6 +1,6 @@
 # Nandana Tea Factory Website - Next.js
 
-This is the Next.js version of the Nandana Tea Factory website, converted from Laravel.
+This is the Next.js version of the Nandana Tea Factory website.
 
 ## Features
 
@@ -38,9 +38,9 @@ This is the Next.js version of the Nandana Tea Factory website, converted from L
    npx prisma db push
    ```
 
-4. **Copy images from Laravel backend:**
+4. **Copy product images (if needed):**
    ```bash
-   cp -r backend/public/images public/
+   cp -r public/images public/
    ```
 
 5. **Run the development server:**
@@ -74,11 +74,7 @@ This is the Next.js version of the Nandana Tea Factory website, converted from L
 
 ## Database Migration
 
-If you have existing data from the Laravel backend, you can migrate it:
-
-1. Export data from Laravel database
-2. Import into SQLite database
-3. Or use Prisma migrations to recreate the schema
+If you have existing data from another backend, export and import it into your configured database or use Prisma to recreate the schema.
 
 ## Production Deployment
 
@@ -97,13 +93,13 @@ If you have existing data from the Laravel backend, you can migrate it:
 - Authentication uses cookie-based sessions (simplified implementation)
 - File uploads are stored in `public/uploads/`
 - The database uses SQLite by default (can be changed to PostgreSQL/MySQL)
-- Images should be copied from the Laravel `public/images/` directory
+-- Images should be placed in the `public/images/` directory
 
-## Differences from Laravel Version
+## Differences from Previous Version
 
-- Uses Next.js App Router instead of Blade templates
-- TypeScript instead of PHP
-- Prisma ORM instead of Eloquent
-- Cookie-based sessions instead of Laravel sessions
+-- Uses Next.js App Router
+-- TypeScript-based code
+-- Prisma ORM
+-- Cookie-based sessions
 - React Server Components and Client Components
 - API routes use Next.js Route Handlers

@@ -457,7 +457,7 @@ nav a:hover {
 /* --- Products Page --- */
 .product-controls {
     text-align: center;
-    margin: 2rem 0;
+    margin: 0;
 }
 .product-controls .btn {
     background: transparent;
@@ -473,7 +473,7 @@ nav a:hover {
 }
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 350px));
+    grid-template-columns: repeat(3, 300px);
     gap: 2rem;
     padding: 2rem 0;
     justify-content: center;

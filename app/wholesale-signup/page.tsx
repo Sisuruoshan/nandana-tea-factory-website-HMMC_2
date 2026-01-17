@@ -30,13 +30,13 @@ export default function WholesaleSignupPage() {
       const res = await fetch('/api/wholesale/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+          body: JSON.stringify({
           company: formData.company,
           name: formData.name,
           email: formData.email,
           phone: formData.phone || undefined,
           address: formData.address || undefined,
-          // Note: backend stores this as an inquiry (like Laravel did), not a real auth account
+          // Note: backend stores this as an inquiry, not a real auth account
         }),
       })
 

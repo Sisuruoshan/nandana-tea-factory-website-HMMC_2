@@ -55,6 +55,7 @@ export default function ProductsPage() {
   }
 
   return (
+<<<<<<< Updated upstream
     <main className="container" style={{ paddingTop: '8rem' }}>
       <section className="page-header">
         <h1>Our Teas</h1>
@@ -63,35 +64,48 @@ export default function ProductsPage() {
       <div className="product-controls">
         <Link href="/products" className="btn active">Retail</Link>
         <Link href="/wholesale" className="btn">Wholesale</Link>
+=======
+    <main style={{ paddingBottom: '4rem', minHeight: '100vh' }}>
+      <div style={{ textAlign: 'center', paddingTop: '6rem', paddingBottom: '2rem' }}>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '3rem', color: 'var(--text-light)', margin: '0 0 1.5rem 0' }}>Our Teas</h1>
+        
+        <div className="product-controls">
+          <Link href="/products" className="btn active">Retail</Link>
+          <Link href="/wholesale" className="btn">Wholesale</Link>
+        </div>
+>>>>>>> Stashed changes
       </div>
 
-      {loading ? (
-        <div id="product-loading" style={{ padding: '20px', textAlign: 'center', color: '#555' }}>
-          Loading products...
-        </div>
-      ) : filteredProducts.length === 0 ? (
-        <div id="no-results" style={{ padding: '20px', textAlign: 'center', color: '#555' }}>
-          No matching products found.
-        </div>
-      ) : (
-        <div className="product-grid">
-          {filteredProducts.map((product) => (
-            <div key={product.id} className="product-card">
-              <Image
-                src={resolveImage(product.image)}
-                alt={product.name}
-                width={240}
-                height={180}
-                style={{ objectFit: 'cover' }}
-              />
-              <h3>{product.name}</h3>
-              <p>{product.description}</p>
-              <div className="price">{formatPrice(product.price)}</div>
-              <Link href={`/product?id=${encodeURIComponent(product.slug)}`}>View More</Link>
-            </div>
-          ))}
-        </div>
-      )}
+      <div className="container">
+
+        {loading ? (
+          <div id="product-loading" style={{ padding: '20px', textAlign: 'center', color: '#555' }}>
+            Loading products...
+          </div>
+        ) : filteredProducts.length === 0 ? (
+          <div id="no-results" style={{ padding: '20px', textAlign: 'center', color: '#555' }}>
+            No matching products found.
+          </div>
+        ) : (
+          <div className="product-grid">
+            {filteredProducts.map((product) => (
+              <div key={product.id} className="product-card">
+                <Image
+                  src={resolveImage(product.image)}
+                  alt={product.name}
+                  width={240}
+                  height={180}
+                  style={{ objectFit: 'cover' }}
+                />
+                <h3>{product.name}</h3>
+                <p>{product.description}</p>
+                <div className="price">{formatPrice(product.price)}</div>
+                <Link href={`/product?id=${encodeURIComponent(product.slug)}`}>View More</Link>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </main>
   )
 }
