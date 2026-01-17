@@ -129,6 +129,30 @@ export default function Header() {
         {sessionChecked && (
           user ? (
             <>
+              {pathname === '/products' && (
+                <Link href="/cart" title="Cart" style={{ position: 'relative', fontSize: '20px', marginRight: '8px' }}>
+                  <i className="fa-solid fa-shopping-cart"></i>
+                  {cartCount > 0 && (
+                    <span style={{
+                      position: 'absolute',
+                      top: '-8px',
+                      right: '-8px',
+                      background: '#2ecc71',
+                      color: 'white',
+                      borderRadius: '50%',
+                      width: '18px',
+                      height: '18px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '11px',
+                      fontWeight: 'bold'
+                    }}>
+                      {cartCount}
+                    </span>
+                  )}
+                </Link>
+              )}
               <div className="user-profile-dropdown">
                 <button
                   className="avatar-btn"
