@@ -21,10 +21,10 @@ interface Product {
 
 const styles = {
   page: {
-    background: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 50%, #e8f5e9 100%)',
+    background: 'linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 50%, var(--primary-bg) 100%)',
     backgroundAttachment: 'fixed',
     minHeight: '100vh',
-    color: '#1b5e20',
+    color: 'var(--text-primary)',
   },
   container: {
     maxWidth: '1250px',
@@ -37,9 +37,10 @@ const styles = {
     fontWeight: 700,
     marginBottom: '8px',
     textAlign: 'center' as const,
+    color: 'var(--primary-green)',
   },
   heroSub: {
-    color: '#2e7d32',
+    color: 'var(--accent-green)',
     textAlign: 'center' as const,
     marginBottom: '48px',
     fontSize: '1.05rem',
@@ -49,12 +50,12 @@ const styles = {
     gridTemplateColumns: 'minmax(0, 1.08fr) minmax(0, 0.92fr)',
     gap: '38px',
     alignItems: 'center',
-    background: 'rgba(255, 255, 255, 0.7)',
+    background: 'var(--card-bg)',
     backdropFilter: 'blur(10px)',
     borderRadius: '22px',
     padding: '26px',
-    boxShadow: '0 24px 70px rgba(46, 125, 50, 0.25)',
-    border: '2px solid #a5d6a7',
+    boxShadow: '0 24px 70px var(--shadow-green)',
+    border: `2px solid var(--border-light)`,
   },
   imageWrap: {
     background: 'transparent',
@@ -75,16 +76,17 @@ const styles = {
     fontFamily: 'var(--font-heading)',
     fontSize: '2.4rem',
     marginBottom: '10px',
+    color: 'var(--primary-green)',
   },
   productSub: {
-    color: '#2e7d32',
+    color: 'var(--text-secondary)',
     marginBottom: '16px',
     fontSize: '1.02rem',
   },
   price: {
     fontSize: '2rem',
     fontWeight: 800,
-    color: '#43a047',
+    color: 'var(--accent-green)',
     marginBottom: '20px',
   },
   qtyRow: {
@@ -97,9 +99,9 @@ const styles = {
     width: '80px',
     height: '44px',
     borderRadius: '12px',
-    border: '2px solid #a5d6a7',
-    background: 'rgba(255, 255, 255, 0.9)',
-    color: '#1b5e20',
+    border: `2px solid var(--border-light)`,
+    background: 'rgba(255, 255, 255, 0.95)',
+    color: 'var(--text-primary)',
     textAlign: 'center' as const,
     fontSize: '1.05rem',
   },
@@ -111,8 +113,8 @@ const styles = {
     marginBottom: '18px',
   },
   primaryBtn: {
-    background: 'linear-gradient(135deg, #43a047 0%, #66bb6a 100%)',
-    color: 'white',
+    background: `linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%)`,
+    color: 'var(--text-on-dark)',
     border: 'none',
     borderRadius: '12px',
     padding: '14px 18px',
@@ -123,12 +125,12 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     gap: '10px',
-    boxShadow: '0 12px 35px rgba(67, 160, 71, 0.35)',
+    boxShadow: '0 4px 15px var(--shadow-green)',
   },
   ghostBtn: {
     background: 'transparent',
-    color: '#1b5e20',
-    border: '2px solid #43a047',
+    color: 'var(--primary-green)',
+    border: `2px solid var(--primary-green)`,
     borderRadius: '12px',
     padding: '14px 18px',
     fontWeight: 700,
@@ -140,12 +142,12 @@ const styles = {
     gap: '10px',
   },
   metaCard: {
-    background: 'rgba(255, 255, 255, 0.7)',
+    background: 'var(--card-bg)',
     backdropFilter: 'blur(10px)',
     borderRadius: '14px',
     padding: '18px',
-    border: '2px solid #a5d6a7',
-    boxShadow: '0 4px 16px rgba(46, 125, 50, 0.2)',
+    border: `2px solid var(--border-light)`,
+    boxShadow: '0 4px 16px var(--shadow-green)',
   },
   detailsGrid: {
     display: 'grid',
@@ -154,24 +156,24 @@ const styles = {
     marginTop: '26px',
   },
   detailCard: {
-    background: 'rgba(255, 255, 255, 0.7)',
+    background: 'var(--card-bg)',
     backdropFilter: 'blur(10px)',
-    border: '2px solid #a5d6a7',
+    border: `2px solid var(--border-light)`,
     borderRadius: '16px',
     padding: '22px',
-    boxShadow: '0 4px 16px rgba(46, 125, 50, 0.2)',
+    boxShadow: '0 4px 16px var(--shadow-green)',
   },
   detailTitle: {
     fontFamily: 'var(--font-heading)',
     fontSize: '1.35rem',
     marginBottom: '12px',
-    color: '#1b5e20',
+    color: 'var(--primary-green)',
   },
   list: {
     margin: 0,
     paddingLeft: '20px',
     lineHeight: 1.8,
-    color: '#1b5e20',
+    color: 'var(--text-secondary)',
     fontWeight: 500,
   },
 }
@@ -320,7 +322,7 @@ export default function ProductPage() {
             {product.stock > 0 ? (
               <>
                 <div style={styles.qtyRow}>
-                  <span style={{ color: '#2e7d32', minWidth: '78px', fontWeight: 600 }}>Quantity</span>
+                  <span style={{ color: 'var(--text-secondary)', minWidth: '78px', fontWeight: 600 }}>Quantity</span>
                   <input
                     type="number"
                     min={1}
@@ -348,10 +350,10 @@ export default function ProductPage() {
                     Place Order
                   </button>
                 </div>
-                {message && <div style={{ color: '#9de6b4', marginBottom: '12px' }}>{message}</div>}
+                {message && <div style={{ color: 'var(--success-color)', marginBottom: '12px' }}>{message}</div>}
               </>
             ) : (
-              <p style={{ color: '#fca5a5', marginBottom: '18px' }}>Out of Stock</p>
+              <p style={{ color: 'var(--error-color)', marginBottom: '18px' }}>Out of Stock</p>
             )}
 
 
@@ -361,7 +363,7 @@ export default function ProductPage() {
         <section style={styles.detailsGrid}>
           <div style={styles.detailCard}>
             <h3 style={styles.detailTitle}>Origin & Notes</h3>
-            <div style={{ color: '#1b5e20', fontWeight: 500 }}>
+            <div style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>
               <p>{product.origin || '—'}</p>
               {product.notes && <p>{product.notes}</p>}
             </div>
@@ -378,7 +380,7 @@ export default function ProductPage() {
 
           <div style={{ ...styles.detailCard, gridColumn: '1 / -1' }}>
             <h3 style={styles.detailTitle}>About this Tea</h3>
-            <p style={{ color: '#1b5e20', lineHeight: 1.7, fontWeight: 500 }}>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, fontWeight: 500 }}>
               {product.longDescription || 'High quality green tea'}
             </p>
           </div>
