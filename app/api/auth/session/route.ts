@@ -18,9 +18,14 @@ export async function GET() {
 
     const userData = JSON.parse(sessionData)
     
-    // Only fetch from DB if we need fresh data, otherwise use cached cookie data
-    // For better performance, we can use cookie data directly and only refresh when needed
-    // But for avatar updates, we'll fetch fresh data
+    // Validate user ID exists before querying
+    if (!userData.id) {
+      const response = NextResponse.json({ user: null })
+      response.headers.set('Cache-Control', 'private, no-cache, no-store, must-revalidate')
+      return response
+    }
+    
+    // Fetch fresh user data from database to get latest avatar and profile info
     const freshUser = await prisma.userSignup.findUnique({
       where: { id: userData.id },
       select: {
