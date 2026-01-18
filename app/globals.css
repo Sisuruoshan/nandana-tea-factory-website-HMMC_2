@@ -382,14 +382,14 @@ nav a:hover {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
+    background: linear-gradient(135deg, var(--accent-green) 0%, var(--light-green) 100%);
     color: var(--text-on-dark);
-    border: 2px solid var(--primary-green);
+    border: 2px solid var(--accent-green);
     box-shadow: 0 4px 15px var(--shadow-green);
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, var(--accent-green) 0%, var(--light-green) 100%);
+    background: linear-gradient(135deg, var(--light-green) 0%, var(--soft-green) 100%);
     transform: translateY(-2px);
     box-shadow: 0 6px 20px var(--shadow-warm);
     color: var(--text-on-dark);
@@ -456,14 +456,14 @@ body>main>section.hero {
 
 /* Original dark theme button styles for hero section buttons */
 .hero .btn-primary {
-    background: linear-gradient(135deg, var(--accent-medium-green) 0%, var(--accent-mint-green) 100%);
+    background: linear-gradient(135deg, var(--accent-mint-green) 0%, var(--accent-soft) 100%);
     color: white;
-    border: 2px solid var(--accent-medium-green);
+    border: 2px solid var(--accent-mint-green);
     box-shadow: 0 4px 15px var(--shadow-green);
 }
 
 .hero .btn-primary:hover {
-    background: linear-gradient(135deg, var(--dark-green-2) 0%, var(--accent-medium-green) 100%);
+    background: linear-gradient(135deg, var(--accent-medium-green) 0%, var(--accent-mint-green) 100%);
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4);
     color: white;
