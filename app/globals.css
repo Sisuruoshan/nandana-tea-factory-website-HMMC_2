@@ -4,6 +4,7 @@
 /* --- CSS Variables (Style Dictionary) --- */
 :root {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     /* Light green theme colors */
     --primary-light-green: #e8f5e9;
     --secondary-light-green: #c8e6c9;
@@ -41,6 +42,8 @@
     --shadow-green: rgba(46, 125, 50, 0.2);
 
 =======
+=======
+>>>>>>> Stashed changes
     /* Professional Tea Theme - Sophisticated Earth Tones */
     --primary-bg: #f8f6f3;
     --secondary-bg: #ebe8e3;
@@ -95,6 +98,9 @@
     --muted-bg: rgba(235, 232, 227, 0.5);
     
     /* Typography */
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     --font-heading: 'Lora', serif;
     --font-body: 'Montserrat', sans-serif;
@@ -563,7 +569,11 @@ body>main>section.hero {
 .page-header p {
     font-size: 1.2rem;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     color: var(--text-dark);
+=======
+    color: var(--text-secondary);
+>>>>>>> Stashed changes
 =======
     color: var(--text-secondary);
 >>>>>>> Stashed changes
@@ -595,7 +605,11 @@ body>main>section.hero {
 
 .about-text p {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     color: var(--text-dark);
+=======
+    color: var(--text-secondary);
+>>>>>>> Stashed changes
 =======
     color: var(--text-secondary);
 >>>>>>> Stashed changes
@@ -818,7 +832,11 @@ body>main>section.hero {
 
 .product-card p {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     color: var(--text-dark);
+=======
+    color: var(--text-secondary);
+>>>>>>> Stashed changes
 =======
     color: var(--text-secondary);
 >>>>>>> Stashed changes
