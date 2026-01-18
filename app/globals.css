@@ -5,6 +5,7 @@
 :root {
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     /* Light green theme colors */
     --primary-light-green: #e8f5e9;
     --secondary-light-green: #c8e6c9;
@@ -42,6 +43,8 @@
     --shadow-green: rgba(46, 125, 50, 0.2);
 
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     /* Professional Tea Theme - Sophisticated Earth Tones */
@@ -99,6 +102,9 @@
     
     /* Typography */
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
@@ -570,7 +576,11 @@ body>main>section.hero {
     font-size: 1.2rem;
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     color: var(--text-dark);
+=======
+    color: var(--text-secondary);
+>>>>>>> Stashed changes
 =======
     color: var(--text-secondary);
 >>>>>>> Stashed changes
@@ -606,7 +616,11 @@ body>main>section.hero {
 .about-text p {
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     color: var(--text-dark);
+=======
+    color: var(--text-secondary);
+>>>>>>> Stashed changes
 =======
     color: var(--text-secondary);
 >>>>>>> Stashed changes
@@ -833,7 +847,11 @@ body>main>section.hero {
 .product-card p {
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     color: var(--text-dark);
+=======
+    color: var(--text-secondary);
+>>>>>>> Stashed changes
 =======
     color: var(--text-secondary);
 >>>>>>> Stashed changes
