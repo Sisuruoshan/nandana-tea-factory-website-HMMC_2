@@ -42,7 +42,7 @@ export async function getSession(): Promise<SessionUser | null> {
 export async function createSession(user: SessionUser): Promise<void> {
   const cookieStore = await cookies()
   const sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(7)}`
-  
+
   cookieStore.set('session_id', sessionId, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -50,7 +50,15 @@ export async function createSession(user: SessionUser): Promise<void> {
     maxAge: 60 * 60 * 24 * 7, // 7 days
   })
 
-  cookieStore.set('user_data', JSON.stringify(user), {
+  // Create a lightweight user object for the cookie to avoid size limits
+  // We exclude 'avatar' as it can be large (base64) and cause cookie rejection
+  const cookieUser = {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+  }
+
+  cookieStore.set('user_data', JSON.stringify(cookieUser), {
     httpOnly: false,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
