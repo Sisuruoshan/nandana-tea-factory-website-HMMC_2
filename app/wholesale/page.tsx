@@ -47,6 +47,11 @@ export default function WholesalePage() {
         <h1>Wholesale Portal</h1>
         <p>Access exclusive pricing and bulk ordering.</p>
       </section>
+
+      <div className="product-controls">
+        <Link href="/products" className="btn">Retail</Link>
+        <Link href="/wholesale" className="btn active">Wholesale</Link>
+      </div>
       <section className="form-container" style={{ marginTop: '4rem', maxWidth: 'none' }}>
         <h2 style={{ textAlign: 'center' }}>Specific Wholesale Inquiry</h2>
 
