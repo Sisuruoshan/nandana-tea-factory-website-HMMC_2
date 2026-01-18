@@ -70,7 +70,7 @@ export default function ProfilePage() {
             <div style={{ textAlign: 'center', padding: '2rem' }}>
               <p>
                 Please{' '}
-                <Link href="/login" style={{ color: 'var(--accent-mint-green)', textDecoration: 'none', fontWeight: '600' }}>
+                <Link href="/login" style={{ color: 'var(--primary-green)', textDecoration: 'none', fontWeight: '600' }}>
                   login
                 </Link>
                 {' '}to view your profile.
@@ -126,12 +126,12 @@ export default function ProfilePage() {
                   style={{ width: '120px', height: '120px', borderRadius: '50%', objectFit: 'cover', display: 'block', margin: '0 auto' }}
                   onError={(e) => {
                     const img = e.target as HTMLImageElement
-                    img.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%2249ca7d%22%3E%3Cpath d=%22M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z%22/%3E%3C/svg%3E'
+                    img.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%222d5016%22%3E%3Cpath d=%22M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z%22/%3E%3C/svg%3E'
                   }}
                 />
               ) : (
                 <img
-                  src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%2249ca7d%22%3E%3Cpath d=%22M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z%22/%3E%3C/svg%3E"
+                  src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%222d5016%22%3E%3Cpath d=%22M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z%22/%3E%3C/svg%3E"
                   alt="default avatar"
                   style={{ width: '120px', height: '120px', borderRadius: '50%', display: 'block', margin: '0 auto' }}
                 />
@@ -145,25 +145,32 @@ export default function ProfilePage() {
 
       <style jsx>{`
         .profile-card {
-          background: var(--secondary-dark-green);
-          padding: 2rem;
-          border-radius: 12px;
-          max-width: 800px;
+          background: var(--card-bg);
+          padding: 2.5rem;
+          border-radius: 16px;
+          max-width: 850px;
           margin: 2rem auto;
-          border: 1px solid var(--border-color);
+          border: 2px solid var(--border-light);
+          box-shadow: 0 12px 40px var(--shadow-green);
+          backdrop-filter: blur(10px);
         }
 
         .profile-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 2rem;
+          margin-bottom: 2.5rem;
           flex-wrap: wrap;
-          gap: 1rem;
+          gap: 1.5rem;
+          padding-bottom: 1.5rem;
+          border-bottom: 1px solid var(--border-light);
         }
 
         .profile-header h2 {
           margin: 0;
+          font-family: var(--font-heading);
+          color: var(--primary-green);
+          font-size: 2rem;
         }
 
         .profile-actions {
@@ -174,8 +181,8 @@ export default function ProfilePage() {
 
         .profile-actions a,
         .profile-actions button {
-          padding: 0.75rem 1.5rem;
-          border-radius: 8px;
+          padding: 0.75rem 1.75rem;
+          border-radius: 30px;
           border: none;
           cursor: pointer;
           text-decoration: none;
@@ -184,106 +191,115 @@ export default function ProfilePage() {
           transition: all 0.3s ease;
           display: flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: 0.6rem;
+          white-space: nowrap;
         }
 
         .btn-edit {
-          background: var(--accent-mint-green);
-          color: var(--text-dark);
+          background: var(--primary-green);
+          color: var(--text-on-dark);
+          box-shadow: 0 4px 12px var(--shadow-green);
         }
 
         .btn-edit:hover {
-          background: var(--accent-soft);
+          background: var(--accent-green);
           transform: translateY(-2px);
-          box-shadow: 0 4px 8px rgba(73, 202, 125, 0.2);
+          box-shadow: 0 6px 16px var(--shadow-warm);
         }
 
         .btn-logout {
           background: transparent;
-          color: var(--text-light);
-          border: 1.5px solid var(--accent-mint-green);
+          color: var(--text-secondary);
+          border: 2px solid var(--border-color);
         }
 
         .btn-logout:hover {
-          background: var(--accent-mint-green);
-          color: var(--text-dark);
+          background: var(--error-color);
+          color: white;
+          border-color: var(--error-color);
         }
 
         .profile-grid {
           display: grid;
-          grid-template-columns: 1fr 320px;
-          gap: 1.5rem;
+          grid-template-columns: 1fr 340px;
+          gap: 2.5rem;
         }
 
         .avatar {
           width: 100%;
-          max-width: 260px;
-          border-radius: 12px;
-          background: var(--card-bg);
-          padding: 1rem;
+          border-radius: 16px;
+          background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.4) 100%);
+          padding: 2rem;
           text-align: center;
+          border: 1px solid var(--border-light);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
 
         .avatar img {
-          width: 120px;
-          height: 120px;
+          width: 140px;
+          height: 140px;
           border-radius: 50%;
+          border: 4px solid var(--primary-green);
+          box-shadow: 0 8px 20px var(--shadow-green);
         }
 
         .profile-info {
           display: flex;
           flex-direction: column;
-          gap: 1rem;
+          gap: 1.5rem;
         }
 
         .info-group {
-          border-bottom: 1px solid var(--border-color);
-          padding-bottom: 1rem;
+          padding: 1rem;
+          background: rgba(255,255,255,0.5);
+          border-radius: 12px;
+          border: 1px solid transparent;
+          transition: all 0.3s;
         }
 
-        .info-group:last-child {
-          border-bottom: none;
+        .info-group:hover {
+          background: rgba(255,255,255,0.8);
+          border-color: var(--border-light);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
 
         .info-label {
-          font-size: 0.85rem;
-          color: var(--text-medium);
+          font-size: 0.8rem;
+          color: var(--text-light);
           text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-bottom: 0.5rem;
+          font-weight: 600;
         }
 
         .info-value {
-          font-size: 1rem;
-          color: var(--text-light);
+          font-size: 1.1rem;
+          color: var(--text-primary);
           font-weight: 500;
+          font-family: var(--font-heading);
         }
 
-        @media (max-width: 768px) {
-          .profile-header {
-            flex-direction: column;
-            align-items: flex-start;
-          }
-
+        @media (max-width: 900px) {
           .profile-grid {
             grid-template-columns: 1fr;
+            gap: 2rem;
           }
-
-          .avatar {
-            max-width: 100%;
+          .profile-header {
+             flex-direction: column; 
+             align-items: flex-start;
           }
-
-          .profile-card {
-            padding: 1.5rem;
-          }
-
           .profile-actions {
             width: 100%;
           }
-
-          .profile-actions a,
+           .profile-actions a,
           .profile-actions button {
             flex: 1;
             justify-content: center;
           }
+           .avatar {
+            order: -1;
+            margin-bottom: 1rem;
+           }
         }
       `}</style>
     </main>

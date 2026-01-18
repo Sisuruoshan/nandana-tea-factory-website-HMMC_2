@@ -35,7 +35,7 @@ export default function EditProfilePage() {
     password: '',
     password_confirmation: '',
   })
-  const [passwordStrength, setPasswordStrength] = useState<'weak' | 'medium' | 'strong' | ''>('')
+
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -93,27 +93,12 @@ export default function EditProfilePage() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const checkPasswordStrength = (password: string) => {
-    if (!password) {
-      setPasswordStrength('')
-      return
-    }
 
-    let strength = 0
-    if (password.length >= 8) strength++
-    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++
-    if (/\d/.test(password)) strength++
-    if (/[^a-zA-Z\d]/.test(password)) strength++
-
-    if (strength === 1) setPasswordStrength('weak')
-    else if (strength === 2 || strength === 3) setPasswordStrength('medium')
-    else if (strength >= 4) setPasswordStrength('strong')
-  }
 
   const handleNewPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target
     setFormData((prev) => ({ ...prev, password: value }))
-    checkPasswordStrength(value)
+
     validatePasswordMatch(value, formData.password_confirmation)
   }
 
@@ -267,13 +252,12 @@ export default function EditProfilePage() {
           {alerts.map((alert) => (
             <div key={alert.id} className={`alert alert-${alert.type}`}>
               <i
-                className={`fa-solid ${
-                  alert.type === 'success'
-                    ? 'fa-check-circle'
-                    : alert.type === 'error'
-                      ? 'fa-exclamation-circle'
-                      : 'fa-info-circle'
-                } alert-icon`}
+                className={`fa-solid ${alert.type === 'success'
+                  ? 'fa-check-circle'
+                  : alert.type === 'error'
+                    ? 'fa-exclamation-circle'
+                    : 'fa-info-circle'
+                  } alert-icon`}
               ></i>
               <div className="alert-content">{alert.message}</div>
               <button
@@ -289,7 +273,7 @@ export default function EditProfilePage() {
 
         <div className="page-header">
           <h1>
-            <i className="fa-solid fa-user-edit" style={{ marginRight: '0.5rem', color: 'var(--accent-mint-green)' }}></i>
+            <i className="fa-solid fa-user-edit" style={{ marginRight: '0.5rem', color: 'var(--primary-green)' }}></i>
             Edit Your Profile
           </h1>
           <p>Update your personal information and account settings</p>
@@ -301,7 +285,7 @@ export default function EditProfilePage() {
               <img
                 ref={avatarPreviewRef}
                 className="profile-avatar"
-                src={user.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%2249ca7d%22%3E%3Cpath d=%22M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z%22/%3E%3C/svg%3E'}
+                src={user.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%222d5016%22%3E%3Cpath d=%22M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z%22/%3E%3C/svg%3E'}
                 alt="Profile Picture"
               />
               <button
@@ -468,9 +452,7 @@ export default function EditProfilePage() {
                   >
                     <i className={`fa-solid ${showNewPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
                   </button>
-                  <div className="password-strength">
-                    <div className={`password-strength-bar ${passwordStrength}`}></div>
-                  </div>
+
                   <span className="form-hint">
                     <i className="fa-solid fa-lock"></i>
                     Leave blank to keep current password
@@ -499,8 +481,8 @@ export default function EditProfilePage() {
                       color:
                         formData.password && formData.password_confirmation
                           ? passwordsMatch
-                            ? 'var(--accent-mint-green)'
-                            : '#ff6b6b'
+                            ? 'var(--success-color)'
+                            : 'var(--error-color)'
                           : 'var(--text-medium)',
                     }}
                   >
@@ -544,10 +526,10 @@ export default function EditProfilePage() {
 
       <style jsx>{`
         .edit-profile-page {
-          padding-top: 7rem;
-          padding-bottom: 4rem;
+          padding-top: 8rem;
+          padding-bottom: 5rem;
           min-height: 100vh;
-          background: linear-gradient(135deg, var(--primary-dark-green) 0%, #051d0d 100%);
+          /* Background handled by global body */
         }
 
         .edit-profile-container {
@@ -576,7 +558,7 @@ export default function EditProfilePage() {
         .page-header h1 {
           font-family: var(--font-heading);
           font-size: 2.75rem;
-          color: var(--text-light);
+          color: var(--primary-green);
           margin-bottom: 0.75rem;
           font-weight: 700;
           letter-spacing: -0.5px;
@@ -584,18 +566,18 @@ export default function EditProfilePage() {
         }
 
         .page-header p {
-          color: var(--text-medium);
+          color: var(--text-secondary);
           font-size: 1.15rem;
-          font-weight: 400;
+          font-weight: 500;
         }
 
         .edit-profile-card {
-          background: rgba(21, 50, 30, 0.95);
+          background: var(--card-bg);
           backdrop-filter: blur(20px);
           padding: 3.5rem;
           border-radius: 20px;
-          border: 1px solid rgba(73, 202, 125, 0.25);
-          box-shadow: 0 25px 70px rgba(0, 0, 0, 0.5);
+          border: 2px solid var(--border-light);
+          box-shadow: 0 25px 70px var(--shadow-green);
           animation: fadeInUp 0.7s ease;
         }
 
@@ -616,13 +598,9 @@ export default function EditProfilePage() {
           gap: 2.5rem;
           margin-bottom: 3.5rem;
           padding: 2.5rem;
-          background: linear-gradient(
-            135deg,
-            rgba(73, 202, 125, 0.12) 0%,
-            rgba(73, 202, 125, 0.06) 100%
-          );
+          background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.3) 100%);
           border-radius: 16px;
-          border: 1px solid rgba(73, 202, 125, 0.25);
+          border: 1px solid var(--border-light);
           position: relative;
           overflow: hidden;
         }
@@ -634,7 +612,7 @@ export default function EditProfilePage() {
           left: 0;
           right: 0;
           height: 4px;
-          background: linear-gradient(90deg, var(--accent-mint-green) 0%, #3ab366 100%);
+          background: linear-gradient(90deg, var(--primary-green) 0%, var(--accent-green) 100%);
         }
 
         .profile-avatar-container {
@@ -647,24 +625,24 @@ export default function EditProfilePage() {
           height: 130px;
           border-radius: 50%;
           object-fit: cover;
-          border: 5px solid var(--accent-mint-green);
-          box-shadow: 0 10px 30px rgba(73, 202, 125, 0.4);
+          border: 4px solid var(--primary-green);
+          box-shadow: 0 10px 30px var(--shadow-green);
           transition: all 0.3s ease;
-          background: rgba(21, 50, 30, 0.8);
+          background: #fff;
         }
 
         .profile-avatar:hover {
           transform: scale(1.05);
-          box-shadow: 0 15px 40px rgba(73, 202, 125, 0.5);
+          box-shadow: 0 15px 40px rgba(0,0,0,0.1);
         }
 
         .avatar-upload-overlay {
           position: absolute;
           bottom: 5px;
           right: 5px;
-          background: var(--accent-mint-green);
-          color: var(--primary-dark-green);
-          border: 4px solid rgba(21, 50, 30, 0.95);
+          background: var(--primary-green);
+          color: white;
+          border: 3px solid #fff;
           border-radius: 50%;
           width: 45px;
           height: 45px;
@@ -674,13 +652,12 @@ export default function EditProfilePage() {
           justify-content: center;
           font-size: 1.1rem;
           transition: all 0.3s ease;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         .avatar-upload-overlay:hover {
-          background: #3ab366;
+          background: var(--accent-green);
           transform: scale(1.15);
-          box-shadow: 0 6px 20px rgba(73, 202, 125, 0.6);
         }
 
         .avatar-upload-overlay:active {
@@ -694,30 +671,30 @@ export default function EditProfilePage() {
         .profile-header-info h2 {
           font-family: var(--font-heading);
           font-size: 2rem;
-          color: var(--text-light);
+          color: var(--primary-green);
           margin: 0 0 0.75rem 0;
           font-weight: 700;
           letter-spacing: -0.3px;
         }
 
         .profile-header-info p {
-          color: var(--text-medium);
+          color: var(--text-secondary);
           font-size: 1.05rem;
           margin: 0 0 1rem 0;
-          font-weight: 400;
+          font-weight: 500;
         }
 
         .profile-status-badge {
           display: inline-flex;
           align-items: center;
           gap: 0.6rem;
-          background: rgba(73, 202, 125, 0.25);
-          color: var(--accent-mint-green);
+          background: var(--primary-light-green);
+          color: var(--primary-green);
           padding: 0.65rem 1.25rem;
           border-radius: 25px;
           font-size: 0.95rem;
           font-weight: 700;
-          border: 1px solid rgba(73, 202, 125, 0.3);
+          border: 1px solid var(--border-light);
         }
 
         .form-section {
@@ -734,27 +711,27 @@ export default function EditProfilePage() {
           gap: 1rem;
           margin-bottom: 2rem;
           padding-bottom: 1.25rem;
-          border-bottom: 2px solid rgba(73, 202, 125, 0.25);
+          border-bottom: 2px solid var(--border-light);
         }
 
         .form-section-icon {
           width: 48px;
           height: 48px;
-          background: linear-gradient(135deg, var(--accent-mint-green) 0%, #3ab366 100%);
+          background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
           border-radius: 12px;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: var(--primary-dark-green);
+          color: white;
           font-size: 1.3rem;
-          box-shadow: 0 4px 12px rgba(73, 202, 125, 0.3);
+          box-shadow: 0 4px 12px var(--shadow-green);
         }
 
         .form-section-title {
           font-family: var(--font-heading);
           font-size: 1.5rem;
           font-weight: 700;
-          color: var(--text-light);
+          color: var(--primary-green);
           margin: 0;
           letter-spacing: -0.3px;
         }
@@ -778,7 +755,7 @@ export default function EditProfilePage() {
         .form-label {
           font-size: 1rem;
           font-weight: 700;
-          color: var(--text-light);
+          color: var(--text-primary);
           margin-bottom: 0.75rem;
           display: flex;
           align-items: center;
@@ -786,41 +763,41 @@ export default function EditProfilePage() {
         }
 
         .form-label .required {
-          color: #ff6b6b;
+          color: var(--error-color);
           font-size: 1rem;
           font-weight: 700;
         }
 
         .form-input {
           padding: 1rem 1.25rem;
-          border: 2px solid rgba(73, 202, 125, 0.3);
+          border: 2px solid var(--border-light);
           border-radius: 12px;
           font-size: 1rem;
-          background: rgba(21, 50, 30, 0.6);
-          color: var(--text-light);
+          background: rgba(255, 255, 255, 0.9);
+          color: var(--text-primary);
           font-family: inherit;
           transition: all 0.3s ease;
           font-weight: 500;
         }
 
         .form-input::placeholder {
-          color: rgba(255, 255, 255, 0.35);
+          color: var(--text-light);
           font-weight: 400;
         }
 
         .form-input:focus {
           outline: none;
-          border-color: var(--accent-mint-green);
-          background: rgba(21, 50, 30, 0.8);
-          box-shadow: 0 0 0 5px rgba(73, 202, 125, 0.15);
+          border-color: var(--primary-green);
+          background: #fff;
+          box-shadow: 0 0 0 5px var(--shadow-green);
           transform: translateY(-1px);
         }
 
         .form-input:disabled {
-          background: rgba(21, 50, 30, 0.3);
+          background: var(--muted-bg);
           cursor: not-allowed;
-          opacity: 0.6;
-          border-color: rgba(73, 202, 125, 0.15);
+          opacity: 0.8;
+          border-color: var(--border-light);
         }
 
         .form-textarea {
@@ -832,12 +809,12 @@ export default function EditProfilePage() {
 
         .form-hint {
           font-size: 0.875rem;
-          color: var(--text-medium);
+          color: var(--text-secondary);
           margin-top: 0.65rem;
           display: flex;
           align-items: center;
           gap: 0.5rem;
-          font-weight: 400;
+          font-weight: 500;
         }
 
         .form-hint i {
@@ -852,10 +829,10 @@ export default function EditProfilePage() {
         .password-toggle-btn {
           position: absolute;
           right: 1rem;
-          top: 2.5rem;
+          top: 2.7rem;
           background: none;
           border: none;
-          color: var(--text-medium);
+          color: var(--text-secondary);
           cursor: pointer;
           padding: 0.5rem;
           font-size: 1rem;
@@ -863,13 +840,13 @@ export default function EditProfilePage() {
         }
 
         .password-toggle-btn:hover {
-          color: var(--accent-mint-green);
+          color: var(--primary-green);
         }
 
         .password-strength {
           margin-top: 0.5rem;
           height: 4px;
-          background: rgba(73, 202, 125, 0.2);
+          background: var(--border-light);
           border-radius: 2px;
           overflow: hidden;
         }
@@ -883,17 +860,17 @@ export default function EditProfilePage() {
 
         .password-strength-bar.weak {
           width: 33%;
-          background: #ff6b6b;
+          background: var(--error-color);
         }
 
         .password-strength-bar.medium {
           width: 66%;
-          background: #ffd93d;
+          background: var(--warning-color);
         }
 
         .password-strength-bar.strong {
           width: 100%;
-          background: var(--accent-mint-green);
+          background: var(--success-color);
         }
 
         .form-actions {
@@ -901,7 +878,7 @@ export default function EditProfilePage() {
           gap: 1rem;
           margin-top: 3rem;
           padding-top: 2rem;
-          border-top: 2px solid rgba(73, 202, 125, 0.2);
+          border-top: 2px solid var(--border-light);
         }
 
         .btn {
@@ -926,14 +903,14 @@ export default function EditProfilePage() {
         }
 
         .btn-primary {
-          background: linear-gradient(135deg, var(--accent-mint-green) 0%, #3ab366 100%);
-          color: var(--primary-dark-green);
-          box-shadow: 0 4px 12px rgba(73, 202, 125, 0.3);
+          background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
+          color: var(--text-on-dark);
+          box-shadow: 0 4px 12px var(--shadow-green);
         }
 
         .btn-primary:hover:not(:disabled) {
           transform: translateY(-2px);
-          box-shadow: 0 8px 24px rgba(73, 202, 125, 0.4);
+          box-shadow: 0 8px 24px var(--shadow-green);
         }
 
         .btn-primary:active:not(:disabled) {
@@ -942,13 +919,14 @@ export default function EditProfilePage() {
 
         .btn-secondary {
           background: transparent;
-          color: var(--text-light);
-          border: 2px solid rgba(73, 202, 125, 0.3);
+          color: var(--text-secondary);
+          border: 2px solid var(--border-light);
         }
 
         .btn-secondary:hover {
-          background: rgba(73, 202, 125, 0.1);
-          border-color: var(--accent-mint-green);
+          background: var(--muted-bg);
+          border-color: var(--primary-green);
+          color: var(--primary-green);
         }
 
         .spinner {
@@ -983,7 +961,7 @@ export default function EditProfilePage() {
           display: flex;
           align-items: flex-start;
           gap: 1rem;
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
           animation: slideIn 0.3s ease;
           backdrop-filter: blur(10px);
         }
@@ -1049,17 +1027,17 @@ export default function EditProfilePage() {
         }
 
         .access-denied-card {
-          background: rgba(21, 50, 30, 0.95);
+          background: var(--card-bg);
           backdrop-filter: blur(20px);
           padding: 3rem;
           border-radius: 16px;
-          border: 1px solid rgba(73, 202, 125, 0.2);
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+          border: 2px solid var(--border-light);
+          box-shadow: 0 20px 60px var(--shadow-green);
         }
 
         .access-denied-icon {
           font-size: 4rem;
-          color: var(--accent-mint-green);
+          color: var(--primary-green);
           margin-bottom: 1.5rem;
           opacity: 0.8;
         }
@@ -1067,12 +1045,12 @@ export default function EditProfilePage() {
         .access-denied-card h2 {
           font-family: var(--font-heading);
           font-size: 2rem;
-          color: var(--text-light);
+          color: var(--text-primary);
           margin: 0 0 1rem 0;
         }
 
         .access-denied-card p {
-          color: var(--text-medium);
+          color: var(--text-secondary);
           font-size: 1.1rem;
           margin-bottom: 2rem;
         }
@@ -1081,25 +1059,25 @@ export default function EditProfilePage() {
           display: inline-flex;
           align-items: center;
           gap: 0.75rem;
-          background: linear-gradient(135deg, var(--accent-mint-green) 0%, #3ab366 100%);
-          color: var(--primary-dark-green);
+          background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
+          color: var(--text-on-dark);
           padding: 1rem 2.5rem;
           border-radius: 10px;
           text-decoration: none;
           font-weight: 700;
           font-size: 1.1rem;
           transition: all 0.3s ease;
-          box-shadow: 0 4px 12px rgba(73, 202, 125, 0.3);
+          box-shadow: 0 4px 12px var(--shadow-green);
         }
 
         .btn-login:hover {
           transform: translateY(-2px);
-          box-shadow: 0 8px 24px rgba(73, 202, 125, 0.4);
+          box-shadow: 0 8px 24px var(--shadow-green);
         }
 
         @media (max-width: 768px) {
           .edit-profile-page {
-            padding-top: 5rem;
+            padding-top: 6rem;
           }
 
           .page-header h1 {
