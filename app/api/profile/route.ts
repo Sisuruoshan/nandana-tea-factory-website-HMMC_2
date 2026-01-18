@@ -27,7 +27,10 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    return NextResponse.json(userData)
+    const response = NextResponse.json(userData)
+    // Do not cache profile data
+    response.headers.set('Cache-Control', 'private, no-cache, no-store, must-revalidate')
+    return response
   } catch (error: any) {
     if (error.message === 'Unauthorized') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -89,7 +92,7 @@ export async function PUT(request: NextRequest) {
 
     // Build update data object
     const updateData: any = {}
-    
+
     if (name) updateData.name = name
     if (email && email !== user.email) updateData.email = email
     if (phone !== undefined) updateData.phone = phone
@@ -125,7 +128,7 @@ export async function PUT(request: NextRequest) {
       }
 
       const isPasswordValid = await bcrypt.compare(current_password, userData.password)
-      
+
       if (!isPasswordValid) {
         return NextResponse.json(
           { message: 'Current password is incorrect' },

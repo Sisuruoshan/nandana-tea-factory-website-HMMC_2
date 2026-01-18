@@ -48,12 +48,9 @@ export default function Header() {
   const checkSession = async () => {
     try {
       setSessionChecked(false)
-      // Use cache with short TTL to reduce server load
+      // Disable cache to ensure accurate session state
       const res = await fetch('/api/auth/session', {
-        next: { revalidate: 30 }, // Revalidate every 30 seconds
-        headers: {
-          'Cache-Control': 'private, max-age=30',
-        }
+        cache: 'no-store'
       })
       const data = await res.json()
       if (data.user) {
@@ -169,7 +166,7 @@ export default function Header() {
                           fontSize: '14px',
                           width: '200px',
                           background: 'transparent',
-                          color: 'inherit',
+                          color: '#ffffff',
                           position: 'absolute',
                           right: '0',
                           zIndex: '10'
