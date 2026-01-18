@@ -3,6 +3,7 @@
 
 /* --- CSS Variables (Style Dictionary) --- */
 :root {
+<<<<<<< Updated upstream
     /* Light green theme colors */
     --primary-light-green: #e8f5e9;
     --secondary-light-green: #c8e6c9;
@@ -39,6 +40,62 @@
     --muted-bg: rgba(200, 230, 201, 0.3);
     --shadow-green: rgba(46, 125, 50, 0.2);
 
+=======
+    /* Professional Tea Theme - Sophisticated Earth Tones */
+    --primary-bg: #f8f6f3;
+    --secondary-bg: #ebe8e3;
+    --card-bg: rgba(255, 255, 255, 0.9);
+    --card-bg-hover: rgba(255, 255, 255, 0.95);
+    
+    /* Deep Forest Greens - Professional Primary Colors */
+    --primary-green: #2d5016;
+    --accent-green: #4a7c2c;
+    --light-green: #6b9d4a;
+    --soft-green: #8cb369;
+    
+    /* Warm Earth Accents */
+    --accent-bronze: #b8956a;
+    --accent-gold: #d4af6a;
+    --warm-brown: #6b5b45;
+    
+    /* Text Colors - High Contrast for Readability */
+    --text-primary: #1a1a1a;
+    --text-secondary: #4a4a4a;
+    --text-light: #6b6b6b;
+    --text-on-dark: #f8f6f3;
+    
+    /* Legacy Compatibility - Map to New Colors */
+    --primary-light-green: #f8f6f3;
+    --secondary-light-green: #ebe8e3;
+    --accent-dark-green: #2d5016;
+    --accent-medium-green: #4a7c2c;
+    --accent-mint-green: #6b9d4a;
+    --accent-soft: #8cb369;
+    --dark-green-1: #2d5016;
+    --dark-green-2: #4a7c2c;
+    --dark-green-3: #6b9d4a;
+    --primary-dark-green: #1a2e0f;
+    --secondary-dark-green: #253d18;
+    --text-medium: #4a4a4a;
+    --text-dark: #1a1a1a;
+    --text-on-light: #2d5016;
+    
+    /* Borders & Shadows */
+    --border-color: #d4c5b0;
+    --border-light: #e8dcc8;
+    --shadow-green: rgba(45, 80, 22, 0.15);
+    --shadow-warm: rgba(107, 91, 69, 0.12);
+    
+    /* Status & Alert Colors */
+    --error-color: #c1503d;
+    --success-color: #4a7c2c;
+    --warning-color: #d4af6a;
+    
+    /* Muted Backgrounds */
+    --muted-bg: rgba(235, 232, 227, 0.5);
+    
+    /* Typography */
+>>>>>>> Stashed changes
     --font-heading: 'Lora', serif;
     --font-body: 'Montserrat', sans-serif;
 }
@@ -51,9 +108,9 @@
 }
 
 body {
-    background: linear-gradient(135deg, var(--primary-light-green) 0%, var(--secondary-light-green) 50%, #e8f5e9 100%);
+    background: linear-gradient(135deg, #f8f6f3 0%, #ebe8e3 50%, #f5f3ef 100%);
     background-attachment: fixed;
-    color: var(--text-dark);
+    color: var(--text-primary);
     font-family: var(--font-body);
     min-height: 100vh;
     display: flex;
@@ -81,20 +138,21 @@ header {
     width: 100%;
     z-index: 1000;
     padding: 1.5rem 2rem;
-    background-color: #012403;
-    /* make top navigation black */
+    background: linear-gradient(135deg, var(--primary-dark-green) 0%, var(--secondary-dark-green) 100%);
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid transparent;
-    transition: background-color 0.4s, padding 0.4s, border-bottom 0.4s;
+    transition: background-color 0.4s, padding 0.4s, border-bottom 0.4s, box-shadow 0.4s;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 header.scrolled {
-    background-color: #03411d;
-    /* keep black when scrolled */
+    background: rgba(26, 46, 15, 0.98);
+    backdrop-filter: blur(10px);
     padding: 1rem 2rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--accent-bronze);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .logo {
@@ -121,7 +179,7 @@ nav a {
 }
 
 nav a:hover {
-    color: var(--accent-mint-green);
+    color: var(--accent-gold);
 }
 
 .header-icons a {
@@ -132,7 +190,7 @@ nav a:hover {
 }
 
 .header-icons a:hover {
-    color: var(--accent-mint-green);
+    color: var(--accent-gold);
 }
 
 .search-cart-container {
@@ -363,28 +421,28 @@ nav a:hover {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--accent-medium-green) 0%, var(--accent-mint-green) 100%);
-    color: white;
-    border: 2px solid var(--accent-medium-green);
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
+    color: var(--text-on-dark);
+    border: 2px solid var(--primary-green);
     box-shadow: 0 4px 15px var(--shadow-green);
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, var(--dark-green-2) 0%, var(--accent-medium-green) 100%);
+    background: linear-gradient(135deg, var(--accent-green) 0%, var(--light-green) 100%);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4);
-    color: white;
+    box-shadow: 0 6px 20px var(--shadow-warm);
+    color: var(--text-on-dark);
 }
 
 .btn-secondary {
     background-color: transparent;
-    color: var(--dark-green-1);
-    border: 2px solid var(--accent-medium-green);
+    color: var(--primary-green);
+    border: 2px solid var(--accent-green);
 }
 
 .btn-secondary:hover {
-    background-color: var(--accent-medium-green);
-    color: white;
+    background-color: var(--accent-green);
+    color: var(--text-on-dark);
     transform: translateY(-2px);
 }
 
@@ -475,7 +533,7 @@ body>main>section.hero {
 .page-header1 h1 {
     font-family: var(--font-heading);
     font-size: 3.5rem;
-    color: var(--dark-green-1);
+    color: var(--primary-green);
     text-shadow: 0 2px 10px rgba(255, 255, 255, 0.8);
 }
 
@@ -498,13 +556,17 @@ body>main>section.hero {
 .page-header h1 {
     font-family: var(--font-heading);
     font-size: 3.5rem;
-    color: var(--dark-green-1);
+    color: var(--primary-green);
     text-shadow: 0 2px 10px rgba(255, 255, 255, 0.8);
 }
 
 .page-header p {
     font-size: 1.2rem;
+<<<<<<< Updated upstream
     color: var(--text-dark);
+=======
+    color: var(--text-secondary);
+>>>>>>> Stashed changes
     max-width: 600px;
     margin: 1rem auto 0;
     font-weight: 600;
@@ -528,11 +590,15 @@ body>main>section.hero {
     font-family: var(--font-heading);
     font-size: 2.5rem;
     margin-bottom: 1rem;
-    color: var(--dark-green-1);
+    color: var(--primary-green);
 }
 
 .about-text p {
+<<<<<<< Updated upstream
     color: var(--text-dark);
+=======
+    color: var(--text-secondary);
+>>>>>>> Stashed changes
     line-height: 1.8;
     font-weight: 500;
 }
@@ -556,26 +622,27 @@ body>main>section.hero {
     padding: 2.5rem;
     border-radius: 12px;
     border: 2px solid var(--border-light);
-    box-shadow: 0 8px 24px var(--shadow-green);
+    box-shadow: 0 8px 24px var(--shadow-warm);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .cert-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 12px 32px rgba(46, 125, 50, 0.3);
+    box-shadow: 0 12px 32px var(--shadow-green);
     background: var(--card-bg-hover);
+    border-color: var(--accent-bronze);
 }
 
 .cert-card i {
     font-size: 2.5rem;
-    color: var(--accent-medium-green);
+    color: var(--accent-green);
     margin-bottom: 1rem;
 }
 
 .cert-card h3 {
     font-size: 1.2rem;
     font-weight: 500;
-    color: var(--dark-green-1);
+    color: var(--primary-green);
 }
 
 /* --- Product Detail Page --- */
@@ -596,11 +663,11 @@ body>main>section.hero {
     font-family: var(--font-heading);
     font-size: 2.25rem;
     margin-bottom: 1rem;
-    color: var(--dark-green-1);
+    color: var(--primary-green);
 }
 
 .pd-desc {
-    color: var(--dark-green-2);
+    color: var(--text-secondary);
     margin-bottom: 1rem;
 }
 
@@ -628,8 +695,8 @@ body>main>section.hero {
 
 .pd-actions input[type="number"]:focus {
     outline: none;
-    border-color: var(--accent-medium-green);
-    box-shadow: 0 0 0 3px rgba(67, 160, 71, 0.2);
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 3px rgba(74, 124, 44, 0.2);
 }
 
 /* Extra explainer section */
@@ -705,14 +772,14 @@ body>main>section.hero {
 }
 
 .product-controls .btn:hover {
-    border-color: var(--accent-medium-green);
-    color: var(--accent-medium-green);
+    border-color: var(--accent-green);
+    color: var(--accent-green);
 }
 
 .product-controls .btn.active {
-    background: linear-gradient(135deg, var(--accent-medium-green) 0%, var(--accent-mint-green) 100%);
-    color: white;
-    border-color: var(--accent-medium-green);
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
+    color: var(--text-on-dark);
+    border-color: var(--primary-green);
     box-shadow: 0 4px 15px var(--shadow-green);
 }
 
@@ -746,11 +813,15 @@ body>main>section.hero {
     font-family: var(--font-heading);
     font-size: 1.5rem;
     margin-bottom: 0.5rem;
-    color: var(--dark-green-1);
+    color: var(--primary-green);
 }
 
 .product-card p {
+<<<<<<< Updated upstream
     color: var(--text-dark);
+=======
+    color: var(--text-secondary);
+>>>>>>> Stashed changes
     margin-bottom: 1rem;
     font-weight: 500;
 }
@@ -759,11 +830,11 @@ body>main>section.hero {
     font-size: 1.2rem;
     font-weight: 700;
     margin-bottom: 1rem;
-    color: var(--accent-medium-green);
+    color: var(--accent-green);
 }
 
 .product-card a {
-    color: var(--accent-medium-green);
+    color: var(--accent-green);
     text-decoration: none;
     font-weight: 600;
     padding: 0.4rem 0.6rem;
@@ -773,16 +844,16 @@ body>main>section.hero {
 }
 
 .product-card a:hover {
-    background: var(--accent-medium-green);
+    background: var(--accent-green);
     color: white;
     transform: scale(1.05);
 }
 
 .product-card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 18px 40px rgba(46, 125, 50, 0.35);
+    box-shadow: 0 18px 40px var(--shadow-warm);
     background: var(--card-bg-hover);
-    border-color: var(--accent-medium-green);
+    border-color: var(--accent-bronze);
 }
 
 #no-results {
@@ -935,8 +1006,8 @@ body>main>section.hero {
 .contact-form .form-group textarea:focus {
     outline: none;
     background: rgba(255, 255, 255, 0.9);
-    border-color: var(--accent-medium-green);
-    box-shadow: 0 0 0 3px rgba(67, 160, 71, 0.2);
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 3px rgba(74, 124, 44, 0.2);
 }
 
 /* Contact page submit button - matches "us" text color (#1b5e20) */
@@ -946,12 +1017,12 @@ body>main>section.hero {
 #contact-form .btn-primary,
 #contact-form button.btn-primary,
 #contact-form button[type="submit"] {
-    background: #1b5e20 !important;
-    background-color: #1b5e20 !important;
+    background: var(--primary-green) !important;
+    background-color: var(--primary-green) !important;
     background-image: none !important;
-    color: #f0f0f0 !important;
-    border: 2px solid #1b5e20 !important;
-    box-shadow: 0 4px 12px rgba(27, 94, 32, 0.3) !important;
+    color: var(--text-on-dark) !important;
+    border: 2px solid var(--primary-green) !important;
+    box-shadow: 0 4px 12px var(--shadow-green) !important;
     opacity: 1 !important;
 }
 
@@ -961,13 +1032,13 @@ body>main>section.hero {
 #contact-form .btn-primary:hover:not(:disabled),
 #contact-form button.btn-primary:hover:not(:disabled),
 #contact-form button[type="submit"]:hover:not(:disabled) {
-    background: #0d3e16 !important;
-    background-color: #0d3e16 !important;
+    background: var(--accent-green) !important;
+    background-color: var(--accent-green) !important;
     background-image: none !important;
-    border-color: #0d3e16 !important;
-    color: #f0f0f0 !important;
+    border-color: var(--accent-green) !important;
+    color: var(--text-on-dark) !important;
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(27, 94, 32, 0.4) !important;
+    box-shadow: 0 6px 16px var(--shadow-warm) !important;
     opacity: 1 !important;
 }
 
@@ -1753,10 +1824,10 @@ footer {
     padding: 4rem 0 2rem 0;
     margin-top: 4rem;
     margin-top: 0;
-    border-top: 1px solid #334f4e;
+    border-top: 2px solid var(--accent-bronze);
     position: relative;
     overflow: hidden;
-    background-color: transparent;
+    background: linear-gradient(135deg, var(--primary-dark-green) 0%, #1a2e0f 100%);
 }
 
 /* Remove container padding inside footer so content can reach edges */
@@ -2041,7 +2112,7 @@ footer:not(.footer-with-bg) .footer-social a {
 
 /* --- Admin Dashboard Layout --- */
 .admin-body {
-    background: linear-gradient(135deg, var(--primary-light-green) 0%, var(--secondary-light-green) 50%, #e8f5e9 100%);
+    background: linear-gradient(135deg, #f8f6f3 0%, #ebe8e3 50%, #f5f3ef 100%);
     background-attachment: fixed;
 }
 
@@ -2052,9 +2123,10 @@ footer:not(.footer-with-bg) .footer-social a {
 
 .admin-sidebar {
     width: 260px;
-    background-color: var(--secondary-light-green);
+    background: linear-gradient(180deg, #ebe8e3 0%, #f8f6f3 100%);
     padding: 2rem;
-    border-right: 1px solid var(--border-color);
+    border-right: 2px solid var(--border-color);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
 }
 
 .admin-nav {
@@ -2075,7 +2147,8 @@ footer:not(.footer-with-bg) .footer-social a {
 
 .admin-nav a.active,
 .admin-nav a:hover {
-    color: var(--accent-dark-green);
+    color: var(--primary-green);
+    font-weight: 600;
 }
 
 .admin-main {
@@ -2100,17 +2173,26 @@ footer:not(.footer-with-bg) .footer-social a {
 }
 
 .stat-card {
-    background: var(--secondary-light-green);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
     padding: 1.5rem;
     border-radius: 12px;
     text-align: center;
     max-width: 250px;
+    border: 2px solid var(--border-light);
+    box-shadow: 0 4px 15px var(--shadow-warm);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px var(--shadow-green);
+    border-color: var(--accent-bronze);
 }
 
 .stat-number {
     font-size: 2.5rem;
     font-weight: 700;
-    color: var(--accent-dark-green);
+    color: var(--primary-green);
     margin-top: 0.5rem;
 }
 
