@@ -58,6 +58,26 @@ export default function WholesaleProductPage() {
 
   const addToCart = async () => {
     if (!product) return
+
+    // Check if user is actually logged in (has auth session)
+    const checkSession = async () => {
+      try {
+        const res = await fetch('/api/auth/session')
+        return res.ok
+      } catch {
+        return false
+      }
+    }
+
+    const isAuthenticated = await checkSession()
+    
+    if (!isAuthenticated) {
+      if (confirm('You need to be logged in to add items to cart. Would you like to login now?')) {
+        router.push('/login?redirect=/wholesale-product?id=' + encodeURIComponent(slug || ''))
+      }
+      return
+    }
+
     setAdding(true)
     try {
       const res = await fetch('/api/cart', {
@@ -67,10 +87,18 @@ export default function WholesaleProductPage() {
       })
       if (res.ok) {
         alert('Added to cart')
+        // Refresh product data to update stock
+        if (slug) await load(slug)
         router.push('/cart')
       } else {
         const data = await res.json().catch(() => ({}))
-        alert(data.error || 'Failed to add to cart')
+        if (data.error === 'Unauthorized') {
+          if (confirm('Your session has expired. Would you like to login again?')) {
+            router.push('/login?redirect=/wholesale-product?id=' + encodeURIComponent(slug || ''))
+          }
+        } else {
+          alert(data.error || 'Failed to add to cart')
+        }
       }
     } finally {
       setAdding(false)
@@ -131,17 +159,34 @@ export default function WholesaleProductPage() {
 
           <div className="pd-actions">
             <label htmlFor="pd-qty">Quantity</label>
-            <input
-              id="pd-qty"
-              type="number"
-              min={1}
-              value={qty}
-              onChange={(e) => setQty(Math.max(1, Number(e.target.value) || 1))}
-            />
-            <button id="pd-add" className="btn btn-primary" onClick={addToCart} disabled={adding}>
+            <div className="quantity-selector" style={{ marginBottom: '1rem' }}>
+              <button 
+                onClick={() => setQty(Math.max(1, qty - 1))}
+                className="qty-btn"
+                disabled={qty <= 1}
+              >
+                <i className="fa-solid fa-minus"></i>
+              </button>
+              <input
+                id="pd-qty"
+                type="number"
+                min={1}
+                value={qty}
+                onChange={(e) => setQty(Math.max(1, Number(e.target.value) || 1))}
+                className="qty-input"
+              />
+              <button 
+                onClick={() => setQty(qty + 1)}
+                className="qty-btn"
+                disabled={product.stock !== undefined && qty >= product.stock}
+              >
+                <i className="fa-solid fa-plus"></i>
+              </button>
+            </div>
+            <button id="pd-add" className="btn btn-primary" onClick={addToCart} disabled={adding} style={{ width: '100%' }}>
               <i className="fa-solid fa-cart-plus"></i> {adding ? 'Adding...' : 'Add to Cart'}
             </button>
-            <Link id="pd-inquiry" className="btn btn-secondary" href="/contact">
+            <Link id="pd-inquiry" className="btn btn-secondary" href="/contact" style={{ width: '100%', textAlign: 'center' }}>
               <i className="fa-solid fa-envelope"></i> Send Inquiry
             </Link>
           </div>

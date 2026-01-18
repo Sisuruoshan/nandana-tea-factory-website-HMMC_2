@@ -12,6 +12,7 @@ interface Product {
   price: number
   wholesalePrice?: number | null
   image: string | null
+  stock?: number
 }
 
 export default function WholesalePage() {
@@ -21,6 +22,8 @@ export default function WholesalePage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
+  const [quantities, setQuantities] = useState<{ [key: number]: number }>({})
+  const [addingToCart, setAddingToCart] = useState<{ [key: number]: boolean }>({})
   const LIMIT = 9
 
   const [inquiryForm, setInquiryForm] = useState({
@@ -133,6 +136,67 @@ export default function WholesalePage() {
     }
   }
 
+  const getQuantity = (productId: number) => {
+    return quantities[productId] || 10
+  }
+
+  const setQuantity = (productId: number, qty: number) => {
+    setQuantities(prev => ({ ...prev, [productId]: Math.max(1, qty) }))
+  }
+
+  const addToCart = async (product: Product) => {
+    // Check if user is actually logged in (has auth session)
+    const checkSession = async () => {
+      try {
+        const res = await fetch('/api/auth/session')
+        return res.ok
+      } catch {
+        return false
+      }
+    }
+
+    const isAuthenticated = await checkSession()
+    
+    if (!isAuthenticated) {
+      if (confirm('You need to be logged in to add items to cart. Would you like to login now?')) {
+        window.location.href = '/login?redirect=/wholesale'
+      }
+      return
+    }
+
+    setAddingToCart(prev => ({ ...prev, [product.id]: true }))
+    try {
+      const res = await fetch('/api/cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          product_id: product.id, 
+          quantity: getQuantity(product.id) 
+        }),
+      })
+      if (res.ok) {
+        alert(`Added ${getQuantity(product.id)} units of ${product.name} to cart`)
+        // Refresh products to update stock display
+        loadProducts(page, searchQuery)
+        // Reset quantity for this product
+        setQuantities(prev => ({ ...prev, [product.id]: 10 }))
+      } else {
+        const data = await res.json().catch(() => ({}))
+        if (data.error === 'Unauthorized') {
+          if (confirm('Your session has expired. Would you like to login again?')) {
+            window.location.href = '/login?redirect=/wholesale'
+          }
+        } else {
+          alert(data.error || 'Failed to add to cart')
+        }
+      }
+    } catch (error) {
+      alert('Failed to add to cart')
+    } finally {
+      setAddingToCart(prev => ({ ...prev, [product.id]: false }))
+    }
+  }
+
   return (
     <main className="container" style={{ paddingTop: '8rem' }}>
       <section className="page-header">
@@ -158,7 +222,7 @@ export default function WholesalePage() {
         <>
           <div className="product-grid">
             {products.map((product) => (
-              <div key={product.id} className="product-card">
+              <div key={product.id} className="product-card wholesale-product-card">
                 <Image
                   src={resolveImage(product.image)}
                   alt={product.name}
@@ -169,10 +233,63 @@ export default function WholesalePage() {
                   placeholder="blur"
                   blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
                 />
-                <h3>{product.name}</h3>
-                <p>{product.description}</p>
-                <div className="price">{formatPrice(product.wholesalePrice || product.price)}</div>
-                <Link href={`/wholesale-product?id=${encodeURIComponent(product.slug)}`}>View More</Link>
+                <div className="product-card-content">
+                  <h3>{product.name}</h3>
+                  <p>{product.description}</p>
+                  <div className="price-stock-row">
+                    <div className="price">{formatPrice(product.wholesalePrice || product.price)}</div>
+                    {product.stock !== undefined && (
+                      <div className={`stock-info ${product.stock === 0 ? 'out-of-stock' : product.stock < 10 ? 'low-stock' : ''}`}>
+                        <i className="fa-solid fa-box"></i> 
+                        {product.stock === 0 ? 'Out of stock' : `${product.stock} in stock`}
+                      </div>
+                    )}
+                  </div>
+                  <div className="product-card-actions">
+                    <div className="quantity-selector">
+                      <button 
+                        onClick={() => setQuantity(product.id, getQuantity(product.id) - 1)}
+                        className="qty-btn"
+                        disabled={getQuantity(product.id) <= 1}
+                      >
+                        <i className="fa-solid fa-minus"></i>
+                      </button>
+                      <input
+                        type="number"
+                        min={1}
+                        value={getQuantity(product.id)}
+                        onChange={(e) => setQuantity(product.id, Number(e.target.value) || 1)}
+                        className="qty-input"
+                      />
+                      <button 
+                        onClick={() => setQuantity(product.id, getQuantity(product.id) + 1)}
+                        className="qty-btn"
+                        disabled={product.stock !== undefined && getQuantity(product.id) >= product.stock}
+                      >
+                        <i className="fa-solid fa-plus"></i>
+                      </button>
+                    </div>
+                    <button 
+                      onClick={() => addToCart(product)}
+                      className="btn btn-primary add-to-cart-btn"
+                      disabled={addingToCart[product.id] || product.stock === 0}
+                    >
+                      {addingToCart[product.id] ? (
+                        <>
+                          <i className="fa-solid fa-spinner fa-spin"></i> Adding...
+                        </>
+                      ) : product.stock === 0 ? (
+                        <>
+                          <i className="fa-solid fa-ban"></i> Out of Stock
+                        </>
+                      ) : (
+                        <>
+                          <i className="fa-solid fa-cart-plus"></i> Add to Cart
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
               </div>
             ))}
           </div>

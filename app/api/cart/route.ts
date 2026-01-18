@@ -97,6 +97,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Check stock availability
+    if (product.stock !== null && product.stock !== undefined) {
+      if (product.stock < quantity) {
+        return NextResponse.json(
+          { error: `Insufficient stock. Only ${product.stock} units available.` },
+          { status: 400 }
+        )
+      }
+    }
+
     // Use wholesale price for wholesale products if available
     const effectivePrice =
       (product.isWholesale && product.wholesalePrice != null)
@@ -126,8 +136,16 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingItem) {
-      // Update quantity
+      // Check if total quantity exceeds stock
       const newQuantity = existingItem.quantity + quantity
+      if (product.stock !== null && product.stock !== undefined && product.stock < newQuantity) {
+        return NextResponse.json(
+          { error: `Insufficient stock. Only ${product.stock} units available (you already have ${existingItem.quantity} in cart).` },
+          { status: 400 }
+        )
+      }
+
+      // Update quantity
       const newSubtotal = effectivePrice * newQuantity
 
       await prisma.cartItem.update({
@@ -137,6 +155,14 @@ export async function POST(request: NextRequest) {
           subtotal: newSubtotal,
         },
       })
+
+      // Decrease product stock
+      if (product.stock !== null && product.stock !== undefined) {
+        await prisma.product.update({
+          where: { id: product.id },
+          data: { stock: product.stock - quantity },
+        })
+      }
     } else {
       // Create new cart item
       await prisma.cartItem.create({
@@ -148,6 +174,14 @@ export async function POST(request: NextRequest) {
           subtotal: effectivePrice * quantity,
         },
       })
+
+      // Decrease product stock
+      if (product.stock !== null && product.stock !== undefined) {
+        await prisma.product.update({
+          where: { id: product.id },
+          data: { stock: product.stock - quantity },
+        })
+      }
     }
 
     // Update cart total
@@ -201,9 +235,20 @@ export async function DELETE(request: NextRequest) {
 
     const cart = await prisma.cart.findFirst({
       where: { userId: user.id },
+      include: { items: { include: { product: true } } },
     })
 
     if (cart) {
+      // Restore stock for all items in cart
+      for (const item of cart.items) {
+        if (item.product.stock !== null && item.product.stock !== undefined) {
+          await prisma.product.update({
+            where: { id: item.productId },
+            data: { stock: item.product.stock + item.quantity },
+          })
+        }
+      }
+
       await prisma.cartItem.deleteMany({
         where: { cartId: cart.id },
       })
