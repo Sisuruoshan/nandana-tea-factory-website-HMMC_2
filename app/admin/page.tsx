@@ -453,7 +453,7 @@ export default function AdminPage() {
             <a href="#wsinquiries" className={section === 'wsinquiries' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setSection('wsinquiries') }}>
               <i className="fa-solid fa-inbox"></i> Wholesale Inquiries
             </a>
-            <Link href="/"><i className="fa-solid fa-house"></i> View Site</Link>
+            <a href="/"><i className="fa-solid fa-house"></i> View Site</a>
             <a href="#logout" onClick={(e) => { e.preventDefault(); logout() }}><i className="fa-solid fa-right-from-bracket"></i> Logout</a>
           </nav>
         </aside>
