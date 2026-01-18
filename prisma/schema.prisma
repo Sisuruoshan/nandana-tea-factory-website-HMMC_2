@@ -50,6 +50,7 @@ model Product {
   price           Float
   wholesalePrice  Float?     @map("wholesale_price")
   image           String?
+  image2          String?    @map("image_2")
   origin          String?
   notes           String?
   brewingGuide    String?    @map("brewing_guide")

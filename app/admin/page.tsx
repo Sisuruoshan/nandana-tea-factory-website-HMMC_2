@@ -13,6 +13,7 @@ interface Product {
   price: number
   wholesalePrice?: number
   image?: string
+  image2?: string
   stock: number
   isWholesale: boolean
   origin?: string
@@ -39,6 +40,7 @@ export default function AdminPage() {
     slug: '',
     price: '',
     image: '',
+    image2: '',
     origin: '',
     notes: '',
     brew: '',
@@ -47,6 +49,8 @@ export default function AdminPage() {
   })
   const [uploadingImage, setUploadingImage] = useState(false)
   const [imageStatus, setImageStatus] = useState('No file chosen')
+  const [uploadingImage2, setUploadingImage2] = useState(false)
+  const [imageStatus2, setImageStatus2] = useState('No file chosen')
 
   // Wholesale product modal state
   const [showWholesaleModal, setShowWholesaleModal] = useState(false)
@@ -144,6 +148,7 @@ export default function AdminPage() {
       slug: '',
       price: '',
       image: '',
+      image2: '',
       origin: '',
       notes: '',
       brew: '',
@@ -151,6 +156,7 @@ export default function AdminPage() {
       stock: '0'
     })
     setImageStatus('No file chosen')
+    setImageStatus2('No file chosen')
     setShowProductModal(true)
   }
 
@@ -162,6 +168,7 @@ export default function AdminPage() {
       slug: product.slug,
       price: product.price.toString(),
       image: product.image || '',
+      image2: product.image2 || '',
       origin: product.origin || '',
       notes: product.notes || '',
       brew: product.brewingGuide || '',
@@ -169,6 +176,7 @@ export default function AdminPage() {
       stock: product.stock?.toString() || '0'
     })
     setImageStatus(product.image ? 'File selected' : 'No file chosen')
+    setImageStatus2(product.image2 ? 'File selected' : 'No file chosen')
     setShowProductModal(true)
   }
 
@@ -222,6 +230,59 @@ export default function AdminPage() {
     const file = e.dataTransfer.files?.[0]
     if (file && file.type.startsWith('image/')) {
       handleProductImageUpload(file)
+    }
+  }
+
+  const handleProductImageUpload2 = async (file: File) => {
+    setUploadingImage2(true)
+    setImageStatus2('Uploading...')
+    try {
+      const formData = new FormData()
+      formData.append('image', file)
+      const response = await fetch('/api/admin/products/upload-image', {
+        method: 'POST',
+        body: formData,
+      })
+      if (!response.ok) throw new Error('Upload failed')
+      const data = await response.json()
+      setProductForm({ ...productForm, image2: data.path })
+      setImageStatus2(`File: ${file.name}`)
+    } catch (error) {
+      console.error(error)
+      setImageStatus2('Upload failed')
+    } finally {
+      setUploadingImage2(false)
+    }
+  }
+
+  const handleProductImageChange2 = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file && file.type.startsWith('image/')) {
+      handleProductImageUpload2(file)
+    } else if (file) {
+      setImageStatus2('Please select an image file')
+    }
+  }
+
+  const handleProductDragOver2 = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    e.currentTarget.style.backgroundColor = 'rgba(73, 202, 125, 0.1)'
+  }
+
+  const handleProductDragLeave2 = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    e.currentTarget.style.backgroundColor = ''
+  }
+
+  const handleProductDrop2 = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    e.currentTarget.style.backgroundColor = ''
+    const file = e.dataTransfer.files?.[0]
+    if (file && file.type.startsWith('image/')) {
+      handleProductImageUpload2(file)
     }
   }
 
@@ -327,6 +388,7 @@ export default function AdminPage() {
         slug: productForm.slug,
         price: productForm.price,
         image: productForm.image,
+        image2: productForm.image2,
         origin: productForm.origin,
         notes: productForm.notes,
         brewingGuide: productForm.brew,
@@ -794,7 +856,7 @@ export default function AdminPage() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="product-image">Product Image</label>
+                <label htmlFor="product-image">Product Image 1</label>
                 <div
                   className="upload-drop"
                   id="product-image-drop"
@@ -839,6 +901,57 @@ export default function AdminPage() {
                   required
                   value={productForm.image}
                   onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
+                  style={{ marginTop: '8px' }}
+                  readOnly
+                />
+                <small>Image will be uploaded and path filled automatically.</small>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="product-image2">Product Image 2</label>
+                <div
+                  className="upload-drop"
+                  id="product-image-drop-2"
+                  onDragOver={handleProductDragOver2}
+                  onDragLeave={handleProductDragLeave2}
+                  onDrop={handleProductDrop2}
+                  style={{
+                    border: '2px dashed var(--border-color)',
+                    padding: '16px',
+                    borderRadius: '8px',
+                    background: 'var(--card-bg)',
+                    cursor: 'pointer',
+                    textAlign: 'center',
+                    transition: 'all 0.3s'
+                  }}
+                >
+                  <p style={{ margin: '0 0 10px 0', fontSize: '0.95rem', color: 'var(--text-light)' }}>Drag & drop image here or</p>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    id="product-image-browse-2"
+                    onClick={() => document.getElementById('product-image-file-2')?.click()}
+                    style={{ marginBottom: '8px' }}
+                  >
+                    Select File
+                  </button>
+                  <input
+                    type="file"
+                    id="product-image-file-2"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    onChange={handleProductImageChange2}
+                  />
+                  <div id="product-image-status-2" style={{ fontSize: '0.85rem', color: 'var(--text-medium)', marginTop: '4px' }}>
+                    {imageStatus2}
+                  </div>
+                </div>
+                <input
+                  type="text"
+                  id="product-image2"
+                  placeholder="Stored image path"
+                  value={productForm.image2}
+                  onChange={(e) => setProductForm({ ...productForm, image2: e.target.value })}
                   style={{ marginTop: '8px' }}
                   readOnly
                 />
