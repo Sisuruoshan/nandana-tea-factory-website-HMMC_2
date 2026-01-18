@@ -184,7 +184,7 @@ export default function Header() {
                           border: 'none',
                           cursor: 'pointer',
                           fontSize: '20px',
-                          color: 'inherit'
+                          color: '#ffffff'
                         }}
                       >
                         <i className="fa-solid fa-search"></i>
