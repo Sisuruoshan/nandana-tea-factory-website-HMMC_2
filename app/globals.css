@@ -3,6 +3,50 @@
 
 /* --- CSS Variables (Style Dictionary) --- */
 :root {
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+    /* Light green theme colors */
+    --primary-light-green: #e8f5e9;
+    --secondary-light-green: #c8e6c9;
+    --accent-dark-green: #2e7d32;
+    --accent-medium-green: #43a047;
+    --accent-mint-green: #66bb6a;
+    --accent-soft: #81c784;
+
+    /* Darker greens for accents and depth */
+    --dark-green-1: #08260d;
+    /* Was #1b5e20 */
+    --dark-green-2: #1b5e20;
+    /* Was #2e7d32 */
+    --dark-green-3: #2e7d32;
+    /* Was #388e3c */
+
+    /* Keep original dark colors for header/footer */
+    --primary-dark-green: #0c2e19;
+    --secondary-dark-green: #0c422c;
+
+    --text-light: #08260d;
+    /* Was #1b5e20 */
+    --text-medium: #1b5e20;
+    /* Was #2e7d32 */
+    --text-dark: #000000;
+    /* Pure black for max contrast per user request context */
+    --text-on-light: #1b5e20;
+
+    --border-color: #81c784;
+    --border-light: #a5d6a7;
+    --error-color: #ff6b6b;
+    --card-bg: rgba(255, 255, 255, 0.7);
+    --card-bg-hover: rgba(255, 255, 255, 0.85);
+    --muted-bg: rgba(200, 230, 201, 0.3);
+    --shadow-green: rgba(46, 125, 50, 0.2);
+
+=======
+=======
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
     /* Professional Tea Theme - Sophisticated Earth Tones */
     --primary-bg: #f8f6f3;
     --secondary-bg: #ebe8e3;
@@ -57,6 +101,13 @@
     --muted-bg: rgba(235, 232, 227, 0.5);
     
     /* Typography */
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
     --font-heading: 'Lora', serif;
     --font-body: 'Montserrat', sans-serif;
 }
@@ -523,7 +574,19 @@ body>main>section.hero {
 
 .page-header p {
     font-size: 1.2rem;
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+    color: var(--text-dark);
+=======
     color: var(--text-secondary);
+>>>>>>> Stashed changes
+=======
+    color: var(--text-secondary);
+>>>>>>> Stashed changes
+=======
+    color: var(--text-secondary);
+>>>>>>> Stashed changes
     max-width: 600px;
     margin: 1rem auto 0;
     font-weight: 600;
@@ -551,7 +614,19 @@ body>main>section.hero {
 }
 
 .about-text p {
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+    color: var(--text-dark);
+=======
     color: var(--text-secondary);
+>>>>>>> Stashed changes
+=======
+    color: var(--text-secondary);
+>>>>>>> Stashed changes
+=======
+    color: var(--text-secondary);
+>>>>>>> Stashed changes
     line-height: 1.8;
     font-weight: 500;
 }
@@ -770,7 +845,19 @@ body>main>section.hero {
 }
 
 .product-card p {
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+    color: var(--text-dark);
+=======
     color: var(--text-secondary);
+>>>>>>> Stashed changes
+=======
+    color: var(--text-secondary);
+>>>>>>> Stashed changes
+=======
+    color: var(--text-secondary);
+>>>>>>> Stashed changes
     margin-bottom: 1rem;
     font-weight: 500;
 }
