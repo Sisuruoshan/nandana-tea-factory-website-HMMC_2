@@ -57,10 +57,10 @@ const styles = {
     border: '2px solid #a5d6a7',
   },
   imageWrap: {
-    background: 'rgba(255, 255, 255, 0.5)',
+    background: 'transparent',
     borderRadius: '18px',
-    padding: '18px',
-    border: '2px solid #a5d6a7',
+    padding: '0',
+    border: 'none',
     overflow: 'hidden',
     aspectRatio: '16 / 10',
     maxHeight: '420px',
@@ -171,7 +171,8 @@ const styles = {
     margin: 0,
     paddingLeft: '20px',
     lineHeight: 1.8,
-    color: '#2e7d32',
+    color: '#1b5e20',
+    fontWeight: 500,
   },
 }
 
@@ -319,7 +320,7 @@ export default function ProductPage() {
             {product.stock > 0 ? (
               <>
                 <div style={styles.qtyRow}>
-                  <span style={{ color: '#cde5d5', minWidth: '78px' }}>Quantity</span>
+                  <span style={{ color: '#2e7d32', minWidth: '78px', fontWeight: 600 }}>Quantity</span>
                   <input
                     type="number"
                     min={1}
@@ -353,21 +354,14 @@ export default function ProductPage() {
               <p style={{ color: '#fca5a5', marginBottom: '18px' }}>Out of Stock</p>
             )}
 
-            <div style={styles.metaCard}>
-              {product.longDescription && (
-                <p style={{ lineHeight: 1.7, color: '#c9dfd1' }}>{product.longDescription}</p>
-              )}
-              {!product.longDescription && (
-                <p style={{ color: '#c9dfd1' }}>Sourced from lush highlands, crafted for a smooth and aromatic cup every time.</p>
-              )}
-            </div>
+
           </div>
         </div>
 
         <section style={styles.detailsGrid}>
           <div style={styles.detailCard}>
             <h3 style={styles.detailTitle}>Origin & Notes</h3>
-            <div style={{ color: '#c9dfd1' }}>
+            <div style={{ color: '#1b5e20', fontWeight: 500 }}>
               <p>{product.origin || '—'}</p>
               {product.notes && <p>{product.notes}</p>}
             </div>
@@ -384,7 +378,7 @@ export default function ProductPage() {
 
           <div style={{ ...styles.detailCard, gridColumn: '1 / -1' }}>
             <h3 style={styles.detailTitle}>About this Tea</h3>
-            <p style={{ color: '#c9dfd1' }}>
+            <p style={{ color: '#1b5e20', lineHeight: 1.7, fontWeight: 500 }}>
               {product.longDescription || 'High quality green tea'}
             </p>
           </div>

@@ -46,7 +46,7 @@ export default function ContactPage() {
           <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '3rem', marginBottom: '1rem' }}>
             Get in Touch
           </h1>
-          <p style={{ color: 'var(--text-medium)', marginBottom: '2rem' }}>
+          <p style={{ color: 'var(--text-dark)', marginBottom: '2rem', fontWeight: 500 }}>
             We&apos;re here to assist you with any inquiries or feedback. Please reach out to us through the form or our contact details.
           </p>
 
