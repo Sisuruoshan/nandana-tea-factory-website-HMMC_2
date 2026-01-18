@@ -49,7 +49,7 @@ export default function Header() {
     try {
       setSessionChecked(false)
       // Use cache with short TTL to reduce server load
-      const res = await fetch('/api/auth/session', { 
+      const res = await fetch('/api/auth/session', {
         next: { revalidate: 30 }, // Revalidate every 30 seconds
         headers: {
           'Cache-Control': 'private, max-age=30',
@@ -239,17 +239,17 @@ export default function Header() {
                   )}
                 </button>
                 <div className={`user-menu ${userMenuOpen ? 'active' : ''}`} id="userMenu">
-                    <Link href="/edit-profile" className="user-menu-item">
-                      <i className="fa-solid fa-edit"></i> Edit Profile
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={handleLogout}
-                      className="user-menu-item logout-btn"
-                    >
-                      <i className="fa-solid fa-sign-out-alt"></i> Logout
-                    </button>
-                  </div>
+                  <Link href="/edit-profile" className="user-menu-item">
+                    <i className="fa-solid fa-edit"></i> Edit Profile
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="user-menu-item logout-btn"
+                  >
+                    <i className="fa-solid fa-sign-out-alt"></i> Logout
+                  </button>
+                </div>
               </div>
             </>
           ) : (

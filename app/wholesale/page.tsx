@@ -110,7 +110,9 @@ export default function WholesalePage() {
             {loading ? 'Submitting...' : 'Submit Inquiry'}
           </button>
         </form>
+    
       </section>
+        <br ></br>
     </main>
   )
 }

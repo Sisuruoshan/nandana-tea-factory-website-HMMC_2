@@ -5,7 +5,7 @@ export async function GET() {
   try {
     // Test the database connection
     const result = await prisma.$queryRaw`db.adminCommand({ ping: 1 })`
-    
+
     return NextResponse.json({
       status: 'healthy',
       database: 'connected',

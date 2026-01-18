@@ -16,9 +16,23 @@ export async function GET(request: NextRequest) {
       where.isWholesale = false
     }
 
+    const search = searchParams.get('search')
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+      ]
+    }
+
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = parseInt(searchParams.get('limit') || '9')
+    const skip = (page - 1) * limit
+
     // Optimize query: only select needed fields
     const products = await prisma.product.findMany({
       where,
+      take: limit,
+      skip: skip,
       select: {
         id: true,
         name: true,
@@ -28,15 +42,31 @@ export async function GET(request: NextRequest) {
         image: true,
         stock: true,
         isWholesale: true,
+        wholesalePrice: true,
+        origin: true,
+        notes: true,
+        brewingGuide: true,
+        longDescription: true,
       },
       orderBy: { createdAt: 'desc' },
     })
 
-    const response = NextResponse.json(products)
-    
+    // Get total count for pagination metadata
+    const total = await prisma.product.count({ where })
+
+    const response = NextResponse.json({
+      products,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit)
+      }
+    })
+
     // Add caching headers
     response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120')
-    
+
     return response
   } catch (error) {
     console.error('Get products error:', error)

@@ -17,8 +17,8 @@ interface Product {
   isWholesale: boolean
   origin?: string
   notes?: string
-  brew?: string
-  longDesc?: string
+  brewingGuide?: string
+  longDescription?: string
 }
 
 export default function AdminPage() {
@@ -47,7 +47,7 @@ export default function AdminPage() {
   })
   const [uploadingImage, setUploadingImage] = useState(false)
   const [imageStatus, setImageStatus] = useState('No file chosen')
-  
+
   // Wholesale product modal state
   const [showWholesaleModal, setShowWholesaleModal] = useState(false)
   const [editingWholesaleProduct, setEditingWholesaleProduct] = useState<Product | null>(null)
@@ -71,14 +71,20 @@ export default function AdminPage() {
 
   const refreshAll = async () => {
     const [rp, wp, iq, wi] = await Promise.allSettled([
-      fetch('/api/products?is_wholesale=false').then((r) => r.json()),
-      fetch('/api/products?is_wholesale=true').then((r) => r.json()),
+      fetch('/api/products?is_wholesale=false&limit=1000').then((r) => r.json()),
+      fetch('/api/products?is_wholesale=true&limit=1000').then((r) => r.json()),
       fetch('/api/admin/inquiries').then((r) => r.json()),
       fetch('/api/admin/wholesale-inquiries').then((r) => r.json()),
     ])
 
-    if (rp.status === 'fulfilled') setRetailProducts(Array.isArray(rp.value) ? rp.value : [])
-    if (wp.status === 'fulfilled') setWholesaleProducts(Array.isArray(wp.value) ? wp.value : [])
+    if (rp.status === 'fulfilled') {
+      const data = rp.value as any
+      setRetailProducts(Array.isArray(data) ? data : (data.products || []))
+    }
+    if (wp.status === 'fulfilled') {
+      const data = wp.value as any
+      setWholesaleProducts(Array.isArray(data) ? data : (data.products || []))
+    }
     if (iq.status === 'fulfilled') setInquiries(Array.isArray(iq.value) ? iq.value : [])
     if (wi.status === 'fulfilled') setWsInquiries(Array.isArray(wi.value) ? wi.value : [])
   }
@@ -141,8 +147,8 @@ export default function AdminPage() {
       image: product.image || '',
       origin: product.origin || '',
       notes: product.notes || '',
-      brew: product.brew || '',
-      longDesc: product.longDesc || '',
+      brew: product.brewingGuide || '',
+      longDesc: product.longDescription || '',
       stock: product.stock?.toString() || '0'
     })
     setImageStatus(product.image ? 'File selected' : 'No file chosen')
@@ -201,7 +207,7 @@ export default function AdminPage() {
       handleProductImageUpload(file)
     }
   }
-  
+
   const openAddWholesaleModal = () => {
     setEditingWholesaleProduct(null)
     setWholesaleForm({
@@ -289,7 +295,7 @@ export default function AdminPage() {
 
   const handleProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!productForm.name || !productForm.slug || !productForm.price) {
       alert('Please fill in required fields: Name, Slug, and Price')
       return
@@ -332,10 +338,10 @@ export default function AdminPage() {
       alert('Error saving product: ' + error.message)
     }
   }
-  
+
   const handleWholesaleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!wholesaleForm.name || !wholesaleForm.slug || !wholesaleForm.price || !wholesaleForm.wholesalePrice) {
       alert('Please fill in required fields: Name, Slug, Price, and Wholesale Price')
       return
@@ -378,11 +384,11 @@ export default function AdminPage() {
 
   const deleteProduct = async (id: number) => {
     if (!confirm('Are you sure you want to delete this product?')) return
-    
+
     try {
       const response = await fetch(`/api/admin/products?id=${id}`, { method: 'DELETE' })
       const data = await response.json()
-      
+
       if (response.ok) {
         alert('Product deleted successfully!')
         refreshAll()
@@ -394,14 +400,14 @@ export default function AdminPage() {
       alert('Error deleting product: ' + error.message)
     }
   }
-  
+
   const deleteWholesaleProduct = async (id: number) => {
     if (!confirm('Are you sure you want to delete this wholesale product?')) return
-    
+
     try {
       const response = await fetch(`/api/admin/products?id=${id}`, { method: 'DELETE' })
       const data = await response.json()
-      
+
       if (response.ok) {
         alert('Product deleted successfully!')
         refreshAll()
@@ -416,7 +422,7 @@ export default function AdminPage() {
 
   const resolveImage = (path?: string) => {
     if (!path) return '/images/image.png'
-    if (path.startsWith('http')) return path
+    if (path.startsWith('http') || path.startsWith('data:')) return path
     return `/${path.replace(/^\//, '')}`
   }
 
@@ -508,7 +514,7 @@ export default function AdminPage() {
                   <i className="fa-solid fa-plus"></i> Add New Product
                 </button>
               </div>
-              
+
               <div className="products-grid">
                 {retailProducts.map((product) => (
                   <div key={product.id} className="product-card-admin">
@@ -529,15 +535,15 @@ export default function AdminPage() {
                         <div className="product-stock-admin">Stock: {product.stock} units</div>
                       </div>
                       <div className="product-actions-admin">
-                        <button 
-                          className="btn-icon-admin btn-edit" 
+                        <button
+                          className="btn-icon-admin btn-edit"
                           onClick={() => openEditProductModal(product)}
                           title="Edit"
                         >
                           <i className="fa-solid fa-pen"></i>
                         </button>
-                        <button 
-                          className="btn-icon-admin btn-delete" 
+                        <button
+                          className="btn-icon-admin btn-delete"
                           onClick={() => deleteProduct(product.id)}
                           title="Delete"
                         >
@@ -559,7 +565,7 @@ export default function AdminPage() {
                   <i className="fa-solid fa-plus"></i> Add Wholesale Product
                 </button>
               </div>
-              
+
               <div className="products-grid">
                 {wholesaleProducts.map((product) => (
                   <div key={product.id} className="product-card-admin">
@@ -583,15 +589,15 @@ export default function AdminPage() {
                         <div className="product-stock-admin">Stock: {product.stock} units</div>
                       </div>
                       <div className="product-actions-admin">
-                        <button 
-                          className="btn-icon-admin btn-edit" 
+                        <button
+                          className="btn-icon-admin btn-edit"
                           onClick={() => openEditWholesaleModal(product)}
                           title="Edit"
                         >
                           <i className="fa-solid fa-pen"></i>
                         </button>
-                        <button 
-                          className="btn-icon-admin btn-delete" 
+                        <button
+                          className="btn-icon-admin btn-delete"
                           onClick={() => deleteWholesaleProduct(product.id)}
                           title="Delete"
                         >
@@ -742,8 +748,8 @@ export default function AdminPage() {
 
               <div className="form-group">
                 <label htmlFor="product-image">Product Image</label>
-                <div 
-                  className="upload-drop" 
+                <div
+                  className="upload-drop"
                   id="product-image-drop"
                   onDragOver={handleProductDragOver}
                   onDragLeave={handleProductDragLeave}
@@ -759,19 +765,19 @@ export default function AdminPage() {
                   }}
                 >
                   <p style={{ margin: '0 0 10px 0', fontSize: '0.95rem', color: 'var(--text-light)' }}>Drag & drop image here or</p>
-                  <button 
-                    type="button" 
-                    className="btn btn-secondary" 
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
                     id="product-image-browse"
                     onClick={() => document.getElementById('product-image-file')?.click()}
                     style={{ marginBottom: '8px' }}
                   >
                     Select File
                   </button>
-                  <input 
-                    type="file" 
-                    id="product-image-file" 
-                    accept="image/*" 
+                  <input
+                    type="file"
+                    id="product-image-file"
+                    accept="image/*"
                     style={{ display: 'none' }}
                     onChange={handleProductImageChange}
                   />
@@ -779,10 +785,10 @@ export default function AdminPage() {
                     {imageStatus}
                   </div>
                 </div>
-                <input 
-                  type="text" 
-                  id="product-image" 
-                  placeholder="Stored image path" 
+                <input
+                  type="text"
+                  id="product-image"
+                  placeholder="Stored image path"
                   required
                   value={productForm.image}
                   onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
@@ -877,7 +883,7 @@ Enjoy plain or with milk"
           </div>
         </div>
       )}
-      
+
       {/* Wholesale Product Modal */}
       {showWholesaleModal && (
         <div className="modal-overlay" onClick={() => setShowWholesaleModal(false)}>
@@ -962,8 +968,8 @@ Enjoy plain or with milk"
 
               <div className="form-group">
                 <label htmlFor="ws-product-image">Product Image</label>
-                <div 
-                  className="upload-drop" 
+                <div
+                  className="upload-drop"
                   id="ws-product-image-drop"
                   onDragOver={handleWholesaleDragOver}
                   onDragLeave={handleWholesaleDragLeave}
@@ -981,19 +987,19 @@ Enjoy plain or with milk"
                   <p style={{ margin: '0 0 10px 0', fontSize: '0.95rem', color: 'var(--text-light)' }}>
                     Drag & drop image here or
                   </p>
-                  <button 
-                    type="button" 
-                    className="btn btn-secondary" 
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
                     id="ws-product-image-browse"
                     onClick={() => document.getElementById('ws-product-image-file')?.click()}
                     style={{ marginBottom: '8px' }}
                   >
                     Select File
                   </button>
-                  <input 
-                    type="file" 
-                    id="ws-product-image-file" 
-                    accept="image/*" 
+                  <input
+                    type="file"
+                    id="ws-product-image-file"
+                    accept="image/*"
                     style={{ display: 'none' }}
                     onChange={handleWholesaleImageChange}
                   />
@@ -1001,10 +1007,10 @@ Enjoy plain or with milk"
                     {wholesaleImageStatus}
                   </div>
                 </div>
-                <input 
-                  type="text" 
-                  id="ws-product-image" 
-                  placeholder="Stored image path" 
+                <input
+                  type="text"
+                  id="ws-product-image"
+                  placeholder="Stored image path"
                   required
                   value={wholesaleForm.image}
                   onChange={(e) => setWholesaleForm({ ...wholesaleForm, image: e.target.value })}
