@@ -89,6 +89,20 @@ export default function AdminPage() {
     if (wi.status === 'fulfilled') setWsInquiries(Array.isArray(wi.value) ? wi.value : [])
   }
 
+  const replyToInquiry = (email: string, subject: string, name: string) => {
+    const replySubject = `Re: ${subject}`
+    const body = `Dear ${name},\n\nThank you for contacting Nandana Tea Factory.\n\n\n\nBest regards,\nNandana Tea Factory Team`
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(replySubject)}&body=${encodeURIComponent(body)}`
+    window.open(gmailUrl, '_blank')
+  }
+
+  const replyToWholesaleInquiry = (email: string, name: string, company: string) => {
+    const subject = `Re: Wholesale Inquiry from ${company}`
+    const body = `Dear ${name},\n\nThank you for your wholesale inquiry at Nandana Tea Factory.\n\n\n\nBest regards,\nNandana Tea Factory Wholesale Team`
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    window.open(gmailUrl, '_blank')
+  }
+
   useEffect(() => {
     refreshAll()
     // Auto-refresh every 5 seconds for real-time updates
@@ -660,6 +674,13 @@ export default function AdminPage() {
                           <td>{i.subject}</td>
                           <td style={{ maxWidth: 380 }}>{i.message}</td>
                           <td>
+                            <button 
+                              className="btn btn-primary" 
+                              onClick={() => replyToInquiry(i.email, i.subject, i.name)}
+                              style={{ marginRight: '8px' }}
+                            >
+                              <i className="fa-solid fa-reply"></i> Reply
+                            </button>
                             <button className="btn btn-secondary" onClick={() => deleteInquiry(i.id)}>
                               <i className="fa-solid fa-trash"></i> Delete
                             </button>
@@ -705,6 +726,13 @@ export default function AdminPage() {
                           <td style={{ maxWidth: 380 }}>{i.details}</td>
                           <td>{i.status}</td>
                           <td>
+                            <button 
+                              className="btn btn-primary" 
+                              onClick={() => replyToWholesaleInquiry(i.email, i.name, i.company)}
+                              style={{ marginRight: '8px' }}
+                            >
+                              <i className="fa-solid fa-reply"></i> Reply
+                            </button>
                             <button className="btn btn-secondary" onClick={() => deleteWsInquiry(i.id)}>
                               <i className="fa-solid fa-trash"></i> Delete
                             </button>
