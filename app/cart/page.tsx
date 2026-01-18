@@ -17,9 +17,9 @@ interface CartItem {
 
 const styles = {
   page: {
-    background: 'radial-gradient(circle at 18% 20%, rgba(26, 91, 52, 0.16), transparent 36%), radial-gradient(circle at 82% 8%, rgba(32, 110, 62, 0.18), transparent 32%), #0c2416',
+    background: '#f8f6f3',
     minHeight: '100vh',
-    color: '#e7f4eb',
+    color: '#1a1a1a',
   },
   container: {
     maxWidth: '1220px',
@@ -30,14 +30,20 @@ const styles = {
     textAlign: 'center' as const,
     marginBottom: '36px',
     position: 'relative' as const,
+    background: 'linear-gradient(135deg, #2d5016 0%, #4a7c2c 100%)',
+    padding: '3rem 1rem',
+    borderRadius: '18px',
+    boxShadow: '0 4px 20px rgba(45, 80, 22, 0.15)',
+    zIndex: 1,
   },
   heroTitle: {
     fontFamily: 'var(--font-heading)',
     fontSize: '2.7rem',
     marginBottom: '6px',
+    color: '#ffffff',
   },
   heroSub: {
-    color: '#bed7c8',
+    color: 'rgba(255, 255, 255, 0.9)',
     fontSize: '1.02rem',
   },
   layout: {
@@ -46,11 +52,11 @@ const styles = {
     gap: '24px',
   },
   card: {
-    background: 'linear-gradient(145deg, rgba(12, 36, 22, 0.92), rgba(12, 36, 22, 0.78))',
+    background: 'rgba(255, 255, 255, 0.95)',
     borderRadius: '18px',
     padding: '18px',
-    border: '1px solid rgba(255,255,255,0.06)',
-    boxShadow: '0 18px 45px rgba(0,0,0,0.32)',
+    border: '1px solid #d4c5b0',
+    boxShadow: '0 4px 20px rgba(45, 80, 22, 0.08)',
   },
   item: {
     display: 'grid',
@@ -59,16 +65,16 @@ const styles = {
     alignItems: 'center',
     padding: '14px',
     borderRadius: '14px',
-    background: 'rgba(15, 43, 25, 0.72)',
-    border: '1px solid rgba(255,255,255,0.05)',
+    background: '#ebe8e3',
+    border: '1px solid #d4c5b0',
     marginBottom: '14px',
   },
   qtyBox: {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    background: '#0f2b19',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: '#ffffff',
+    border: '1px solid #d4c5b0',
     borderRadius: '10px',
     padding: '8px 10px',
   },
@@ -76,34 +82,36 @@ const styles = {
     width: '30px',
     height: '30px',
     borderRadius: '8px',
-    border: '1px solid rgba(255,255,255,0.08)',
-    background: '#123820',
-    color: '#e7f4eb',
+    border: '1px solid #d4c5b0',
+    background: '#f8f6f3',
+    color: '#2d5016',
     cursor: 'pointer',
+    transition: 'all 0.3s ease',
   },
   price: {
-    color: '#4ade80',
+    color: '#2d5016',
     fontWeight: 700,
   },
   trashBtn: {
     background: 'none',
     border: 'none',
-    color: '#f87171',
+    color: '#dc2626',
     cursor: 'pointer',
     fontSize: '1rem',
+    transition: 'color 0.3s ease',
   },
   summary: {
-    background: 'linear-gradient(135deg, rgba(12, 36, 22, 0.9), rgba(10, 30, 18, 0.92))',
+    background: 'rgba(255, 255, 255, 0.95)',
     borderRadius: '18px',
     padding: '20px',
-    border: '1px solid rgba(255,255,255,0.08)',
-    boxShadow: '0 18px 45px rgba(0,0,0,0.32)',
+    border: '1px solid #d4c5b0',
+    boxShadow: '0 4px 20px rgba(45, 80, 22, 0.08)',
   },
   summaryRow: {
     display: 'flex',
     justifyContent: 'space-between',
     marginBottom: '10px',
-    color: '#d5e7dc',
+    color: '#4a4a4a',
   },
   summaryTotal: {
     display: 'flex',
@@ -111,9 +119,9 @@ const styles = {
     alignItems: 'center',
     marginTop: '12px',
     paddingTop: '14px',
-    borderTop: '1px solid rgba(255,255,255,0.08)',
+    borderTop: '1px solid #d4c5b0',
     fontWeight: 800,
-    color: '#4ade80',
+    color: '#2d5016',
     fontSize: '1.2rem',
   },
   primaryBtn: {
@@ -121,22 +129,24 @@ const styles = {
     padding: '14px',
     borderRadius: '12px',
     border: 'none',
-    background: '#22c55e',
-    color: '#0c2416',
+    background: '#2d5016',
+    color: '#f8f6f3',
     fontWeight: 800,
     cursor: 'pointer',
     marginTop: '12px',
+    transition: 'all 0.3s ease',
   },
   secondaryBtn: {
     width: '100%',
     padding: '13px',
     borderRadius: '12px',
-    border: '1px solid rgba(255,255,255,0.14)',
+    border: '1px solid #2d5016',
     background: 'transparent',
-    color: '#e7f4eb',
+    color: '#2d5016',
     fontWeight: 700,
     cursor: 'pointer',
     marginTop: '10px',
+    transition: 'all 0.3s ease',
   },
 }
 
@@ -241,7 +251,7 @@ export default function CartPage() {
     <main style={styles.page}>
       <div style={styles.container}>
         <header style={styles.hero}>
-          <div style={{ fontSize: '2.6rem' }}>
+          <div style={styles.heroTitle}>
             Your Shopping Cart
           </div>
           <div style={styles.heroSub}>{itemCount} {itemCount === 1 ? 'item' : 'items'} in cart</div>
@@ -259,18 +269,19 @@ export default function CartPage() {
             <section style={styles.card}>
               {cartItems.map((item) => (
                 <div key={item.id} style={styles.item}>
-                  <div>
+                  <div style={{ width: '90px', height: '90px', flexShrink: 0 }}>
                     <Image
                       src={resolveImage(item.product_image)}
                       alt={item.product_name}
                       width={90}
                       height={90}
-                      style={{ borderRadius: '12px', objectFit: 'cover' }}
+                      unoptimized
+                      style={{ borderRadius: '12px', objectFit: 'cover', width: '100%', height: '100%', display: 'block' }}
                     />
                   </div>
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: '1.05rem' }}>{item.product_name}</div>
-                    <div style={{ color: '#9fc3ae', fontSize: '0.95rem', marginTop: '4px' }}>Premium Tea</div>
+                    <div style={{ fontWeight: 700, fontSize: '1.05rem', color: '#2d5016' }}>{item.product_name}</div>
+                    <div style={{ color: '#6b6b6b', fontSize: '0.95rem', marginTop: '4px' }}>Premium Tea</div>
                   </div>
                   <div style={styles.price}>{formatPrice(item.price)}</div>
                   <div>
@@ -311,7 +322,7 @@ export default function CartPage() {
             </section>
 
             <aside style={styles.summary}>
-              <h2 style={{ fontFamily: 'var(--font-heading)', marginBottom: '14px' }}>Order Summary</h2>
+              <h2 style={{ fontFamily: 'var(--font-heading)', marginBottom: '14px', color: '#2d5016' }}>Order Summary</h2>
               <div style={styles.summaryRow}>
                 <span>Subtotal</span>
                 <span>{formatPrice(total)}</span>
