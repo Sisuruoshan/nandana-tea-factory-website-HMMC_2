@@ -10,6 +10,7 @@ interface Product {
   description: string
   slug: string
   price: number
+  wholesalePrice?: number | null
   image: string | null
 }
 
@@ -57,13 +58,12 @@ export default function WholesalePage() {
 
     try {
       const queryParams = new URLSearchParams({
-        is_wholesale: 'false',
         page: pageNum.toString(),
         limit: LIMIT.toString(),
       })
       if (search) queryParams.set('search', search)
 
-      const res = await fetch(`/api/products?${queryParams.toString()}`, {
+      const res = await fetch(`/api/wholesale-products?${queryParams.toString()}`, {
         next: { revalidate: 60 },
         headers: {
           'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
@@ -171,8 +171,8 @@ export default function WholesalePage() {
                 />
                 <h3>{product.name}</h3>
                 <p>{product.description}</p>
-                <div className="price">{formatPrice(product.price)}</div>
-                <Link href={`/product?id=${encodeURIComponent(product.slug)}`}>View More</Link>
+                <div className="price">{formatPrice(product.wholesalePrice || product.price)}</div>
+                <Link href={`/wholesale-product?id=${encodeURIComponent(product.slug)}`}>View More</Link>
               </div>
             ))}
           </div>
