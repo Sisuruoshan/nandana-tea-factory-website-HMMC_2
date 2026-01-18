@@ -23,7 +23,7 @@ interface Product {
 
 export default function AdminPage() {
   const router = useRouter()
-  const [section, setSection] = useState<'dashboard' | 'products' | 'wsproducts' | 'inquiries' | 'wsinquiries'>('products')
+  const [section, setSection] = useState<'dashboard' | 'products' | 'wsproducts' | 'inquiries' | 'wsinquiries'>('dashboard')
 
   const [retailProducts, setRetailProducts] = useState<Product[]>([])
   const [wholesaleProducts, setWholesaleProducts] = useState<Product[]>([])
@@ -91,6 +91,9 @@ export default function AdminPage() {
 
   useEffect(() => {
     refreshAll()
+    // Auto-refresh every 5 seconds for real-time updates
+    const interval = setInterval(refreshAll, 5000)
+    return () => clearInterval(interval)
   }, [])
 
   const stats = useMemo(() => {
@@ -481,23 +484,39 @@ export default function AdminPage() {
               </section>
 
               <section className="admin-activity">
-                <h3>Recent Admin Activity</h3>
+                <h3>Real-Time Activity Feed <span style={{ fontSize: '0.8rem', color: 'var(--accent-mint-green)' }}>● Live</span></h3>
                 <div className="activity-table-wrapper">
                   <table className="wholesale-table">
                     <thead>
                       <tr>
                         <th>Timestamp</th>
-                        <th>Action</th>
-                        <th>User</th>
+                        <th>Activity Type</th>
+                        <th>Details</th>
                         <th>Status</th>
                       </tr>
                     </thead>
                     <tbody id="activity-log">
+                      {inquiries.filter(i => i.status === 'new').length > 0 && (
+                        <tr style={{ backgroundColor: 'rgba(73, 202, 125, 0.05)' }}>
+                          <td>{new Date().toISOString().slice(0, 16).replace('T', ' ')}</td>
+                          <td>New Customer Inquiry</td>
+                          <td>{inquiries.filter(i => i.status === 'new')[0]?.name} - {inquiries.filter(i => i.status === 'new')[0]?.subject}</td>
+                          <td><span className="status-badge success">New</span></td>
+                        </tr>
+                      )}
+                      {wsInquiries.filter(i => i.status === 'new').length > 0 && (
+                        <tr style={{ backgroundColor: 'rgba(73, 202, 125, 0.05)' }}>
+                          <td>{new Date().toISOString().slice(0, 16).replace('T', ' ')}</td>
+                          <td>New Wholesale Request</td>
+                          <td>{wsInquiries.filter(i => i.status === 'new')[0]?.company} - {wsInquiries.filter(i => i.status === 'new')[0]?.name}</td>
+                          <td><span className="status-badge success">New</span></td>
+                        </tr>
+                      )}
                       <tr>
                         <td>{new Date().toISOString().slice(0, 16).replace('T', ' ')}</td>
-                        <td>Loaded admin dashboard</td>
-                        <td>Admin</td>
-                        <td><span className="status-badge success">Completed</span></td>
+                        <td>Dashboard Sync</td>
+                        <td>Real-time monitoring active - Updating every 5 seconds</td>
+                        <td><span className="status-badge success">Active</span></td>
                       </tr>
                     </tbody>
                   </table>
