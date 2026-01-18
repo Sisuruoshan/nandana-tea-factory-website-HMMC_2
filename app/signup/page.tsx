@@ -114,16 +114,16 @@ export default function SignupPage() {
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
             />
           </div>
-          
-          <div className="signup-actions">
-            <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? 'Creating...' : 'Create Account'}
-            </button>
-            <Link href="/login" className="btn btn-secondary-outline">
-              Already have an account
-            </Link>
-          </div>
+
+
+          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1.5rem' }} disabled={loading}>
+            {loading ? 'Creating...' : 'Create Account'}
+          </button>
         </form>
+
+        <Link href="/login" className="signup-link">
+          Already have an account
+        </Link>
       </div>
     </div>
   )
