@@ -205,7 +205,7 @@ export default function WholesalePage() {
   }
 
   return (
-    <main className="container" style={{ paddingTop: '8rem' }}>
+    <main className="container wholesale-container" style={{ paddingTop: '8rem' }}>
       <section className="page-header">
         <h1>Wholesale Portal</h1>
         <p>Access exclusive pricing and bulk ordering.</p>
