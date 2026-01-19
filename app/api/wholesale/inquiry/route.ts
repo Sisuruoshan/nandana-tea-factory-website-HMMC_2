@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { db } from '@/lib/firebase'
+import { collection, addDoc, Timestamp } from 'firebase/firestore'
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,22 +14,26 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const inquiry = await prisma.wholesaleInquiry.create({
-      data: {
-        name,
-        company,
-        email,
-        phone: phone || null,
-        address: address || null,
-        details,
-        status: 'new',
-      },
-    })
+    const inquiriesRef = collection(db, 'wholesale_inquiries');
+
+    const newInquiry = {
+      name,
+      company,
+      email,
+      phone: phone || null,
+      address: address || null,
+      details,
+      status: 'new',
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+    };
+
+    const docRef = await addDoc(inquiriesRef, newInquiry);
 
     return NextResponse.json({
       success: true,
       message: 'Inquiry submitted! We will contact you soon.',
-      inquiry,
+      inquiry: { id: docRef.id, ...newInquiry },
     })
   } catch (error) {
     console.error('Wholesale inquiry error:', error)

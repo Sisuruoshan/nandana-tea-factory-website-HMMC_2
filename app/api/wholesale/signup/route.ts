@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { db } from '@/lib/firebase'
+import { collection, addDoc, query, where, getDocs, Timestamp } from 'firebase/firestore'
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,31 +14,40 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const inquiry = await prisma.wholesaleInquiry.create({
-      data: {
-        company,
-        name,
-        email,
-        phone: phone || null,
-        address: address || null,
-        details: 'Wholesale Account Signup',
-        status: 'new',
-      },
-    })
+    const inquiriesRef = collection(db, 'wholesale_inquiries');
 
-    return NextResponse.json({
-      success: true,
-      message: 'Signup submitted! An admin will review your application.',
-      inquiry,
-    })
-  } catch (error: any) {
-    console.error('Wholesale signup error:', error)
-    if (error.code === 'P2002') {
+    // Check for existing email to mimic unique constraint
+    const q = query(inquiriesRef, where('email', '==', email));
+    const snapshot = await getDocs(q);
+
+    if (!snapshot.empty) {
       return NextResponse.json(
         { error: 'Email already registered' },
         { status: 400 }
       )
     }
+
+    const newInquiry = {
+      company,
+      name,
+      email,
+      phone: phone || null,
+      address: address || null,
+      details: 'Wholesale Account Signup',
+      status: 'new',
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+    };
+
+    const docRef = await addDoc(inquiriesRef, newInquiry);
+
+    return NextResponse.json({
+      success: true,
+      message: 'Signup submitted! An admin will review your application.',
+      inquiry: { id: docRef.id, ...newInquiry },
+    })
+  } catch (error: any) {
+    console.error('Wholesale signup error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { db } from '@/lib/firebase'
+import { collection, query, where, getDocs, doc, getDoc, updateDoc, deleteDoc, Timestamp, writeBatch } from 'firebase/firestore'
 import { requireAuth } from '@/lib/auth'
 
 export async function PUT(
@@ -18,87 +19,94 @@ export async function PUT(
       )
     }
 
-    const cartItem = await prisma.cartItem.findUnique({
-      where: { id: params.itemId },
-      include: { cart: true, product: true },
-    })
+    // Find User's Cart to verify ownership and get cartId
+    const cartsRef = collection(db, 'carts');
+    const q = query(cartsRef, where('userId', '==', user.id));
+    const cartSnapshot = await getDocs(q);
 
-    if (!cartItem) {
+    if (cartSnapshot.empty) {
+      return NextResponse.json(
+        { error: 'Cart not found' },
+        { status: 404 }
+      )
+    }
+
+    const cartDoc = cartSnapshot.docs[0];
+    const cartId = cartDoc.id;
+
+    // Get Item reference
+    const itemRef = doc(db, 'carts', cartId, 'items', params.itemId);
+    const itemSnap = await getDoc(itemRef);
+
+    if (!itemSnap.exists()) {
       return NextResponse.json(
         { error: 'Cart item not found' },
         { status: 404 }
       )
     }
 
-    // Verify cart belongs to user
-    if (cartItem.cart.userId !== user.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+    const itemData = itemSnap.data();
+
+    // Get Product to check stock
+    const productRef = doc(db, 'products', itemData.productId);
+    const productSnap = await getDoc(productRef);
+    const productData = productSnap.exists() ? productSnap.data() : null;
+
+    if (!productData) {
+      // Should probably delete item if product missing, but for now error
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
-    // Calculate quantity difference and restore/deduct stock accordingly
-    const quantityDiff = quantity - cartItem.quantity
-    
-    if (quantityDiff !== 0 && cartItem.product.stock !== null && cartItem.product.stock !== undefined) {
+    // Stock check
+    const quantityDiff = quantity - itemData.quantity;
+
+    if (quantityDiff !== 0 && productData.stock !== null && productData.stock !== undefined) {
       if (quantityDiff > 0) {
-        // Increasing quantity - check if enough stock
-        if (cartItem.product.stock < quantityDiff) {
+        if (productData.stock < quantityDiff) {
           return NextResponse.json(
-            { error: `Insufficient stock. Only ${cartItem.product.stock} more units available.` },
+            { error: `Insufficient stock. Only ${productData.stock} more units available.` },
             { status: 400 }
           )
         }
-        // Deduct additional stock
-        await prisma.product.update({
-          where: { id: cartItem.productId },
-          data: { stock: cartItem.product.stock - quantityDiff },
-        })
+        // Deduct stock
+        await updateDoc(productRef, {
+          stock: productData.stock - quantityDiff
+        });
       } else {
-        // Decreasing quantity - restore stock
-        await prisma.product.update({
-          where: { id: cartItem.productId },
-          data: { stock: cartItem.product.stock - quantityDiff }, // quantityDiff is negative, so this adds
-        })
+        // Restore stock
+        await updateDoc(productRef, {
+          stock: productData.stock - quantityDiff // quantityDiff is negative
+        });
       }
     }
 
-    const newSubtotal = Number(cartItem.price) * quantity
+    const newSubtotal = Number(itemData.price) * quantity;
 
-    await prisma.cartItem.update({
-      where: { id: cartItem.id },
-      data: {
-        quantity,
-        subtotal: newSubtotal,
-      },
-    })
+    await updateDoc(itemRef, {
+      quantity,
+      subtotal: newSubtotal,
+      updatedAt: Timestamp.now()
+    });
 
-    // Update cart total
-    const cart = await prisma.cart.findUnique({
-      where: { id: cartItem.cartId },
-      include: { items: true },
-    })
+    // Recalculate Cart Total
+    const itemsRef = collection(db, 'carts', cartId, 'items');
+    const allItemsSnapshot = await getDocs(itemsRef);
+    const totalAmount = allItemsSnapshot.docs.reduce(
+      (sum, item) => sum + Number(item.data().subtotal),
+      0
+    );
 
-    if (cart) {
-      const totalAmount = cart.items.reduce(
-        (sum, item) => sum + Number(item.subtotal),
-        0
-      )
-
-      await prisma.cart.update({
-        where: { id: cart.id },
-        data: { totalAmount },
-      })
-
-      return NextResponse.json({
-        success: true,
-        subtotal: newSubtotal,
-        cart_total: totalAmount,
-      })
-    }
+    await updateDoc(cartDoc.ref, {
+      totalAmount,
+      updatedAt: Timestamp.now()
+    });
 
     return NextResponse.json({
       success: true,
       subtotal: newSubtotal,
+      cart_total: totalAmount,
     })
+
   } catch (error: any) {
     if (error.message === 'Unauthorized') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -118,64 +126,69 @@ export async function DELETE(
   try {
     const user = await requireAuth()
 
-    const cartItem = await prisma.cartItem.findUnique({
-      where: { id: params.itemId },
-      include: { cart: true, product: true },
-    })
+    // Find User's Cart
+    const cartsRef = collection(db, 'carts');
+    const q = query(cartsRef, where('userId', '==', user.id));
+    const cartSnapshot = await getDocs(q);
 
-    if (!cartItem) {
+    if (cartSnapshot.empty) {
+      return NextResponse.json(
+        { error: 'Cart not found' },
+        { status: 404 }
+      )
+    }
+
+    const cartDoc = cartSnapshot.docs[0];
+    const cartId = cartDoc.id;
+
+    // Get Item
+    const itemRef = doc(db, 'carts', cartId, 'items', params.itemId);
+    const itemSnap = await getDoc(itemRef);
+
+    if (!itemSnap.exists()) {
       return NextResponse.json(
         { error: 'Cart item not found' },
         { status: 404 }
       )
     }
 
-    // Verify cart belongs to user
-    if (cartItem.cart.userId !== user.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+    const itemData = itemSnap.data();
+
+    // Restore stock
+    if (itemData.productId) {
+      const productRef = doc(db, 'products', itemData.productId);
+      const productSnap = await getDoc(productRef);
+      if (productSnap.exists()) {
+        const productData = productSnap.data();
+        if (productData.stock !== null && productData.stock !== undefined) {
+          await updateDoc(productRef, {
+            stock: productData.stock + itemData.quantity
+          });
+        }
+      }
     }
 
-    // Restore stock when item is removed from cart
-    if (cartItem.product.stock !== null && cartItem.product.stock !== undefined) {
-      await prisma.product.update({
-        where: { id: cartItem.productId },
-        data: { stock: cartItem.product.stock + cartItem.quantity },
-      })
-    }
+    await deleteDoc(itemRef);
 
-    const cartId = cartItem.cartId
-    await prisma.cartItem.delete({
-      where: { id: cartItem.id },
-    })
+    // Recalculate Cart Total
+    const itemsRef = collection(db, 'carts', cartId, 'items');
+    const allItemsSnapshot = await getDocs(itemsRef);
+    const totalAmount = allItemsSnapshot.docs.reduce(
+      (sum, item) => sum + Number(item.data().subtotal),
+      0
+    );
 
-    // Update cart total
-    const cart = await prisma.cart.findUnique({
-      where: { id: cartId },
-      include: { items: true },
-    })
-
-    if (cart) {
-      const totalAmount = cart.items.reduce(
-        (sum, item) => sum + Number(item.subtotal),
-        0
-      )
-
-      await prisma.cart.update({
-        where: { id: cart.id },
-        data: { totalAmount },
-      })
-
-      return NextResponse.json({
-        success: true,
-        message: 'Item removed from cart.',
-        cart_total: totalAmount,
-      })
-    }
+    await updateDoc(cartDoc.ref, {
+      totalAmount,
+      updatedAt: Timestamp.now()
+    });
 
     return NextResponse.json({
       success: true,
       message: 'Item removed from cart.',
+      cart_total: totalAmount,
     })
+
   } catch (error: any) {
     if (error.message === 'Unauthorized') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

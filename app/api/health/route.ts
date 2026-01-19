@@ -1,14 +1,17 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { db } from '@/lib/firebase'
+import { collection, getDocs, limit, query } from 'firebase/firestore'
 
 export async function GET() {
   try {
-    // Test the database connection
-    const result = await prisma.$queryRaw`db.adminCommand({ ping: 1 })`
+    // Test the database connection by trying to fetch one document
+    const q = query(collection(db, 'products'), limit(1));
+    await getDocs(q);
 
     return NextResponse.json({
       status: 'healthy',
       database: 'connected',
+      backend: 'firebase'
     })
   } catch (error: any) {
     console.error('Health check error:', error)

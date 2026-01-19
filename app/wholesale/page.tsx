@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 
 interface Product {
   id: number
@@ -16,6 +17,7 @@ interface Product {
 }
 
 export default function WholesalePage() {
+  const router = useRouter()
   const [products, setProducts] = useState<Product[]>([])
   const [productsLoading, setProductsLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
@@ -23,7 +25,7 @@ export default function WholesalePage() {
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
   const [quantities, setQuantities] = useState<{ [key: number]: number }>({})
-  const [addingToCart, setAddingToCart] = useState<{ [key: number]: boolean }>({})
+  const [loadingAction, setLoadingAction] = useState<{ [key: number]: 'add' | 'buy' | null }>({})
   const LIMIT = 9
 
   const [inquiryForm, setInquiryForm] = useState({
@@ -144,7 +146,7 @@ export default function WholesalePage() {
     setQuantities(prev => ({ ...prev, [productId]: Math.max(1, qty) }))
   }
 
-  const addToCart = async (product: Product) => {
+  const addToCart = async (product: Product, isBuyNow: boolean = false) => {
     // Check if user is actually logged in (has auth session)
     const checkSession = async () => {
       try {
@@ -156,7 +158,7 @@ export default function WholesalePage() {
     }
 
     const isAuthenticated = await checkSession()
-    
+
     if (!isAuthenticated) {
       if (confirm('You need to be logged in to add items to cart. Would you like to login now?')) {
         window.location.href = '/login?redirect=/wholesale'
@@ -164,17 +166,21 @@ export default function WholesalePage() {
       return
     }
 
-    setAddingToCart(prev => ({ ...prev, [product.id]: true }))
+    setLoadingAction(prev => ({ ...prev, [product.id]: isBuyNow ? 'buy' : 'add' }))
     try {
       const res = await fetch('/api/cart', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          product_id: product.id, 
-          quantity: getQuantity(product.id) 
+        body: JSON.stringify({
+          product_id: product.id,
+          quantity: getQuantity(product.id)
         }),
       })
       if (res.ok) {
+        if (isBuyNow) {
+          router.push('/cart')
+          return
+        }
         alert(`Added ${getQuantity(product.id)} units of ${product.name} to cart`)
         // Refresh products to update stock display
         loadProducts(page, searchQuery)
@@ -191,9 +197,10 @@ export default function WholesalePage() {
         }
       }
     } catch (error) {
+      console.error(error)
       alert('Failed to add to cart')
     } finally {
-      setAddingToCart(prev => ({ ...prev, [product.id]: false }))
+      setLoadingAction(prev => ({ ...prev, [product.id]: null }))
     }
   }
 
@@ -240,14 +247,14 @@ export default function WholesalePage() {
                     <div className="price">{formatPrice(product.wholesalePrice || product.price)}</div>
                     {product.stock !== undefined && (
                       <div className={`stock-info ${product.stock === 0 ? 'out-of-stock' : product.stock < 10 ? 'low-stock' : ''}`}>
-                        <i className="fa-solid fa-box"></i> 
+                        <i className="fa-solid fa-box"></i>
                         {product.stock === 0 ? 'Out of stock' : `${product.stock} in stock`}
                       </div>
                     )}
                   </div>
                   <div className="product-card-actions">
                     <div className="quantity-selector">
-                      <button 
+                      <button
                         onClick={() => setQuantity(product.id, getQuantity(product.id) - 1)}
                         className="qty-btn"
                         disabled={getQuantity(product.id) <= 1}
@@ -261,7 +268,7 @@ export default function WholesalePage() {
                         onChange={(e) => setQuantity(product.id, Number(e.target.value) || 1)}
                         className="qty-input"
                       />
-                      <button 
+                      <button
                         onClick={() => setQuantity(product.id, getQuantity(product.id) + 1)}
                         className="qty-btn"
                         disabled={product.stock !== undefined && getQuantity(product.id) >= product.stock}
@@ -269,12 +276,12 @@ export default function WholesalePage() {
                         <i className="fa-solid fa-plus"></i>
                       </button>
                     </div>
-                    <button 
+                    <button
                       onClick={() => addToCart(product)}
                       className="btn btn-primary add-to-cart-btn"
-                      disabled={addingToCart[product.id] || product.stock === 0}
+                      disabled={!!loadingAction[product.id] || product.stock === 0}
                     >
-                      {addingToCart[product.id] ? (
+                      {loadingAction[product.id] === 'add' ? (
                         <>
                           <i className="fa-solid fa-spinner fa-spin"></i> Adding...
                         </>
@@ -285,6 +292,21 @@ export default function WholesalePage() {
                       ) : (
                         <>
                           <i className="fa-solid fa-cart-plus"></i> Add to Cart
+                        </>
+                      )}
+                    </button>
+                    <button
+                      onClick={() => addToCart(product, true)}
+                      className="btn btn-secondary add-to-cart-btn"
+                      disabled={!!loadingAction[product.id] || product.stock === 0}
+                    >
+                      {loadingAction[product.id] === 'buy' ? (
+                        <>
+                          <i className="fa-solid fa-spinner fa-spin"></i> Processing...
+                        </>
+                      ) : (
+                        <>
+                          <i className="fa-solid fa-bolt"></i> Buy Now
                         </>
                       )}
                     </button>
@@ -378,9 +400,9 @@ export default function WholesalePage() {
             {loading ? 'Submitting...' : 'Submit Inquiry'}
           </button>
         </form>
-    
+
       </section>
-        <br ></br>
+      <br ></br>
     </main>
   )
 }

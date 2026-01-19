@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { prisma } from '@/lib/prisma'
+import { db } from '@/lib/firebase'
+import { doc, getDoc } from 'firebase/firestore'
 
 export const dynamic = 'force-dynamic'
 
@@ -26,21 +27,22 @@ export async function GET() {
     }
 
     // Fetch fresh user data from database to get latest avatar and profile info
-    const freshUser = await prisma.userSignup.findUnique({
-      where: { id: userData.id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        avatar: true,
-      },
-    })
+    const docRef = doc(db, 'users', userData.id);
+    const docSnap = await getDoc(docRef);
 
-    if (!freshUser) {
+    if (!docSnap.exists()) {
       const response = NextResponse.json({ user: null })
       response.headers.set('Cache-Control', 'private, no-cache, no-store, must-revalidate')
       return response
     }
+
+    const data = docSnap.data();
+    const freshUser = {
+      id: docSnap.id,
+      name: data.name,
+      email: data.email,
+      avatar: data.avatar || null, // Ensure explicit null if undefined for JSON
+    };
 
     const response = NextResponse.json({ user: freshUser })
     // Do not cache authenticated responses to ensure logout is reflected immediately

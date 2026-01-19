@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { db } from '@/lib/firebase'
+import { doc, deleteDoc, updateDoc, getDoc, Timestamp } from 'firebase/firestore'
 
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    await prisma.wholesaleInquiry.delete({
-      where: { id: params.id },
-    })
+    const inquiryRef = doc(db, 'wholesale_inquiries', params.id);
+    await deleteDoc(inquiryRef);
 
     return NextResponse.json({ message: 'Wholesale inquiry deleted' })
   } catch (error) {
@@ -35,13 +35,24 @@ export async function POST(
       )
     }
 
-    const inquiry = await prisma.wholesaleInquiry.update({
-      where: { id: params.id },
-      data: {
-        reply,
-        status: 'contacted',
-      },
-    })
+    const inquiryRef = doc(db, 'wholesale_inquiries', params.id);
+
+    await updateDoc(inquiryRef, {
+      reply,
+      status: 'contacted',
+      updatedAt: Timestamp.now()
+    });
+
+    // Return updated doc
+    const snap = await getDoc(inquiryRef);
+    const data = snap.data();
+
+    const inquiry = {
+      id: snap.id,
+      ...data,
+      createdAt: data?.createdAt?.toDate?.() || new Date(data?.createdAt),
+      updatedAt: data?.updatedAt?.toDate?.() || new Date(data?.updatedAt)
+    };
 
     // TODO: Send email notification
     // For now, we'll just return success

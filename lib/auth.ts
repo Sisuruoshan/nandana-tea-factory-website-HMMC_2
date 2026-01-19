@@ -1,6 +1,5 @@
 import { cookies } from 'next/headers'
 import bcrypt from 'bcryptjs'
-import { prisma } from './prisma'
 
 export interface SessionUser {
   id: string

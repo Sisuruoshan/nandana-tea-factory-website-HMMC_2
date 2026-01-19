@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { db } from '@/lib/firebase'
+import { collection, addDoc, Timestamp } from 'firebase/firestore'
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,20 +14,24 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const inquiry = await prisma.inquiry.create({
-      data: {
-        name,
-        email,
-        subject,
-        message,
-        status: 'new',
-      },
-    })
+    const inquiriesRef = collection(db, 'inquiries');
+
+    const newInquiry = {
+      name,
+      email,
+      subject,
+      message,
+      status: 'new',
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+    };
+
+    const docRef = await addDoc(inquiriesRef, newInquiry);
 
     return NextResponse.json({
       success: true,
       message: 'Inquiry submitted! We will contact you soon.',
-      inquiry,
+      inquiry: { id: docRef.id, ...newInquiry },
     })
   } catch (error) {
     console.error('Contact inquiry error:', error)

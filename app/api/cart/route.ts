@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { db } from '@/lib/firebase'
+import { collection, query, where, getDocs, addDoc, doc, getDoc, updateDoc, deleteDoc, writeBatch, Timestamp } from 'firebase/firestore'
 import { requireAuth } from '@/lib/auth'
 
 const FALLBACK_IMAGE = '/images/image.png'
@@ -10,30 +11,12 @@ export async function GET(request: NextRequest) {
   try {
     const user = await requireAuth()
 
-    // Optimize query: only select needed fields
-    const cart = await prisma.cart.findFirst({
-      where: { userId: user.id },
-      select: {
-        totalAmount: true,
-        items: {
-          select: {
-            id: true,
-            productId: true,
-            quantity: true,
-            price: true,
-            subtotal: true,
-            product: {
-              select: {
-                name: true,
-                image: true,
-              },
-            },
-          },
-        },
-      },
-    })
+    // Find cart for user
+    const cartsRef = collection(db, 'carts');
+    const q = query(cartsRef, where('userId', '==', user.id));
+    const cartSnapshot = await getDocs(q);
 
-    if (!cart) {
+    if (cartSnapshot.empty) {
       const response = NextResponse.json({
         items: [],
         total: 0,
@@ -43,23 +26,42 @@ export async function GET(request: NextRequest) {
       return response
     }
 
+    const cartDoc = cartSnapshot.docs[0];
+    const cartId = cartDoc.id;
+    const cartData = cartDoc.data();
+
+    // Get items from subcollection
+    const itemsRef = collection(db, 'carts', cartId, 'items');
+    const itemsSnapshot = await getDocs(itemsRef);
+
+    const items = await Promise.all(itemsSnapshot.docs.map(async (itemDoc) => {
+      const itemData = itemDoc.data();
+
+      // Fetch product details
+      const productRef = doc(db, 'products', itemData.productId);
+      const productSnap = await getDoc(productRef);
+      const productData = productSnap.exists() ? productSnap.data() : null;
+
+      return {
+        id: itemDoc.id,
+        product_id: itemData.productId,
+        product_name: productData?.name || 'Unknown Product',
+        product_image: productData?.image || FALLBACK_IMAGE,
+        quantity: itemData.quantity,
+        price: Number(itemData.price),
+        subtotal: Number(itemData.subtotal),
+      }
+    }));
+
     const response = NextResponse.json({
-      items: cart.items.map((item) => ({
-        id: item.id,
-        product_id: item.productId,
-        product_name: item.product.name,
-        product_image: item.product.image || FALLBACK_IMAGE,
-        quantity: item.quantity,
-        price: Number(item.price),
-        subtotal: Number(item.subtotal),
-      })),
-      total: Number(cart.totalAmount),
-      count: cart.items.length,
+      items,
+      total: Number(cartData.totalAmount || 0),
+      count: items.length,
     })
-    
+
     // Cache cart data briefly
     response.headers.set('Cache-Control', 'private, max-age=10, stale-while-revalidate=30')
-    
+
     return response
   } catch (error: any) {
     if (error.message === 'Unauthorized') {
@@ -86,16 +88,17 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const product = await prisma.product.findUnique({
-      where: { id: product_id },
-    })
+    const productRef = doc(db, 'products', product_id);
+    const productSnap = await getDoc(productRef);
 
-    if (!product) {
+    if (!productSnap.exists()) {
       return NextResponse.json(
         { error: 'Product not found' },
         { status: 404 }
       )
     }
+
+    const product = productSnap.data();
 
     // Check stock availability
     if (product.stock !== null && product.stock !== undefined) {
@@ -114,28 +117,39 @@ export async function POST(request: NextRequest) {
         : Number(product.price)
 
     // Get or create cart
-    let cart = await prisma.cart.findFirst({
-      where: { userId: user.id },
-    })
+    const cartsRef = collection(db, 'carts');
+    const q = query(cartsRef, where('userId', '==', user.id));
+    const cartSnapshot = await getDocs(q);
 
-    if (!cart) {
-      cart = await prisma.cart.create({
-        data: {
-          userId: user.id,
-          totalAmount: 0,
-        },
-      })
+    let cartId;
+    let cartRef;
+
+    if (cartSnapshot.empty) {
+      const newCart = {
+        userId: user.id,
+        totalAmount: 0,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now()
+      };
+      const newCartDoc = await addDoc(cartsRef, newCart);
+      cartId = newCartDoc.id;
+      cartRef = newCartDoc; // This is a DocumentReference
+    } else {
+      cartId = cartSnapshot.docs[0].id;
+      cartRef = doc(db, 'carts', cartId);
     }
 
-    // Check if product already exists in cart
-    const existingItem = await prisma.cartItem.findFirst({
-      where: {
-        cartId: cart.id,
-        productId: product.id,
-      },
-    })
+    // Items subcollection
+    const itemsRef = collection(db, 'carts', cartId, 'items');
 
-    if (existingItem) {
+    // Check if product already exists in cart subcollection
+    const itemQ = query(itemsRef, where('productId', '==', product_id));
+    const itemSnapshot = await getDocs(itemQ);
+
+    if (!itemSnapshot.empty) {
+      const existingItemDoc = itemSnapshot.docs[0];
+      const existingItem = existingItemDoc.data();
+
       // Check if total quantity exceeds stock
       const newQuantity = existingItem.quantity + quantity
       if (product.stock !== null && product.stock !== undefined && product.stock < newQuantity) {
@@ -148,75 +162,56 @@ export async function POST(request: NextRequest) {
       // Update quantity
       const newSubtotal = effectivePrice * newQuantity
 
-      await prisma.cartItem.update({
-        where: { id: existingItem.id },
-        data: {
-          quantity: newQuantity,
-          subtotal: newSubtotal,
-        },
-      })
+      await updateDoc(doc(itemsRef, existingItemDoc.id), {
+        quantity: newQuantity,
+        subtotal: newSubtotal,
+        updatedAt: Timestamp.now()
+      });
 
       // Decrease product stock
       if (product.stock !== null && product.stock !== undefined) {
-        await prisma.product.update({
-          where: { id: product.id },
-          data: { stock: product.stock - quantity },
-        })
+        await updateDoc(productRef, {
+          stock: product.stock - quantity
+        });
       }
     } else {
       // Create new cart item
-      await prisma.cartItem.create({
-        data: {
-          cartId: cart.id,
-          productId: product.id,
-          quantity,
-          price: effectivePrice,
-          subtotal: effectivePrice * quantity,
-        },
-      })
+      await addDoc(itemsRef, {
+        productId: product_id,
+        quantity,
+        price: effectivePrice,
+        subtotal: effectivePrice * quantity,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now()
+      });
 
       // Decrease product stock
       if (product.stock !== null && product.stock !== undefined) {
-        await prisma.product.update({
-          where: { id: product.id },
-          data: { stock: product.stock - quantity },
-        })
+        await updateDoc(productRef, {
+          stock: product.stock - quantity
+        });
       }
     }
 
-    // Update cart total
-    const updatedCart = await prisma.cart.findUnique({
-      where: { id: cart.id },
-      include: {
-        items: true,
-      },
-    })
+    // Update cart total (Recalculate all items)
+    const allItemsSnapshot = await getDocs(itemsRef);
+    const totalAmount = allItemsSnapshot.docs.reduce(
+      (sum, item) => sum + Number(item.data().subtotal),
+      0
+    );
 
-    if (updatedCart) {
-      const totalAmount = updatedCart.items.reduce(
-        (sum, item) => sum + Number(item.subtotal),
-        0
-      )
-
-      await prisma.cart.update({
-        where: { id: cart.id },
-        data: { totalAmount },
-      })
-
-      return NextResponse.json({
-        success: true,
-        message: 'Product added to cart successfully.',
-        cart_count: updatedCart.items.length,
-        cart_total: totalAmount,
-      })
-    }
+    await updateDoc(doc(db, 'carts', cartId), { // Reuse doc reference manually if needed, but safe here
+      totalAmount,
+      updatedAt: Timestamp.now()
+    });
 
     return NextResponse.json({
       success: true,
       message: 'Product added to cart successfully.',
-      cart_count: 0,
-      cart_total: 0,
+      cart_count: allItemsSnapshot.size,
+      cart_total: totalAmount,
     })
+
   } catch (error: any) {
     if (error.message === 'Unauthorized') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -233,30 +228,46 @@ export async function DELETE(request: NextRequest) {
   try {
     const user = await requireAuth()
 
-    const cart = await prisma.cart.findFirst({
-      where: { userId: user.id },
-      include: { items: { include: { product: true } } },
-    })
+    const cartsRef = collection(db, 'carts');
+    const q = query(cartsRef, where('userId', '==', user.id));
+    const cartSnapshot = await getDocs(q);
 
-    if (cart) {
-      // Restore stock for all items in cart
-      for (const item of cart.items) {
-        if (item.product.stock !== null && item.product.stock !== undefined) {
-          await prisma.product.update({
-            where: { id: item.productId },
-            data: { stock: item.product.stock + item.quantity },
-          })
+    if (!cartSnapshot.empty) {
+      const cartDoc = cartSnapshot.docs[0];
+      const cartId = cartDoc.id;
+
+      const itemsRef = collection(db, 'carts', cartId, 'items');
+      const itemsSnapshot = await getDocs(itemsRef);
+
+      const batch = writeBatch(db);
+
+      // Restore stock for all items
+      // Note: In a real high-frequency app, we'd handle this more carefully for race conditions
+      for (const itemDoc of itemsSnapshot.docs) {
+        const item = itemDoc.data();
+        const productRef = doc(db, 'products', item.productId);
+        const productSnap = await getDoc(productRef);
+
+        if (productSnap.exists()) {
+          const productData = productSnap.data();
+          if (productData.stock !== null && productData.stock !== undefined) {
+            batch.update(productRef, {
+              stock: productData.stock + item.quantity
+            });
+          }
         }
+
+        // Delete item
+        batch.delete(itemDoc.ref);
       }
 
-      await prisma.cartItem.deleteMany({
-        where: { cartId: cart.id },
-      })
+      // Update cart total
+      batch.update(cartDoc.ref, {
+        totalAmount: 0,
+        updatedAt: Timestamp.now()
+      });
 
-      await prisma.cart.update({
-        where: { id: cart.id },
-        data: { totalAmount: 0 },
-      })
+      await batch.commit();
     }
 
     return NextResponse.json({

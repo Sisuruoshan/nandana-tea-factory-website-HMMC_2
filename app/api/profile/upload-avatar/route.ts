@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { db } from '@/lib/firebase'
+import { doc, updateDoc, getDoc } from 'firebase/firestore'
 import { requireAuth, createSession } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
@@ -15,10 +16,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
+    // Validate request size for Firestore
+    // Firestore limit: 1 MiB. Safe limit for avatar string: ~750KB
+    // 750KB in bytes = 768,000 bytes.
+    if (file.size > 768000) {
       return NextResponse.json(
-        { error: 'File size must be less than 5MB' },
+        { error: 'File too large. Max size is 750KB for Base64 storage.' },
         { status: 400 }
       )
     }
@@ -38,24 +41,28 @@ export async function POST(request: NextRequest) {
     // Convert image to base64
     const base64Image = `data:${file.type};base64,${buffer.toString('base64')}`
 
-    // Update user avatar in database with base64 string
-    const updatedUser = await prisma.userSignup.update({
-      where: { id: user.id },
-      data: { avatar: base64Image },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        avatar: true,
-      },
-    })
+    // Double check final string length (1 char ~= 1 byte)
+    if (base64Image.length > 1000000) {
+      return NextResponse.json(
+        { error: 'Encoded image is too large for database storage.' },
+        { status: 400 }
+      )
+    }
+
+    // Update user avatar in database
+    const userRef = doc(db, 'users', user.id);
+    await updateDoc(userRef, { avatar: base64Image });
+
+    // Get updated user data for session
+    const userSnap = await getDoc(userRef);
+    const updatedUser = userSnap.data() as any;
 
     // Update session with new avatar
     await createSession({
-      id: updatedUser.id.toString(),
+      id: user.id,
       name: updatedUser.name,
       email: updatedUser.email,
-      avatar: updatedUser.avatar,
+      avatar: base64Image,
     })
 
     return NextResponse.json({
@@ -69,7 +76,7 @@ export async function POST(request: NextRequest) {
     }
     console.error('Upload avatar error:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error: ' + error.message },
       { status: 500 }
     )
   }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { db } from '@/lib/firebase'
 import { hashPassword } from '@/lib/auth'
+import { collection, query, where, getDocs, addDoc, Timestamp } from 'firebase/firestore'
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,23 +34,22 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists
-    let existingUser
+    const usersRef = collection(db, 'users');
+    const q = query(usersRef, where('email', '==', email));
+
     try {
-      existingUser = await prisma.userSignup.findUnique({
-        where: { email },
-      })
+      const snapshot = await getDocs(q);
+      if (!snapshot.empty) {
+        return NextResponse.json(
+          { error: 'Email already registered' },
+          { status: 400 }
+        )
+      }
     } catch (dbError: any) {
       console.error('Database connection error:', dbError.message)
       return NextResponse.json(
-        { error: 'Database connection failed. Please try again later.' },
+        { error: `Database connection failed: ${dbError.message}` },
         { status: 503 }
-      )
-    }
-
-    if (existingUser) {
-      return NextResponse.json(
-        { error: 'Email already registered' },
-        { status: 400 }
       )
     }
 
@@ -66,40 +66,36 @@ export async function POST(request: NextRequest) {
     }
 
     // Create user
-    let user
     try {
-      user = await prisma.userSignup.create({
-        data: {
-          name,
-          email,
-          password: hashedPassword,
-          phone: phone || null,
-          address: address || null,
+      const newUser = {
+        name,
+        email,
+        password: hashedPassword,
+        phone: phone || null,
+        address: address || null,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now()
+      };
+
+      const docRef = await addDoc(usersRef, newUser);
+
+      return NextResponse.json({
+        success: true,
+        message: 'Account created successfully! You can now login.',
+        user: {
+          id: docRef.id,
+          name: newUser.name,
+          email: newUser.email,
         },
       })
     } catch (createError: any) {
       console.error('User creation error:', createError.message)
-      if (createError.code === 'P2002') {
-        return NextResponse.json(
-          { error: 'Email already registered' },
-          { status: 400 }
-        )
-      }
       return NextResponse.json(
         { error: 'Failed to create account. Please try again.' },
         { status: 500 }
       )
     }
 
-    return NextResponse.json({
-      success: true,
-      message: 'Account created successfully! You can now login.',
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-      },
-    })
   } catch (error: any) {
     console.error('Signup error:', error)
     return NextResponse.json(
