@@ -343,12 +343,15 @@ export default function WholesalePage() {
         {status && (
           <div
             style={{
-              background: status.type === 'success' ? '#e6ffed' : '#ffebeb',
-              color: status.type === 'success' ? '#03543f' : '#8a1f1f',
-              border: `1px solid ${status.type === 'success' ? '#84e1bc' : '#f5a9a9'}`,
-              padding: '12px',
+              background: status.type === 'success' ? 'rgba(74, 124, 44, 0.1)' : 'rgba(193, 80, 61, 0.1)',
+              color: status.type === 'success' ? 'var(--success-color)' : 'var(--error-color)',
+              border: `1px solid ${status.type === 'success' ? 'var(--success-color)' : 'var(--error-color)'}`,
+              padding: '1rem',
               borderRadius: '8px',
-              margin: '16px 0',
+              margin: '1.5rem 0',
+              fontSize: '1rem',
+              fontWeight: 600,
+              textAlign: 'center',
             }}
           >
             {status.message}
