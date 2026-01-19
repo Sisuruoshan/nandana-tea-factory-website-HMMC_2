@@ -888,7 +888,7 @@ export default function AdminPage() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="product-image">Tea Image</label>
+                <label htmlFor="product-image">Packet Image</label>
                 <div
                   className="upload-drop"
                   id="product-image-drop"
@@ -930,7 +930,7 @@ export default function AdminPage() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="product-image2">Packet Image</label>
+                <label htmlFor="product-image2">Tea Image</label>
                 <div
                   className="upload-drop"
                   id="product-image-drop-2"
