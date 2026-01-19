@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { db } from '@/lib/firebase'
+import { collection, addDoc, query, where, getDocs, doc, updateDoc, deleteDoc, getDoc, Timestamp } from 'firebase/firestore'
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,12 +28,22 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if slug already exists
-    const existingProduct = await prisma.product.findUnique({
-      where: { slug },
-    })
+    // Validate image size for Firestore (if present)
+    // 950,000 chars allows for some other fields metadata before hitting 1MB limit
+    if (image && image.length > 950000) {
+      return NextResponse.json(
+        { error: 'Image is too large. Max size is ~900KB for Base64 storage.' },
+        { status: 400 }
+      )
+    }
 
-    if (existingProduct) {
+    const productsRef = collection(db, 'products');
+
+    // Check if slug already exists
+    const q = query(productsRef, where('slug', '==', slug));
+    const snapshot = await getDocs(q);
+
+    if (!snapshot.empty) {
       return NextResponse.json(
         { error: 'Product with this slug already exists' },
         { status: 400 }
@@ -40,27 +51,29 @@ export async function POST(request: NextRequest) {
     }
 
     // Create product
-    const product = await prisma.product.create({
-      data: {
-        name,
-        description,
-        slug,
-        price: parseFloat(price),
-        image: image || null,
-        origin: origin || null,
-        notes: notes || null,
-        brewingGuide: brewingGuide || null,
-        longDescription: longDescription || null,
-        stock: parseInt(stock) || 0,
-        isWholesale: isWholesale || false,
-        wholesalePrice: wholesalePrice ? parseFloat(wholesalePrice) : null,
-      },
-    })
+    const newProduct = {
+      name,
+      description: description || '',
+      slug,
+      price: parseFloat(price),
+      image: image || null,
+      origin: origin || null,
+      notes: notes || null,
+      brewingGuide: brewingGuide || null,
+      longDescription: longDescription || null,
+      stock: parseInt(stock) || 0,
+      isWholesale: isWholesale || false,
+      wholesalePrice: wholesalePrice ? parseFloat(wholesalePrice) : null,
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+    };
+
+    const docRef = await addDoc(productsRef, newProduct);
 
     return NextResponse.json({
       success: true,
       message: 'Product created successfully',
-      product,
+      product: { id: docRef.id, ...newProduct },
     })
   } catch (error: any) {
     console.error('Product creation error:', error)
@@ -97,41 +110,47 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    // Check if product exists
-    const existingProduct = await prisma.product.findUnique({
-      where: { id },
-    })
+    // Validate image size
+    if (image && image.length > 950000) {
+      return NextResponse.json(
+        { error: 'Image is too large. Max size is ~900KB for Base64 storage.' },
+        { status: 400 }
+      )
+    }
 
-    if (!existingProduct) {
+    const productRef = doc(db, 'products', id);
+    const productSnap = await getDoc(productRef);
+
+    if (!productSnap.exists()) {
       return NextResponse.json(
         { error: 'Product not found' },
         { status: 404 }
       )
     }
 
+    const updateData = {
+      name,
+      description,
+      slug,
+      price: parseFloat(price),
+      image: image || null,
+      origin: origin || null,
+      notes: notes || null,
+      brewingGuide: brewingGuide || null,
+      longDescription: longDescription || null,
+      stock: parseInt(stock) || 0,
+      isWholesale: isWholesale || false,
+      wholesalePrice: wholesalePrice ? parseFloat(wholesalePrice) : null,
+      updatedAt: Timestamp.now(),
+    };
+
     // Update product
-    const updatedProduct = await prisma.product.update({
-      where: { id },
-      data: {
-        name,
-        description,
-        slug,
-        price: parseFloat(price),
-        image: image || null,
-        origin: origin || null,
-        notes: notes || null,
-        brewingGuide: brewingGuide || null,
-        longDescription: longDescription || null,
-        stock: parseInt(stock) || 0,
-        isWholesale: isWholesale || false,
-        wholesalePrice: wholesalePrice ? parseFloat(wholesalePrice) : null,
-      },
-    })
+    await updateDoc(productRef, updateData);
 
     return NextResponse.json({
       success: true,
       message: 'Product updated successfully',
-      product: updatedProduct,
+      product: { id, ...updateData },
     })
   } catch (error: any) {
     console.error('Product update error:', error)
@@ -154,12 +173,11 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    // Check if product exists
-    const existingProduct = await prisma.product.findUnique({
-      where: { id },
-    })
+    const productRef = doc(db, 'products', id);
+    // Firestore deleteDoc doesn't error if doc missing, but finding first is good for user feedback or existence check
+    const productSnap = await getDoc(productRef);
 
-    if (!existingProduct) {
+    if (!productSnap.exists()) {
       return NextResponse.json(
         { error: 'Product not found' },
         { status: 404 }
@@ -167,9 +185,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Delete product
-    await prisma.product.delete({
-      where: { id },
-    })
+    await deleteDoc(productRef);
 
     return NextResponse.json({
       success: true,
