@@ -101,7 +101,7 @@ export default function ProductsPage() {
   }
 
   return (
-    <main className="container" style={{ paddingTop: '8rem', paddingBottom: '4rem' }}>
+    <main className="container retail-container" style={{ paddingTop: '8rem', paddingBottom: '4rem' }}>
       <section className="page-header">
         <h1>Our Teas</h1>
       </section>

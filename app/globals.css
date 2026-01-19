@@ -912,7 +912,7 @@ body>main>section.hero {
 
 .wholesale-product-card h3 {
     font-size: 1.5rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.8rem;
 }
 
 .wholesale-product-card p {
@@ -974,7 +974,8 @@ body>main>section.hero {
     }
 }
 
-/* Wholesale page container: reduce horizontal padding for tighter layout */
+/* Retail and Wholesale page containers: reduce horizontal padding for tighter layout */
+.retail-container,
 .wholesale-container {
     padding: 0 3rem;
 }
