@@ -68,6 +68,7 @@ const styles = {
     background: '#ebe8e3',
     border: '1px solid #d4c5b0',
     marginBottom: '14px',
+    position: 'relative' as const,
   },
   qtyBox: {
     display: 'flex',
@@ -99,6 +100,9 @@ const styles = {
     cursor: 'pointer',
     fontSize: '1rem',
     transition: 'color 0.3s ease',
+    position: 'absolute' as const,
+    bottom: '14px',
+    right: '14px',
   },
   summary: {
     background: 'rgba(255, 255, 255, 0.95)',
@@ -135,6 +139,10 @@ const styles = {
     cursor: 'pointer',
     marginTop: '12px',
     transition: 'all 0.3s ease',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: '10px',
   },
   secondaryBtn: {
     width: '100%',
@@ -229,10 +237,12 @@ export default function CartPage() {
     return `Rs. ${value.toFixed(2)}`
   }
 
-  const resolveImage = (path: string) => {
+  const resolveImage = (path: string | null) => {
     if (!path) return '/images/image.png'
+    if (path.startsWith('data:')) return path
     if (path.startsWith('http')) return path
-    return `/${path.replace(/^\//, '')}`
+    const cleaned = path.replace(/^public\//, '').replace(/^\//, '')
+    return `/${cleaned}`
   }
 
   if (loading) {

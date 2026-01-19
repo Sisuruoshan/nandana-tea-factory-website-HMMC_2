@@ -219,7 +219,7 @@ export default function ProductPage() {
     }
   }
 
-  const addToCart = async (redirectToCart: boolean) => {
+  const addToCart = async (destination: 'cart' | 'payment' | 'stay') => {
     if (!product) return
 
     setAddingToCart(true)
@@ -235,8 +235,10 @@ export default function ProductPage() {
       })
 
       if (res.ok) {
-        if (redirectToCart) {
+        if (destination === 'cart') {
           router.push('/cart')
+        } else if (destination === 'payment') {
+          router.push('/payment')
         } else {
           setMessage('Added to cart.')
         }
@@ -335,7 +337,7 @@ export default function ProductPage() {
 
                 <div style={styles.ctaRow}>
                   <button
-                    onClick={() => addToCart(true)}
+                    onClick={() => addToCart('stay')}
                     style={{ ...styles.primaryBtn, opacity: addingToCart ? 0.7 : 1 }}
                     disabled={addingToCart}
                   >
@@ -343,7 +345,7 @@ export default function ProductPage() {
                     {addingToCart ? 'Adding...' : 'Add to Cart'}
                   </button>
                   <button
-                    onClick={() => addToCart(true)}
+                    onClick={() => addToCart('payment')}
                     style={styles.ghostBtn}
                     disabled={addingToCart}
                   >
