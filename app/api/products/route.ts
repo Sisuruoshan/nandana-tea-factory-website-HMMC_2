@@ -43,9 +43,9 @@ export async function GET(request: NextRequest) {
 
     // Filter by isWholesale
     if (isWholesale === 'true') {
-      products = products.filter((p: any) => p.isWholesale === true);
+      products = products.filter((p: any) => !!p.isWholesale);
     } else if (isWholesale === 'false') {
-      products = products.filter((p: any) => p.isWholesale === false);
+      products = products.filter((p: any) => !p.isWholesale);
     }
 
     // Filter by search term

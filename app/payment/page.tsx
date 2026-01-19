@@ -44,7 +44,7 @@ export default function PaymentPage() {
   }
 
   return (
-    <main style={{ paddingTop: '8rem', minHeight: '60vh' }}>
+    <main style={{ paddingTop: '8rem', paddingBottom: '6rem', minHeight: '60vh' }}>
       <div className="container">
         <div className="page-header">
           <h1>Payment</h1>

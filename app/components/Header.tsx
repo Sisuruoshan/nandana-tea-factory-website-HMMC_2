@@ -142,7 +142,7 @@ export default function Header() {
         {sessionChecked && (
           user ? (
             <>
-              {pathname === '/products' && (
+              {(pathname === '/products' || pathname === '/wholesale') && (
                 <>
                   <div style={{ position: 'relative', marginRight: '2px', width: '24px', height: '24px' }}>
                     {showSearch ? (
@@ -160,16 +160,21 @@ export default function Header() {
                         }}
                         autoFocus
                         style={{
-                          padding: '6px 10px',
-                          border: '1px solid rgba(255, 255, 255, 0.3)',
-                          borderRadius: '4px',
-                          fontSize: '14px',
-                          width: '200px',
-                          background: 'transparent',
+                          padding: '8px 16px',
+                          border: '1px solid var(--accent-bronze)',
+                          borderRadius: '24px',
+                          fontSize: '0.95rem',
+                          width: '240px',
+                          background: 'rgba(255, 255, 255, 0.1)',
+                          backdropFilter: 'blur(5px)',
                           color: '#ffffff',
                           position: 'absolute',
                           right: '0',
-                          zIndex: '10'
+                          top: '-8px',
+                          zIndex: '10',
+                          boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+                          transition: 'all 0.3s ease',
+                          outline: 'none'
                         }}
                       />
                     ) : (
