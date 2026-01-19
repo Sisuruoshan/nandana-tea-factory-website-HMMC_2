@@ -180,69 +180,23 @@ export default function AdminPage() {
     setShowProductModal(true)
   }
 
-  const compressImage = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const MAX_WIDTH = 800;
-      const MAX_HEIGHT = 800;
-      // Start with decent quality, can lower if needed
-      let quality = 0.7;
-
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = (event) => {
-        const img = document.createElement('img');
-        img.src = event.target?.result as string;
-        img.onload = () => {
-          let width = img.width;
-          let height = img.height;
-
-          // Resize logic
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height *= MAX_WIDTH / width;
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width *= MAX_HEIGHT / height;
-              height = MAX_HEIGHT;
-            }
-          }
-
-          const canvas = document.createElement('canvas');
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx?.drawImage(img, 0, 0, width, height);
-
-          // Iterate to get below 700KB (approx safe limit)
-          const attemptCompression = (q: number) => {
-            const dataUrl = canvas.toDataURL('image/jpeg', q);
-            // Rough size check: 1 char = 1 byte (Base64 is strictly ASCII)
-            if (dataUrl.length < 700000 || q < 0.2) {
-              resolve(dataUrl);
-            } else {
-              attemptCompression(q - 0.1);
-            }
-          }
-
-          attemptCompression(quality);
-        }
-      }
-      reader.onerror = (error) => reject(error);
-    });
-  }
-
   const handleProductImageUpload = async (file: File) => {
     setUploadingImage(true)
-    setImageStatus('Compressing & Encoding...')
+    setImageStatus('Uploading...')
     try {
-      const base64 = await compressImage(file);
-      setProductForm(prev => ({ ...prev, image: base64 }))
-      setImageStatus(`Ready: ${file.name} (${(base64.length / 1024).toFixed(1)} KB)`)
+      const formData = new FormData()
+      formData.append('image', file)
+      const response = await fetch('/api/admin/products/upload-image', {
+        method: 'POST',
+        body: formData,
+      })
+      if (!response.ok) throw new Error('Upload failed')
+      const data = await response.json()
+      setProductForm({ ...productForm, image: data.path })
+      setImageStatus(`File: ${file.name}`)
     } catch (error) {
       console.error(error)
-      setImageStatus('Processing failed')
+      setImageStatus('Upload failed')
     } finally {
       setUploadingImage(false)
     }
@@ -281,14 +235,21 @@ export default function AdminPage() {
 
   const handleProductImageUpload2 = async (file: File) => {
     setUploadingImage2(true)
-    setImageStatus2('Compressing & Encoding...')
+    setImageStatus2('Uploading...')
     try {
-      const base64 = await compressImage(file);
-      setProductForm(prev => ({ ...prev, image2: base64 }))
-      setImageStatus2(`Ready: ${file.name} (${(base64.length / 1024).toFixed(1)} KB)`)
+      const formData = new FormData()
+      formData.append('image', file)
+      const response = await fetch('/api/admin/products/upload-image', {
+        method: 'POST',
+        body: formData,
+      })
+      if (!response.ok) throw new Error('Upload failed')
+      const data = await response.json()
+      setProductForm({ ...productForm, image2: data.path })
+      setImageStatus2(`File: ${file.name}`)
     } catch (error) {
       console.error(error)
-      setImageStatus2('Processing failed')
+      setImageStatus2('Upload failed')
     } finally {
       setUploadingImage2(false)
     }
@@ -359,14 +320,21 @@ export default function AdminPage() {
 
   const handleWholesaleImageUpload = async (file: File) => {
     setUploadingWholesaleImage(true)
-    setWholesaleImageStatus('Compressing & Encoding...')
+    setWholesaleImageStatus('Uploading...')
     try {
-      const base64 = await compressImage(file);
-      setWholesaleForm(prev => ({ ...prev, image: base64 }))
-      setWholesaleImageStatus(`Ready: ${file.name} (${(base64.length / 1024).toFixed(1)} KB)`)
+      const formData = new FormData()
+      formData.append('image', file)
+      const response = await fetch('/api/admin/products/upload-image', {
+        method: 'POST',
+        body: formData,
+      })
+      if (!response.ok) throw new Error('Upload failed')
+      const data = await response.json()
+      setWholesaleForm({ ...wholesaleForm, image: data.path })
+      setWholesaleImageStatus(`File: ${file.name}`)
     } catch (error) {
       console.error(error)
-      setWholesaleImageStatus('Processing failed')
+      setWholesaleImageStatus('Upload failed')
     } finally {
       setUploadingWholesaleImage(false)
     }
@@ -768,8 +736,8 @@ export default function AdminPage() {
                           <td>{i.subject}</td>
                           <td style={{ maxWidth: 380 }}>{i.message}</td>
                           <td>
-                            <button
-                              className="btn btn-primary"
+                            <button 
+                              className="btn btn-primary" 
                               onClick={() => replyToInquiry(i.email, i.subject, i.name)}
                               style={{ marginRight: '8px' }}
                             >
@@ -820,8 +788,8 @@ export default function AdminPage() {
                           <td style={{ maxWidth: 380 }}>{i.details}</td>
                           <td>{i.status}</td>
                           <td>
-                            <button
-                              className="btn btn-primary"
+                            <button 
+                              className="btn btn-primary" 
                               onClick={() => replyToWholesaleInquiry(i.email, i.name, i.company)}
                               style={{ marginRight: '8px' }}
                             >
