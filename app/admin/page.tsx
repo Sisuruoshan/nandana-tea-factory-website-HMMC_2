@@ -888,7 +888,7 @@ export default function AdminPage() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="product-image">Product Image 1</label>
+                <label htmlFor="product-image">Tea Image</label>
                 <div
                   className="upload-drop"
                   id="product-image-drop"
@@ -926,21 +926,11 @@ export default function AdminPage() {
                     {imageStatus}
                   </div>
                 </div>
-                <input
-                  type="text"
-                  id="product-image"
-                  placeholder="Stored image path"
-                  required
-                  value={productForm.image}
-                  onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
-                  style={{ marginTop: '8px' }}
-                  readOnly
-                />
-                <small>Image will be uploaded and path filled automatically.</small>
+
               </div>
 
               <div className="form-group">
-                <label htmlFor="product-image2">Product Image 2</label>
+                <label htmlFor="product-image2">Packet Image</label>
                 <div
                   className="upload-drop"
                   id="product-image-drop-2"
@@ -978,16 +968,7 @@ export default function AdminPage() {
                     {imageStatus2}
                   </div>
                 </div>
-                <input
-                  type="text"
-                  id="product-image2"
-                  placeholder="Stored image path"
-                  value={productForm.image2}
-                  onChange={(e) => setProductForm({ ...productForm, image2: e.target.value })}
-                  style={{ marginTop: '8px' }}
-                  readOnly
-                />
-                <small>Image will be uploaded and path filled automatically.</small>
+
               </div>
 
               <div className="form-group">
@@ -1199,17 +1180,7 @@ Enjoy plain or with milk"
                     {wholesaleImageStatus}
                   </div>
                 </div>
-                <input
-                  type="text"
-                  id="ws-product-image"
-                  placeholder="Stored image path"
-                  required
-                  value={wholesaleForm.image}
-                  onChange={(e) => setWholesaleForm({ ...wholesaleForm, image: e.target.value })}
-                  style={{ marginTop: '8px' }}
-                  readOnly
-                />
-                <small>Image will be uploaded and path filled automatically.</small>
+
               </div>
 
               <div className="form-group">

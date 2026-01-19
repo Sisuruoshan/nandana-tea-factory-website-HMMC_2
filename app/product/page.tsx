@@ -13,6 +13,7 @@ interface Product {
   slug: string
   price: number
   image: string | null
+  image2?: string | null
   origin: string | null
   notes: string | null
   brewingGuide: string | null

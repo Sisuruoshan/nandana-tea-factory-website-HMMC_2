@@ -11,6 +11,7 @@ export async function POST(request: NextRequest) {
       slug,
       price,
       image,
+      image2,
       origin,
       notes,
       brewingGuide,
@@ -37,6 +38,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Validate image2 size
+    if (image2 && image2.length > 950000) {
+      return NextResponse.json(
+        { error: 'Image 2 is too large. Max size is ~900KB for Base64 storage.' },
+        { status: 400 }
+      )
+    }
+
     const productsRef = collection(db, 'products');
 
     // Check if slug already exists
@@ -57,6 +66,7 @@ export async function POST(request: NextRequest) {
       slug,
       price: parseFloat(price),
       image: image || null,
+      image2: image2 || null,
       origin: origin || null,
       notes: notes || null,
       brewingGuide: brewingGuide || null,
@@ -94,6 +104,7 @@ export async function PUT(request: NextRequest) {
       slug,
       price,
       image,
+      image2,
       origin,
       notes,
       brewingGuide,
@@ -118,6 +129,14 @@ export async function PUT(request: NextRequest) {
       )
     }
 
+    // Validate image2 size
+    if (image2 && image2.length > 950000) {
+      return NextResponse.json(
+        { error: 'Image 2 is too large. Max size is ~900KB for Base64 storage.' },
+        { status: 400 }
+      )
+    }
+
     const productRef = doc(db, 'products', id);
     const productSnap = await getDoc(productRef);
 
@@ -134,6 +153,7 @@ export async function PUT(request: NextRequest) {
       slug,
       price: parseFloat(price),
       image: image || null,
+      image2: image2 || null,
       origin: origin || null,
       notes: notes || null,
       brewingGuide: brewingGuide || null,
