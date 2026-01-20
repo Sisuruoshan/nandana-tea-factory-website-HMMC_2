@@ -81,7 +81,7 @@ export default function AboutPage() {
         </section>
 
         <section className="about-section">
-          <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+          <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
             {images.map((image, index) => (
               <img
                 key={image}
@@ -94,8 +94,8 @@ export default function AboutPage() {
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
-                  opacity: currentImageIndex === index ? 1 : 0,
-                  transition: 'opacity 1s ease-in-out'
+                  transform: `translateX(${(index - currentImageIndex) * 100}%)`,
+                  transition: 'transform 0.8s ease-in-out'
                 }}
               />
             ))}
