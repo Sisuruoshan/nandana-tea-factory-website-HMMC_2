@@ -119,7 +119,7 @@ export default function ContactPage() {
           <h2>Contact Information</h2>
           <div className="info-item">
             <i className="fa-solid fa-phone"></i>
-            <span>+94 71 637 8331</span>
+            <span>077 792 0019</span>
           </div>
           <div className="info-item">
             <i className="fa-solid fa-envelope"></i>
