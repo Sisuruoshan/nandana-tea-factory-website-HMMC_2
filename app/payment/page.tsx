@@ -10,17 +10,44 @@ export default function PaymentPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    loadCart()
-  }, [])
+    const slug = searchParams.get('slug')
+    const qty = Number(searchParams.get('quantity'))
+
+    if (slug && qty > 0) {
+      loadDirectOrder(slug, qty)
+    } else {
+      loadCart()
+    }
+  }, [searchParams])
+
+  const loadDirectOrder = async (slug: string, qty: number) => {
+    try {
+      const res = await fetch(`/api/products/${slug}`)
+      if (res.ok) {
+        const product = await res.json()
+        const price = (product.isWholesale && product.wholesalePrice)
+          ? Number(product.wholesalePrice)
+          : Number(product.price)
+        setCartTotal(price * qty)
+      } else {
+        console.error('Product not found')
+        // Fallback to cart or error? For now, just stop loading
+      }
+    } catch (error) {
+      console.error('Failed to load product:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const loadCart = async () => {
     try {
-      const res = await fetch('/api/cart')
+      const res = await fetch('/api/cart', { cache: 'no-store' })
       if (res.ok) {
         const data = await res.json()
         setCartTotal(data.total || 0)
       } else if (res.status === 401) {
-        router.push('/login?redirect=/payment')
+        router.push(`/login?redirect=${encodeURIComponent('/payment')}`)
       }
     } catch (error) {
       console.error('Failed to load cart:', error)

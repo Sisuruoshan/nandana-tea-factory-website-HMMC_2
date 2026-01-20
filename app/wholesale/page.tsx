@@ -166,7 +166,13 @@ export default function WholesalePage() {
       return
     }
 
-    setLoadingAction(prev => ({ ...prev, [product.id]: isBuyNow ? 'buy' : 'add' }))
+    if (isBuyNow) {
+      setLoadingAction(prev => ({ ...prev, [product.id]: 'buy' }))
+      router.push(`/payment?slug=${product.slug}&quantity=${getQuantity(product.id)}`)
+      return
+    }
+
+    setLoadingAction(prev => ({ ...prev, [product.id]: 'add' }))
     try {
       const res = await fetch('/api/cart', {
         method: 'POST',
@@ -177,10 +183,6 @@ export default function WholesalePage() {
         }),
       })
       if (res.ok) {
-        if (isBuyNow) {
-          router.push('/cart')
-          return
-        }
         alert(`Added ${getQuantity(product.id)} units of ${product.name} to cart`)
         // Refresh products to update stock display
         loadProducts(page, searchQuery)

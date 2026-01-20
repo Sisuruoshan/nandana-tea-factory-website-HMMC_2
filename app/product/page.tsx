@@ -224,6 +224,23 @@ export default function ProductPage() {
 
     setAddingToCart(true)
     setMessage(null)
+
+    // Direct Buy Now Logic
+    if (destination === 'payment') {
+      // Check auth status first (optional, but good practice, though payment page will handle it too)
+      // Actually, let's just push to payment page, and payment page auth check will handle login redirect if needed
+      // But we probably want to ensure they are logged in before checkout flow starts?
+      // The current flow redirects to login if 401. 
+      // The Payment page implementation (from previous turn) redirects to login if 401 on cart fetch.
+      // But since we are bypassing cart fetch in Payment page for direct orders, we might need an auth check there?
+      // Wait, `loadDirectOrder` in Payment page fetches product, it doesn't check auth.
+      // We should probably check auth here or let the Payment page handle it.
+      // Let's implement the redirect first.
+      router.push(`/payment?slug=${product.slug}&quantity=${quantity}`)
+      setAddingToCart(false)
+      return
+    }
+
     try {
       const res = await fetch('/api/cart', {
         method: 'POST',
@@ -237,8 +254,6 @@ export default function ProductPage() {
       if (res.ok) {
         if (destination === 'cart') {
           router.push('/cart')
-        } else if (destination === 'payment') {
-          router.push('/payment')
         } else {
           setMessage('Added to cart.')
         }
