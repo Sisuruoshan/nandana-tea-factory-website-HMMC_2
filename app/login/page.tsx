@@ -28,7 +28,7 @@ export default function LoginPage() {
       }
     }
   }, [searchParams])
-  
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -65,7 +65,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="login-container">
+    <div className="login-container" style={{ marginTop: '2rem' }}>
       <div className="login-card">
         <i className="fa-solid fa-leaf"></i>
         <h2>Welcome Back</h2>
