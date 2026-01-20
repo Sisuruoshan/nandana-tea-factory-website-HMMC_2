@@ -89,7 +89,7 @@ export default function ProfilePage() {
           <div className="profile-header">
             <h2>My Profile</h2>
             <div className="profile-actions">
-              <Link href="/edit-profile" className="btn-edit">
+              <Link href="/edit-profile" className="btn btn-primary">
                 <i className="fa-solid fa-edit"></i> Edit Profile
               </Link>
               <button type="submit" className="btn-logout" onClick={handleLogout}>
@@ -179,11 +179,19 @@ export default function ProfilePage() {
           flex-wrap: wrap;
         }
 
-        .profile-actions a,
-        .profile-actions button {
+        .profile-actions .btn {
+          padding: 0.75rem 1.75rem;
+          display: flex;
+          align-items: center;
+          gap: 0.6rem;
+          white-space: nowrap;
+          font-size: 0.95rem;
+        }
+
+        .btn-logout {
           padding: 0.75rem 1.75rem;
           border-radius: 30px;
-          border: none;
+          border: 2px solid var(--border-color);
           cursor: pointer;
           text-decoration: none;
           font-size: 0.95rem;
@@ -193,24 +201,8 @@ export default function ProfilePage() {
           align-items: center;
           gap: 0.6rem;
           white-space: nowrap;
-        }
-
-        .btn-edit {
-          background: var(--primary-green);
-          color: var(--text-on-dark);
-          box-shadow: 0 4px 12px var(--shadow-green);
-        }
-
-        .btn-edit:hover {
-          background: var(--accent-green);
-          transform: translateY(-2px);
-          box-shadow: 0 6px 16px var(--shadow-warm);
-        }
-
-        .btn-logout {
           background: transparent;
           color: var(--text-secondary);
-          border: 2px solid var(--border-color);
         }
 
         .btn-logout:hover {

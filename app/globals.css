@@ -2238,15 +2238,15 @@ footer:not(.footer-with-bg) .footer-social a {
 }
 
 .social-icons a:nth-child(1) {
-    color: #1877F2;
+    color: #0e4f9e;
 }
 
 .social-icons a:nth-child(2) {
-    color: #E4405F;
+    color: #a92b44;
 }
 
 .social-icons a:nth-child(3) {
-    color: #FF0000;
+    color: #b30000;
 }
 
 .social-icons a:hover {
