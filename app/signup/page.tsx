@@ -49,7 +49,7 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="signup-container" style={{ marginTop: '2rem' }}>
+    <div className="signup-container" style={{ marginTop: '6rem' }}>
       <div className="signup-card">
         <h2>Create Your Account</h2>
 
