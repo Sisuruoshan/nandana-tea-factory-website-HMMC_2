@@ -59,7 +59,6 @@ export default function AdminPage() {
   const [wholesaleForm, setWholesaleForm] = useState({
     name: '',
     slug: '',
-    price: '',
     wholesalePrice: '',
     minQuantity: '10',
     stock: '0',
@@ -330,7 +329,6 @@ export default function AdminPage() {
     setWholesaleForm({
       name: '',
       slug: '',
-      price: '',
       wholesalePrice: '',
       minQuantity: '10',
       stock: '0',
@@ -345,7 +343,6 @@ export default function AdminPage() {
     setWholesaleForm({
       name: product.name,
       slug: product.slug,
-      price: product.price.toString(),
       wholesalePrice: product.wholesalePrice?.toString() || '',
       minQuantity: product.minWholesaleQty?.toString() || '10',
       stock: product.stock.toString(),
@@ -451,8 +448,8 @@ export default function AdminPage() {
   const handleWholesaleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!wholesaleForm.name || !wholesaleForm.slug || !wholesaleForm.price || !wholesaleForm.wholesalePrice) {
-      alert('Please fill in required fields: Name, Slug, Price, and Wholesale Price')
+    if (!wholesaleForm.name || !wholesaleForm.slug || !wholesaleForm.wholesalePrice) {
+      alert('Please fill in required fields: Name, Slug, and Wholesale Price')
       return
     }
 
@@ -462,7 +459,7 @@ export default function AdminPage() {
         ...(editingWholesaleProduct && { id: editingWholesaleProduct.id }),
         name: wholesaleForm.name,
         slug: wholesaleForm.slug,
-        price: wholesaleForm.price,
+        price: wholesaleForm.wholesalePrice,
         wholesalePrice: wholesaleForm.wholesalePrice,
         image: wholesaleForm.image,
         stock: parseInt(wholesaleForm.stock) || 0,
@@ -536,7 +533,7 @@ export default function AdminPage() {
   }
 
   return (
-    <body className="admin-body">
+    <div className="admin-body">
       <div className="admin-wrapper">
         <aside className="admin-sidebar">
           <div className="admin-logo">
@@ -708,7 +705,6 @@ export default function AdminPage() {
                         <h3 className="product-name-admin">{product.name}</h3>
                         <p className="product-description-admin">{product.description}</p>
                         <div className="product-price-admin">
-                          Retail: Rs. {Number(product.price || 0).toFixed(2)}<br />
                           Wholesale: Rs. {Number(product.wholesalePrice ?? product.price ?? 0).toFixed(2)}
                         </div>
                         <div className="product-stock-admin">Stock: {product.stock} units</div>
@@ -1079,17 +1075,7 @@ Enjoy plain or with milk"
 
               {/* Description removed for wholesale add form */}
 
-              <div className="form-group">
-                <label htmlFor="ws-product-price">Retail Price (Rs.)</label>
-                <input
-                  type="number"
-                  id="ws-product-price"
-                  step="0.01"
-                  required
-                  value={wholesaleForm.price}
-                  onChange={(e) => setWholesaleForm({ ...wholesaleForm, price: e.target.value })}
-                />
-              </div>
+              {/* Retail Price removed for wholesale add form */}
 
               <div className="form-group">
                 <label htmlFor="ws-product-wholesale-price">Wholesale Price (Rs.)</label>
@@ -1196,7 +1182,7 @@ Enjoy plain or with milk"
           </div>
         </div>
       )}
-    </body>
+    </div>
   )
 }
 

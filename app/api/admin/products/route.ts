@@ -152,7 +152,7 @@ export async function PUT(request: NextRequest) {
 
     const updateData = {
       name,
-      description,
+      description: description || '',
       slug,
       price: parseFloat(price),
       image: image || null,
