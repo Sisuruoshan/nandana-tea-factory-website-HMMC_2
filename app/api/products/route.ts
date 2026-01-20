@@ -52,8 +52,7 @@ export async function GET(request: NextRequest) {
     if (search) {
       const searchLower = search.toLowerCase();
       products = products.filter((p: any) =>
-        p.name?.toLowerCase().includes(searchLower) ||
-        p.description?.toLowerCase().includes(searchLower)
+        p.name?.toLowerCase().includes(searchLower)
       );
     }
 

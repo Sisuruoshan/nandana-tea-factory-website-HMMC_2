@@ -59,8 +59,8 @@ export async function GET(request: NextRequest) {
       count: items.length,
     })
 
-    // Cache cart data briefly
-    response.headers.set('Cache-Control', 'private, max-age=10, stale-while-revalidate=30')
+    // Prevent caching for cart data to ensure real-time updates
+    response.headers.set('Cache-Control', 'no-store, max-age=0')
 
     return response
   } catch (error: any) {

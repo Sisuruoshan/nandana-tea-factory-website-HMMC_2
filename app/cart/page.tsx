@@ -170,7 +170,7 @@ export default function CartPage() {
 
   const loadCart = async () => {
     try {
-      const res = await fetch('/api/cart')
+      const res = await fetch('/api/cart', { cache: 'no-store' })
       if (res.ok) {
         const data = await res.json()
         setCartItems(data.items || [])
@@ -204,16 +204,28 @@ export default function CartPage() {
   }
 
   const removeItem = async (itemId: number) => {
+    // Optimistic update
+    const itemToRemove = cartItems.find(item => item.id === itemId)
+    setCartItems(prev => prev.filter(item => item.id !== itemId))
+    if (itemToRemove) {
+      setTotal(prev => prev - itemToRemove.subtotal)
+    }
+
     try {
       const res = await fetch(`/api/cart/items/${itemId}`, {
         method: 'DELETE',
       })
 
       if (res.ok) {
+        // Sync with server to be sure
+        await loadCart()
+      } else {
+        // Revert on failure (simple strategy: reload)
         await loadCart()
       }
     } catch (error) {
       console.error('Failed to remove item:', error)
+      await loadCart()
     }
   }
 
