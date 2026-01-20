@@ -58,7 +58,6 @@ export default function AdminPage() {
   const [editingWholesaleProduct, setEditingWholesaleProduct] = useState<Product | null>(null)
   const [wholesaleForm, setWholesaleForm] = useState({
     name: '',
-    description: '',
     slug: '',
     price: '',
     wholesalePrice: '',
@@ -330,7 +329,6 @@ export default function AdminPage() {
     setEditingWholesaleProduct(null)
     setWholesaleForm({
       name: '',
-      description: '',
       slug: '',
       price: '',
       wholesalePrice: '',
@@ -346,7 +344,6 @@ export default function AdminPage() {
     setEditingWholesaleProduct(product)
     setWholesaleForm({
       name: product.name,
-      description: product.description,
       slug: product.slug,
       price: product.price.toString(),
       wholesalePrice: product.wholesalePrice?.toString() || '',
@@ -464,7 +461,6 @@ export default function AdminPage() {
       const payload = {
         ...(editingWholesaleProduct && { id: editingWholesaleProduct.id }),
         name: wholesaleForm.name,
-        description: wholesaleForm.description,
         slug: wholesaleForm.slug,
         price: wholesaleForm.price,
         wholesalePrice: wholesaleForm.wholesalePrice,
@@ -1081,16 +1077,7 @@ Enjoy plain or with milk"
                 />
               </div>
 
-              <div className="form-group">
-                <label htmlFor="ws-product-description">Description</label>
-                <textarea
-                  id="ws-product-description"
-                  rows={3}
-                  required
-                  value={wholesaleForm.description}
-                  onChange={(e) => setWholesaleForm({ ...wholesaleForm, description: e.target.value })}
-                />
-              </div>
+              {/* Description removed for wholesale add form */}
 
               <div className="form-group">
                 <label htmlFor="ws-product-price">Retail Price (Rs.)</label>
