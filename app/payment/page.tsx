@@ -1,24 +1,41 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function PaymentPage() {
+function PaymentContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [cartTotal, setCartTotal] = useState(0)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const slug = searchParams.get('slug')
-    const qty = Number(searchParams.get('quantity'))
-
-    if (slug && qty > 0) {
-      loadDirectOrder(slug, qty)
-    } else {
-      loadCart()
-    }
+    checkAuthAndLoad()
   }, [searchParams])
+
+  const checkAuthAndLoad = async () => {
+    try {
+      const authRes = await fetch('/api/auth/session')
+      const authData = await authRes.json()
+
+      if (!authRes.ok || !authData.user) {
+        router.push(`/login?redirect=${encodeURIComponent('/payment?' + searchParams.toString())}`)
+        return
+      }
+
+      const slug = searchParams.get('slug')
+      const qty = Number(searchParams.get('quantity'))
+
+      if (slug && qty > 0) {
+        loadDirectOrder(slug, qty)
+      } else {
+        loadCart()
+      }
+    } catch (error) {
+      console.error('Auth check failed:', error)
+      router.push('/login')
+    }
+  }
 
   const loadDirectOrder = async (slug: string, qty: number) => {
     try {
@@ -107,5 +124,19 @@ export default function PaymentPage() {
         </div>
       </div>
     </main>
+  )
+}
+
+export default function PaymentPage() {
+  return (
+    <Suspense fallback={
+      <main style={{ paddingTop: '8rem', minHeight: '60vh' }}>
+        <div className="container">
+          <p>Loading...</p>
+        </div>
+      </main>
+    }>
+      <PaymentContent />
+    </Suspense>
   )
 }

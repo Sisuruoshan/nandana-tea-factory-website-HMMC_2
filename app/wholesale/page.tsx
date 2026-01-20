@@ -37,6 +37,14 @@ export default function WholesalePage() {
   })
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
   const [loading, setLoading] = useState(false)
+  const [toast, setToast] = useState<{ show: boolean, message: string, type: 'success' | 'error' }>({ show: false, message: '', type: 'success' })
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ show: true, message, type })
+    setTimeout(() => {
+      setToast(prev => ({ ...prev, show: false }))
+    }, 3000)
+  }
 
   // Listen to header search events
   useEffect(() => {
@@ -192,7 +200,7 @@ export default function WholesalePage() {
         }),
       })
       if (res.ok) {
-        alert(`Added ${getQuantity(product.id)} units of ${product.name} to cart`)
+        showToast(`Added ${getQuantity(product.id)} units of ${product.name} to cart`, 'success')
         // Refresh products to update stock display
         loadProducts(page, searchQuery)
         // Reset quantity for this product
@@ -206,12 +214,12 @@ export default function WholesalePage() {
             window.location.href = '/login?redirect=/wholesale'
           }
         } else {
-          alert(data.error || 'Failed to add to cart')
+          showToast(data.error || 'Failed to add to cart', 'error')
         }
       }
     } catch (error) {
       console.error(error)
-      alert('Failed to add to cart')
+      showToast('Failed to add to cart', 'error')
     } finally {
       setLoadingAction(prev => ({ ...prev, [product.id]: null }))
     }
@@ -417,6 +425,32 @@ export default function WholesalePage() {
         </form>
 
       </section>
+
+      {/* Toast Notification */}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          padding: '16px 24px',
+          background: toast.type === 'success' ? 'var(--primary-green)' : '#ef4444',
+          color: '#ffffff',
+          borderRadius: '8px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          transform: toast.show ? 'translateY(0)' : 'translateY(100px)',
+          opacity: toast.show ? 1 : 0,
+          transition: 'all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55)',
+          zIndex: 1000,
+          pointerEvents: toast.show ? 'auto' : 'none',
+        }}
+      >
+        <i className={`fa-solid ${toast.type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'}`}></i>
+        <span style={{ fontWeight: 500 }}>{toast.message}</span>
+      </div>
+
       <br ></br>
     </main>
   )

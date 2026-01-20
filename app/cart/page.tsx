@@ -163,11 +163,21 @@ export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [showClearConfirm, setShowClearConfirm] = useState(false)
+  const [toast, setToast] = useState<{ show: boolean, message: string, type: 'success' | 'error' }>({ show: false, message: '', type: 'success' })
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ show: true, message, type })
+    setTimeout(() => {
+      setToast(prev => ({ ...prev, show: false }))
+    }, 3000)
+  }
 
   useEffect(() => {
     loadCart()
   }, [])
 
+  // ... (rest of methods)
   const loadCart = async () => {
     try {
       const res = await fetch('/api/cart', { cache: 'no-store' })
@@ -204,7 +214,6 @@ export default function CartPage() {
   }
 
   const removeItem = async (itemId: number) => {
-    // Optimistic update
     const itemToRemove = cartItems.find(item => item.id === itemId)
     setCartItems(prev => prev.filter(item => item.id !== itemId))
     if (itemToRemove) {
@@ -217,21 +226,25 @@ export default function CartPage() {
       })
 
       if (res.ok) {
-        // Sync with server to be sure
         await loadCart()
+        showToast('Item removed', 'success')
       } else {
-        // Revert on failure (simple strategy: reload)
         await loadCart()
+        showToast('Failed to remove item', 'error')
       }
     } catch (error) {
       console.error('Failed to remove item:', error)
       await loadCart()
+      showToast('An error occurred', 'error')
     }
   }
 
-  const clearCart = async () => {
-    if (!confirm('Are you sure you want to clear your cart?')) return
+  const clearCart = () => {
+    setShowClearConfirm(true)
+  }
 
+  const confirmClearCart = async () => {
+    setShowClearConfirm(false)
     try {
       const res = await fetch('/api/cart', {
         method: 'DELETE',
@@ -239,9 +252,13 @@ export default function CartPage() {
 
       if (res.ok) {
         await loadCart()
+        showToast('Cart cleared successfully', 'success')
+      } else {
+        showToast('Failed to clear cart', 'error')
       }
     } catch (error) {
       console.error('Failed to clear cart:', error)
+      showToast('An error occurred', 'error')
     }
   }
 
@@ -374,6 +391,65 @@ export default function CartPage() {
             </aside>
           </div>
         )}
+      </div>
+
+      {/* Confirmation Modal */}
+      {showClearConfirm && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999
+        }}>
+          <div style={{
+            background: 'white', padding: '24px', borderRadius: '12px', maxWidth: '400px', width: '90%',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.2)', textAlign: 'center'
+          }}>
+            <h3 style={{ marginBottom: '16px', color: '#2d5016' }}>Clear Cart?</h3>
+            <p style={{ marginBottom: '24px', color: '#666' }}>Are you sure you want to remove all items from your cart? This action cannot be undone.</p>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              <button
+                onClick={() => setShowClearConfirm(false)}
+                style={{
+                  padding: '10px 20px', borderRadius: '8px', border: '1px solid #ccc', background: 'white', cursor: 'pointer', fontWeight: 600
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmClearCart}
+                style={{
+                  padding: '10px 20px', borderRadius: '8px', border: 'none', background: '#dc2626', color: 'white', cursor: 'pointer', fontWeight: 600
+                }}
+              >
+                Clear Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          padding: '16px 24px',
+          background: toast.type === 'success' ? '#2d5016' : '#ef4444',
+          color: '#ffffff',
+          borderRadius: '8px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          transform: toast.show ? 'translateY(0)' : 'translateY(100px)',
+          opacity: toast.show ? 1 : 0,
+          transition: 'all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55)',
+          zIndex: 10000,
+          pointerEvents: toast.show ? 'auto' : 'none',
+        }}
+      >
+        <i className={`fa-solid ${toast.type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'}`}></i>
+        <span style={{ fontWeight: 500 }}>{toast.message}</span>
       </div>
     </main>
   )

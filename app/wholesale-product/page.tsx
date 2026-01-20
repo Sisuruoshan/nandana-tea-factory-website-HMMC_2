@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 
-export default function WholesaleProductPage() {
+function WholesaleProductContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const slug = searchParams.get('id')
@@ -217,3 +217,14 @@ export default function WholesaleProductPage() {
   )
 }
 
+export default function WholesaleProductPage() {
+  return (
+    <Suspense fallback={
+      <main className="container" style={{ paddingTop: '8rem' }}>
+        <p>Loading...</p>
+      </main>
+    }>
+      <WholesaleProductContent />
+    </Suspense>
+  )
+}
