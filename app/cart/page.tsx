@@ -41,10 +41,13 @@ const styles = {
     fontSize: '2.7rem',
     marginBottom: '6px',
     color: '#ffffff',
+    textAlign: 'center' as const,
+    width: '100%',
   },
   heroSub: {
     color: 'rgba(255, 255, 255, 0.9)',
     fontSize: '1.02rem',
+    textAlign: 'center' as const,
   },
   layout: {
     display: 'grid',
