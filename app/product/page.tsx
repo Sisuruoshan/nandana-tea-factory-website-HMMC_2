@@ -256,6 +256,7 @@ export default function ProductPage() {
           router.push('/cart')
         } else {
           setMessage('Added to cart.')
+          window.dispatchEvent(new Event('cartUpdated'))
         }
       } else if (res.status === 401) {
         router.push('/login?redirect=' + encodeURIComponent(`/product?id=${product.slug}`))

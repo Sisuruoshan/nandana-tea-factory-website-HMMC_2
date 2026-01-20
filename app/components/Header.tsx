@@ -39,9 +39,13 @@ export default function Header() {
     }
     document.addEventListener('click', onDocClick)
 
+    // Listen for cart updates
+    window.addEventListener('cartUpdated', updateCartCount)
+
     return () => {
       window.removeEventListener('scroll', onScroll)
       document.removeEventListener('click', onDocClick)
+      window.removeEventListener('cartUpdated', updateCartCount)
     }
   }, [])
 

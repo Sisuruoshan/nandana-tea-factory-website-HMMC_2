@@ -70,7 +70,7 @@ export default function WholesaleProductPage() {
     }
 
     const isAuthenticated = await checkSession()
-    
+
     if (!isAuthenticated) {
       if (confirm('You need to be logged in to add items to cart. Would you like to login now?')) {
         router.push('/login?redirect=/wholesale-product?id=' + encodeURIComponent(slug || ''))
@@ -89,6 +89,7 @@ export default function WholesaleProductPage() {
         alert('Added to cart')
         // Refresh product data to update stock
         if (slug) await load(slug)
+        window.dispatchEvent(new Event('cartUpdated'))
         router.push('/cart')
       } else {
         const data = await res.json().catch(() => ({}))
@@ -160,7 +161,7 @@ export default function WholesaleProductPage() {
           <div className="pd-actions">
             <label htmlFor="pd-qty">Quantity</label>
             <div className="quantity-selector" style={{ marginBottom: '1rem' }}>
-              <button 
+              <button
                 onClick={() => setQty(Math.max(1, qty - 1))}
                 className="qty-btn"
                 disabled={qty <= 1}
@@ -175,7 +176,7 @@ export default function WholesaleProductPage() {
                 onChange={(e) => setQty(Math.max(1, Number(e.target.value) || 1))}
                 className="qty-input"
               />
-              <button 
+              <button
                 onClick={() => setQty(qty + 1)}
                 className="qty-btn"
                 disabled={product.stock !== undefined && qty >= product.stock}

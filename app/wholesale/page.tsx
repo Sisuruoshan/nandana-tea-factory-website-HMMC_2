@@ -197,6 +197,8 @@ export default function WholesalePage() {
         loadProducts(page, searchQuery)
         // Reset quantity for this product
         setQuantities(prev => ({ ...prev, [product.id]: getMinQty(product) }))
+        // Update header cart count
+        window.dispatchEvent(new Event('cartUpdated'))
       } else {
         const data = await res.json().catch(() => ({}))
         if (data.error === 'Unauthorized') {
@@ -253,7 +255,6 @@ export default function WholesalePage() {
                 />
                 <div className="product-card-content">
                   <h3>{product.name}</h3>
-                  <p>{product.description}</p>
                   <div className="price-stock-row">
                     <div className="price">{formatPrice(product.wholesalePrice || product.price)}</div>
                     {product.stock !== undefined && (
