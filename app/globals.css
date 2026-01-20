@@ -76,6 +76,7 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow-x: hidden;
 }
 
 /* Ensure footer sticks to bottom on short pages */
@@ -497,6 +498,7 @@ body>main>section.hero {
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
+    animation: subtle-pan 20s ease-in-out infinite alternate;
 }
 
 .page-header1 h1 {
@@ -518,17 +520,7 @@ body>main>section.hero {
     display: inline-block;
 }
 
-.page-header1 .professional-heading::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, var(--primary-green), transparent);
-    border-radius: 2px;
-}
+
 
 .page-header1 .subtitle-divider {
     width: 50px;
@@ -577,6 +569,16 @@ body>main>section.hero {
 
 }
 
+
+@keyframes subtle-pan {
+    0% {
+        background-position: center;
+    }
+
+    100% {
+        background-position: center 20%;
+    }
+}
 
 .page-header h1 {
     font-family: var(--font-heading);
@@ -3056,4 +3058,121 @@ body.is-ready .page-shell {
 
 .scroll-reveal.is-visible.animate-zoom-in {
     transform: scale(1);
+}
+
+/* --- About Page Text --- */
+.about-text p {
+    text-align: justify;
+    line-height: 1.8;
+    /* Improve readability for justified text */
+}
+
+/* --- Tea Cup Decoration (About Page) --- */
+.container {
+    position: relative;
+    /* Ensure absolute children position relative to container */
+}
+
+.tea-decoration {
+    position: absolute;
+    top: auto;
+    bottom: 900px;
+    right: -320px;
+    width: 600px;
+    height: 600px;
+    pointer-events: none;
+    /* Let clicks pass through */
+    z-index: 10;
+    /* Above background, below modal */
+    display: none;
+    /* Hidden on mobile by default */
+    animation: spin-circle-reverse 60s linear infinite;
+}
+
+@keyframes spin-circle {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spin-circle-reverse {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(-360deg);
+    }
+}
+
+@media (min-width: 992px) {
+    .tea-decoration {
+        display: block;
+    }
+}
+
+.tea-cup {
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+    transition: transform 0.3s ease;
+}
+
+.tea-cup:hover {
+    transform: scale(1.1) rotate(10deg);
+}
+
+/* Positioning for 8-Cup Full Circle (Centered for 180px Size) */
+/* 1. Top */
+.tea-cup-1 {
+    top: -10px;
+    right: 210px;
+}
+
+/* 2. Top-Right */
+.tea-cup-2 {
+    top: 54px;
+    right: 54px;
+}
+
+/* 3. Right */
+.tea-cup-3 {
+    top: 210px;
+    right: -10px;
+}
+
+/* 4. Bottom-Right */
+.tea-cup-4 {
+    top: 366px;
+    right: 54px;
+}
+
+/* 5. Bottom */
+.tea-cup-5 {
+    top: 430px;
+    right: 210px;
+}
+
+/* 6. Bottom-Left */
+.tea-cup-6 {
+    top: 366px;
+    right: 366px;
+}
+
+/* 7. Left */
+.tea-cup-7 {
+    top: 210px;
+    right: 430px;
+}
+
+/* 8. Top-Left */
+.tea-cup-8 {
+    top: 54px;
+    right: 366px;
 }
