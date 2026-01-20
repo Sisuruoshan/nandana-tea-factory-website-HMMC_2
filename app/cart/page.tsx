@@ -355,9 +355,6 @@ export default function CartPage() {
                   </button>
                 </div>
               ))}
-              <button onClick={clearCart} style={styles.secondaryBtn}>
-                Clear Cart
-              </button>
             </section>
 
             <aside style={styles.summary}>
