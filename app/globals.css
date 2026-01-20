@@ -136,7 +136,7 @@ header.scrolled {
 }
 
 .logo i {
-    color: #fff;
+    color: var(--accent-mint-green);
     margin-right: 0.5rem;
 }
 
