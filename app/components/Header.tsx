@@ -120,6 +120,10 @@ export default function Header() {
     }
   }
 
+  if (pathname?.startsWith('/admin')) {
+    return null
+  }
+
   return (
     <header ref={(el) => { headerRef.current = el }}>
       <Link href="/" className="logo">
