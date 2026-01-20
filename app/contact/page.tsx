@@ -40,7 +40,7 @@ export default function ContactPage() {
   }
 
   return (
-    <main className="container" style={{ paddingTop: '8rem', paddingBottom: '4rem' }}>
+    <main className="container" style={{ paddingTop: '8rem', paddingBottom: '4rem', position: 'relative' }}>
       <div className="contact-grid">
         <div className="contact-form">
           <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '3rem', marginBottom: '1rem' }}>
@@ -144,6 +144,13 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
+      </div>
+      <div style={{ position: 'absolute', bottom: '0', right: '-200px', zIndex: -1 }}>
+        <img
+          src="/images/tea-pour-decor.png"
+          alt="Tea Pouring Decoration"
+          style={{ width: '500px', opacity: 0.9, marginBottom: '-20px' }}
+        />
       </div>
     </main>
   )
