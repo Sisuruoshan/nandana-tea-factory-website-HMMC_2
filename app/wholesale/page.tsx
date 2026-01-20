@@ -14,6 +14,7 @@ interface Product {
   wholesalePrice?: number | null
   image: string | null
   stock?: number
+  minWholesaleQty?: number
 }
 
 export default function WholesalePage() {
@@ -138,12 +139,20 @@ export default function WholesalePage() {
     }
   }
 
+  const getMinQty = (product: Product) => {
+    return product.minWholesaleQty || 10
+  }
+
   const getQuantity = (productId: number) => {
-    return quantities[productId] || 10
+    const product = products.find(p => p.id === productId)
+    if (!product) return 10
+    return quantities[productId] || getMinQty(product)
   }
 
   const setQuantity = (productId: number, qty: number) => {
-    setQuantities(prev => ({ ...prev, [productId]: Math.max(1, qty) }))
+    const product = products.find(p => p.id === productId)
+    if (!product) return
+    setQuantities(prev => ({ ...prev, [productId]: Math.max(getMinQty(product), qty) }))
   }
 
   const addToCart = async (product: Product, isBuyNow: boolean = false) => {
@@ -187,7 +196,7 @@ export default function WholesalePage() {
         // Refresh products to update stock display
         loadProducts(page, searchQuery)
         // Reset quantity for this product
-        setQuantities(prev => ({ ...prev, [product.id]: 10 }))
+        setQuantities(prev => ({ ...prev, [product.id]: getMinQty(product) }))
       } else {
         const data = await res.json().catch(() => ({}))
         if (data.error === 'Unauthorized') {
@@ -259,13 +268,13 @@ export default function WholesalePage() {
                       <button
                         onClick={() => setQuantity(product.id, getQuantity(product.id) - 1)}
                         className="qty-btn"
-                        disabled={getQuantity(product.id) <= 1}
+                        disabled={getQuantity(product.id) <= getMinQty(product)}
                       >
                         <i className="fa-solid fa-minus"></i>
                       </button>
                       <input
                         type="number"
-                        min={1}
+                        min={getMinQty(product)}
                         value={getQuantity(product.id)}
                         onChange={(e) => setQuantity(product.id, Number(e.target.value) || 1)}
                         className="qty-input"

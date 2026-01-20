@@ -20,6 +20,7 @@ interface Product {
   notes?: string
   brewingGuide?: string
   longDescription?: string
+  minWholesaleQty?: number
 }
 
 export default function AdminPage() {
@@ -349,7 +350,7 @@ export default function AdminPage() {
       slug: product.slug,
       price: product.price.toString(),
       wholesalePrice: product.wholesalePrice?.toString() || '',
-      minQuantity: '10',
+      minQuantity: product.minWholesaleQty?.toString() || '10',
       stock: product.stock.toString(),
       image: product.image || ''
     })
@@ -469,6 +470,7 @@ export default function AdminPage() {
         wholesalePrice: wholesaleForm.wholesalePrice,
         image: wholesaleForm.image,
         stock: parseInt(wholesaleForm.stock) || 0,
+        minWholesaleQty: parseInt(wholesaleForm.minQuantity) || 10,
         isWholesale: true,
       }
 

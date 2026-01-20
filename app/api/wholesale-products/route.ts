@@ -60,6 +60,7 @@ export async function GET(request: NextRequest) {
       image: p.image,
       stock: p.stock,
       isWholesale: p.isWholesale,
+      minWholesaleQty: p.minWholesaleQty,
     }));
 
     const response = NextResponse.json({

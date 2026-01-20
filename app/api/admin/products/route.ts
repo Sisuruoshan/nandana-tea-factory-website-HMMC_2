@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
       stock,
       isWholesale,
       wholesalePrice,
+      minWholesaleQty,
     } = body
 
     // Validate required fields
@@ -74,6 +75,7 @@ export async function POST(request: NextRequest) {
       stock: parseInt(stock) || 0,
       isWholesale: isWholesale || false,
       wholesalePrice: wholesalePrice ? parseFloat(wholesalePrice) : null,
+      minWholesaleQty: minWholesaleQty ? parseInt(minWholesaleQty) : 10,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
     };
@@ -112,6 +114,7 @@ export async function PUT(request: NextRequest) {
       stock,
       isWholesale,
       wholesalePrice,
+      minWholesaleQty,
     } = body
 
     if (!id) {
@@ -161,6 +164,7 @@ export async function PUT(request: NextRequest) {
       stock: parseInt(stock) || 0,
       isWholesale: isWholesale || false,
       wholesalePrice: wholesalePrice ? parseFloat(wholesalePrice) : null,
+      minWholesaleQty: minWholesaleQty ? parseInt(minWholesaleQty) : 10,
       updatedAt: Timestamp.now(),
     };
 
