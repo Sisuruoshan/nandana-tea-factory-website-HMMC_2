@@ -1,4 +1,24 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+
 export default function AboutPage() {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const images = [
+    '/srs/v1.jpg',
+    '/srs/v2.jpg',
+    '/srs/v3.jpeg',
+    '/srs/nandana-tea-factory_02.jpg'
+  ]
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length)
+    }, 3000) // Change image every 3 seconds
+
+    return () => clearInterval(interval)
+  }, [images.length])
+
   return (
     <div className="about-wrapper" style={{ position: 'relative', overflow: 'hidden' }}>
       <div className="tea-decoration">
@@ -61,7 +81,25 @@ export default function AboutPage() {
         </section>
 
         <section className="about-section">
-          <img src="/srs/nandana-tea-factory_02.jpg" alt="Tea packaging and loose leaves" />
+          <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+            {images.map((image, index) => (
+              <img
+                key={image}
+                src={image}
+                alt={`Tea factory image ${index + 1}`}
+                style={{
+                  position: index === 0 ? 'relative' : 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  opacity: currentImageIndex === index ? 1 : 0,
+                  transition: 'opacity 1s ease-in-out'
+                }}
+              />
+            ))}
+          </div>
           <div className="about-text">
             <h2>Our Process & Vision</h2>
             <p>
