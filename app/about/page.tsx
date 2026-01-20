@@ -5,9 +5,9 @@ import { useState, useEffect } from 'react'
 export default function AboutPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const images = [
-    '/srs/v1.jpg',
+    '/srs/v1.png',
     '/srs/v2.jpg',
-    '/srs/v3.jpeg',
+    '/srs/v3.png',
     '/srs/nandana-tea-factory_02.jpg'
   ]
 
