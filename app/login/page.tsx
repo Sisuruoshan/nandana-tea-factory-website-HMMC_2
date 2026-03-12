@@ -89,7 +89,7 @@ function LoginContent() {
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
           </div>
-            // Keep the login screen wrapped in Suspense because it depends on search params.
+           
           <div className="form-group">
             <label>Password</label>
             <input
