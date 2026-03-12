@@ -11,6 +11,7 @@ interface ScrollRevealProps {
     threshold?: number
 }
 
+// Fade content in only after it enters the viewport so long pages feel less static.
 const ScrollReveal: React.FC<ScrollRevealProps> = ({
     children,
     animation = 'fade-up',

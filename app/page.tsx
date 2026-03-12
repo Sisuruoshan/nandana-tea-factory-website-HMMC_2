@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import ScrollReveal from './components/ScrollReveal'
 
+// Present the main landing page and guide visitors toward shopping or contacting the team.
 export default function Home() {
   return (
     <section className="hero">

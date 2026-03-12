@@ -15,6 +15,7 @@ interface User {
   avatar: string | null
 }
 
+// Load the signed-in user's account details and redirect guests back to login.
 export default function ProfilePage() {
   const router = useRouter()
   const pathname = usePathname()

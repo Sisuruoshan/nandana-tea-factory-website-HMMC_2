@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   description: 'Discover the rich heritage and exquisite flavors of Nandana Tea, crafted with passion and tradition.',
 }
 
+// Wrap every page with the shared site chrome and global shortcuts.
 export default function RootLayout({
   children,
 }: {

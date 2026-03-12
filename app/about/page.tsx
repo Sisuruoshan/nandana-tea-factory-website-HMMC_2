@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react'
 
+// Tell the factory story and cycle through photos to make the page feel more alive.
 export default function AboutPage() {
+  // Keep track of which factory photo is currently visible in the slider.
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const images = [
     '/srs/v1.png',
@@ -12,10 +14,12 @@ export default function AboutPage() {
   ]
 
   useEffect(() => {
+    // Rotate through the gallery automatically so the page feels alive without user input.
     const interval = setInterval(() => {
       setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length)
     }, 3000) // Change image every 3 seconds
 
+    // Clear the timer when the component unmounts to avoid leaving it running in the background.
     return () => clearInterval(interval)
   }, [images.length])
 
@@ -82,6 +86,7 @@ export default function AboutPage() {
 
         <section className="about-section">
           <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+            {/* Slide the images horizontally and keep only one centered at a time. */}
             {images.map((image, index) => (
               <img
                 key={image}

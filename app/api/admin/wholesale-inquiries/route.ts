@@ -4,6 +4,7 @@ import { collection, getDocs, orderBy, query } from 'firebase/firestore'
 
 export const dynamic = 'force-dynamic'
 
+// Let admins review the latest wholesale inquiries in the dashboard.
 export async function GET(request: NextRequest) {
   try {
     const inquiriesRef = collection(db, 'wholesale_inquiries');

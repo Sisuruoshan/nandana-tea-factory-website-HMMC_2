@@ -5,6 +5,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore'
 export const dynamic = 'force-dynamic'
 export const revalidate = 60 // Revalidate every 60 seconds
 
+// Fetch a single wholesale product by slug for the detail page.
 export async function GET(
   request: NextRequest,
   { params }: { params: { slug: string } }

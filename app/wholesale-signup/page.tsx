@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 
+// Gather the information needed to review a new wholesale partnership request.
 export default function WholesaleSignupPage() {
   const [formData, setFormData] = useState({
     company: '',

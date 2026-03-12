@@ -17,6 +17,7 @@ interface Product {
   minWholesaleQty?: number
 }
 
+// Show wholesale buyers the bulk catalog and let them start an inquiry quickly.
 export default function WholesalePage() {
   const router = useRouter()
   const [products, setProducts] = useState<Product[]>([])

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/firebase'
 import { collection, addDoc, Timestamp } from 'firebase/firestore'
 
+// Save a public contact form submission so the team can follow up later.
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 
+// Let visitors send a message without leaving the site.
 export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: '',

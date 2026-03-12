@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
+// Prepare the order summary after confirming the shopper still has a valid session.
 function PaymentContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -86,6 +87,7 @@ function PaymentContent() {
       </main>
     )
   }
+    // Keep payment rendering behind Suspense because it depends on URL-driven state.
 
   return (
     <main style={{ paddingTop: '8rem', paddingBottom: '6rem', minHeight: '60vh' }}>

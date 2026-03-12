@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 
+// Load one wholesale product and help the buyer choose a valid bulk quantity.
 function WholesaleProductContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -217,6 +218,7 @@ function WholesaleProductContent() {
   )
 }
 
+// Wrap the wholesale product view in Suspense because it depends on search params.
 export default function WholesaleProductPage() {
   return (
     <Suspense fallback={

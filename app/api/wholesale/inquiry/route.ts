@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/firebase'
 import { collection, addDoc, Timestamp } from 'firebase/firestore'
 
+// Save a wholesale inquiry so the sales team can respond with details.
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()

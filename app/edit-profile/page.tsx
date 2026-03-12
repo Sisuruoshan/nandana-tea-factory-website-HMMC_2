@@ -21,6 +21,7 @@ interface Alert {
   type: 'success' | 'error' | 'info'
 }
 
+// Give signed-in users one place to update profile details, avatar, and password.
 export default function EditProfilePage() {
   const router = useRouter()
   const pathname = usePathname()

@@ -4,6 +4,7 @@ import { collection, getDocs, orderBy, query } from 'firebase/firestore'
 
 export const dynamic = 'force-dynamic'
 
+// Let the admin dashboard pull the latest customer inquiries in one request.
 export async function GET(request: NextRequest) {
   try {
     const inquiriesRef = collection(db, 'inquiries');

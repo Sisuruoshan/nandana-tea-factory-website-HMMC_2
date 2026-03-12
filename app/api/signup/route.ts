@@ -5,6 +5,7 @@ import { collection, query, where, getDocs, addDoc, Timestamp } from 'firebase/f
 
 const USER_PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\d).{8,}$/
 
+// Create a new customer account after validating the submitted details.
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()

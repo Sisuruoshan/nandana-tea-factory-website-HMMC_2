@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 
 import ScrollReveal from './ScrollReveal'
 
+// Show the site footer on public pages and hide it inside the admin area.
 export default function Footer() {
   const pathname = usePathname()
   if (pathname?.startsWith('/admin')) return null

@@ -3,6 +3,7 @@ import { db } from '@/lib/firebase'
 import { doc, updateDoc, getDoc } from 'firebase/firestore'
 import { requireAuth, createSession } from '@/lib/auth'
 
+// Store a new avatar image for the authenticated user.
 export async function POST(request: NextRequest) {
   try {
     const user = await requireAuth()

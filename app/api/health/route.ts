@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { db } from '@/lib/firebase'
 import { collection, getDocs, limit, query } from 'firebase/firestore'
 
+// Give the app a quick health-check endpoint that also confirms Firestore is reachable.
 export async function GET() {
   try {
     // Test the database connection by trying to fetch one document

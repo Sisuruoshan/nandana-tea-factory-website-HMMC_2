@@ -161,6 +161,7 @@ const styles = {
   },
 }
 
+// Show the shopper what is in the cart and keep checkout actions close at hand.
 export default function CartPage() {
   const router = useRouter()
   const [cartItems, setCartItems] = useState<CartItem[]>([])

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/firebase'
 import { collection, addDoc, query, where, getDocs, Timestamp } from 'firebase/firestore'
 
+// Record a wholesale signup request for later review by the team.
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()

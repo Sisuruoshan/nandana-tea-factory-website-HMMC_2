@@ -5,6 +5,7 @@ import { doc, getDoc } from 'firebase/firestore'
 
 export const dynamic = 'force-dynamic'
 
+// Return the current signed-in user so the frontend can hydrate auth state.
 export async function GET() {
   try {
     const cookieStore = await cookies()

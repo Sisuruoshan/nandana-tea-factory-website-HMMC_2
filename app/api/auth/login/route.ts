@@ -5,6 +5,7 @@ import { verifyPassword, createSession } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic'
 
+// Check the submitted credentials and create a session for a valid user.
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()

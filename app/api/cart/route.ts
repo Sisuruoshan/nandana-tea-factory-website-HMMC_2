@@ -7,6 +7,7 @@ const FALLBACK_IMAGE = '/images/image.png'
 
 export const dynamic = 'force-dynamic'
 
+// Return the signed-in user's cart with fresh totals and product snapshots.
 export async function GET(request: NextRequest) {
   try {
     const user = await requireAuth()
@@ -75,6 +76,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
+// Add a product to the cart or increase its quantity if it is already there.
 export async function POST(request: NextRequest) {
   try {
     const user = await requireAuth()
@@ -224,6 +226,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// Empty the entire cart and restore stock for every item that was reserved.
 export async function DELETE(request: NextRequest) {
   try {
     const user = await requireAuth()

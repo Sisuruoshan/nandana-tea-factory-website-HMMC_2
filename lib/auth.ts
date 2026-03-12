@@ -8,14 +8,17 @@ export interface SessionUser {
   avatar?: string | null
 }
 
+// Hash a password before we store it anywhere persistent.
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 10)
 }
 
+// Compare a login attempt against the saved password hash.
 export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
   return bcrypt.compare(password, hashedPassword)
 }
 
+// Read the lightweight session payload back from cookies for the current request.
 export async function getSession(): Promise<SessionUser | null> {
   try {
     const cookieStore = await cookies()
@@ -38,6 +41,7 @@ export async function getSession(): Promise<SessionUser | null> {
   return null
 }
 
+// Create the cookies that represent a signed-in user session.
 export async function createSession(user: SessionUser): Promise<void> {
   const cookieStore = await cookies()
   const sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(7)}`
@@ -65,12 +69,14 @@ export async function createSession(user: SessionUser): Promise<void> {
   })
 }
 
+// Remove the session cookies so the user is logged out cleanly.
 export async function destroySession(): Promise<void> {
   const cookieStore = await cookies()
   cookieStore.delete('session_id')
   cookieStore.delete('user_data')
 }
 
+// Stop protected routes early when there is no authenticated user in the session.
 export async function requireAuth(): Promise<SessionUser> {
   const user = await getSession()
   if (!user) {

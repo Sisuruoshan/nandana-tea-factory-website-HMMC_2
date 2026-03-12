@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { destroySession } from '@/lib/auth'
 
+// Clear the current session so the user is fully signed out.
 export async function POST() {
   try {
     await destroySession()

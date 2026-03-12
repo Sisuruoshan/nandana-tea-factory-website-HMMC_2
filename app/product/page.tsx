@@ -179,6 +179,7 @@ const styles = {
   },
 }
 
+// Load one retail product, then handle quantity changes and cart actions on the page.
 function ProductContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -413,6 +414,7 @@ function ProductContent() {
   )
 }
 
+// Keep the product page resilient while the search-param driven content is resolving.
 export default function ProductPage() {
   return (
     <Suspense fallback={

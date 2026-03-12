@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import Image from 'next/image'
 
+// Keep the main navigation in sync with session state, cart count, and quick search.
 export default function Header() {
   const [user, setUser] = useState<any>(null)
   const [cartCount, setCartCount] = useState(0)

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// Convert an uploaded image into a data URL that the product form can store.
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()

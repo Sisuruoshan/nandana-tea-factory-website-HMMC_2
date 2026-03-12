@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/firebase'
 import { doc, deleteDoc, updateDoc, getDoc, Timestamp } from 'firebase/firestore'
 
+// Delete an inquiry when the admin no longer needs to keep it.
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -20,6 +21,7 @@ export async function DELETE(
   }
 }
 
+// Save an admin reply back onto the selected inquiry record.
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
+// Collect the details needed to create a customer account.
 export default function SignupPage() {
   const router = useRouter()
   const passwordRequirementPattern = '^(?=.*[A-Z])(?=.*\\d).{8,}$'

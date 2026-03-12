@@ -1,3 +1,4 @@
+// Explain how customer information is collected, used, and protected.
 export default function PrivacyPage() {
   return (
     <main>

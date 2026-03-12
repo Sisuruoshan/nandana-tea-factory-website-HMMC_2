@@ -14,6 +14,7 @@ import {
 export const dynamic = 'force-dynamic'
 export const revalidate = 60 // Revalidate every 60 seconds
 
+// Fetch one product by slug for the storefront detail page.
 export async function GET(
   request: NextRequest,
   { params }: { params: { slug: string } }
@@ -54,6 +55,7 @@ export async function GET(
   }
 }
 
+// Update the product that matches the provided slug.
 export async function PUT(
   request: NextRequest,
   { params }: { params: { slug: string } }
@@ -103,6 +105,7 @@ export async function PUT(
   }
 }
 
+// Delete a single product by slug when it should no longer be sold.
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { slug: string } }

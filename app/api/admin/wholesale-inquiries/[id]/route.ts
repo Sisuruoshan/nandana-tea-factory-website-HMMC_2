@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/firebase'
 import { doc, deleteDoc, updateDoc, getDoc, Timestamp } from 'firebase/firestore'
 
+// Remove a wholesale inquiry when the admin has finished with it.
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -20,6 +21,7 @@ export async function DELETE(
   }
 }
 
+// Save the admin's follow-up message on a wholesale inquiry.
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }

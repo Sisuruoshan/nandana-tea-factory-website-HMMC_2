@@ -6,6 +6,7 @@ import { collection, getDocs, query, where } from 'firebase/firestore'
 // export const dynamic = 'force-dynamic'
 export const revalidate = 60 // Revalidate every 60 seconds
 
+// Return the wholesale catalog with search and paging support.
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)

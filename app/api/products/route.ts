@@ -15,6 +15,7 @@ import {
 // export const dynamic = 'force-dynamic'
 export const revalidate = 60 // Revalidate every 60 seconds
 
+// Return a paginated product list with optional search and wholesale filters.
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
@@ -102,6 +103,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
+// Create a new product record that the storefront can start serving.
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()

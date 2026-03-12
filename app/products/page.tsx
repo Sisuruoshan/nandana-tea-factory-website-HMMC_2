@@ -14,6 +14,7 @@ interface Product {
   image2?: string | null
 }
 
+// Load the retail catalog and keep search plus pagination responsive on the page.
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)

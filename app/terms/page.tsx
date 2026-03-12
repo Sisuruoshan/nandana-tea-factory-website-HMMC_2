@@ -1,3 +1,4 @@
+// Set the ground rules for using the site and its services.
 export default function TermsPage() {
   return (
     <main>

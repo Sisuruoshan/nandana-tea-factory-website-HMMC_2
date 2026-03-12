@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 
+// Listen for the hidden admin shortcut without cluttering the visible UI.
 export default function KeyboardShortcuts() {
   const router = useRouter()
   const pathname = usePathname()

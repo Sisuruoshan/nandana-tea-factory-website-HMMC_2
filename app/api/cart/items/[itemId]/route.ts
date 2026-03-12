@@ -3,6 +3,7 @@ import { db } from '@/lib/firebase'
 import { collection, query, where, getDocs, doc, getDoc, updateDoc, deleteDoc, Timestamp, writeBatch } from 'firebase/firestore'
 import { requireAuth } from '@/lib/auth'
 
+// Update one cart item's quantity while keeping stock and totals in sync.
 export async function PUT(
   request: NextRequest,
   { params }: { params: { itemId: string } }
@@ -119,6 +120,7 @@ export async function PUT(
   }
 }
 
+// Remove one item from the cart and put its reserved stock back.
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { itemId: string } }

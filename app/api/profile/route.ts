@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs'
 
 const USER_PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\d).{8,}$/
 
+// Return the authenticated user's saved profile details.
 export async function GET(request: NextRequest) {
   try {
     const user = await requireAuth()
@@ -47,6 +48,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
+// Save the profile fields that can change without a password update.
 export async function POST(request: NextRequest) {
   try {
     const user = await requireAuth()
@@ -91,6 +93,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// Handle the fuller profile update flow, including optional password changes.
 export async function PUT(request: NextRequest) {
   try {
     const user = await requireAuth()

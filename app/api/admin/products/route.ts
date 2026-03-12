@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/firebase'
 import { collection, addDoc, query, where, getDocs, doc, updateDoc, deleteDoc, getDoc, Timestamp } from 'firebase/firestore'
 
+// Create a new product record directly from the admin dashboard.
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -96,6 +97,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// Update an existing product without rebuilding the full catalog.
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()
@@ -185,6 +187,7 @@ export async function PUT(request: NextRequest) {
   }
 }
 
+// Delete a product by id when the admin removes it from the catalog.
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)

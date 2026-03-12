@@ -23,6 +23,7 @@ interface Product {
   minWholesaleQty?: number
 }
 
+// Give admins one screen to review products, retail inquiries, and wholesale leads.
 export default function AdminPage() {
   const router = useRouter()
   const [section, setSection] = useState<'dashboard' | 'products' | 'wsproducts' | 'inquiries' | 'wsinquiries'>('dashboard')

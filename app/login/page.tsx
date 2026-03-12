@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
+// Handle the actual login flow and decide where the user should land afterward.
 function LoginContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -88,6 +89,7 @@ function LoginContent() {
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
           </div>
+            // Keep the login screen wrapped in Suspense because it depends on search params.
           <div className="form-group">
             <label>Password</label>
             <input
