@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 
+const USER_PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\d).{8,}$/
+
 interface User {
   id: number
   name: string
@@ -174,8 +176,8 @@ export default function EditProfilePage() {
         showAlert('Passwords do not match', 'error')
         return
       }
-      if (password.length < 8) {
-        showAlert('Password must be at least 8 characters long', 'error')
+      if (!USER_PASSWORD_REGEX.test(password)) {
+        showAlert('Password must be at least 8 characters with one uppercase letter and one number', 'error')
         return
       }
     }

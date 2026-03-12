@@ -4,6 +4,8 @@ import { doc, getDoc, updateDoc, Timestamp } from 'firebase/firestore'
 import { requireAuth } from '@/lib/auth'
 import bcrypt from 'bcryptjs'
 
+const USER_PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\d).{8,}$/
+
 export async function GET(request: NextRequest) {
   try {
     const user = await requireAuth()
@@ -110,6 +112,13 @@ export async function PUT(request: NextRequest) {
       if (password !== password_confirmation) {
         return NextResponse.json(
           { message: 'Passwords do not match' },
+          { status: 400 }
+        )
+      }
+
+      if (!USER_PASSWORD_REGEX.test(password)) {
+        return NextResponse.json(
+          { message: 'Password must be at least 8 characters with one uppercase letter and one number' },
           { status: 400 }
         )
       }

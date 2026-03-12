@@ -6,6 +6,7 @@ import Link from 'next/link'
 
 export default function SignupPage() {
   const router = useRouter()
+  const passwordRequirementPattern = '^(?=.*[A-Z])(?=.*\\d).{8,}$'
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -91,7 +92,9 @@ export default function SignupPage() {
               type="password"
               name="password"
               required
-              minLength={6}
+              minLength={8}
+              pattern={passwordRequirementPattern}
+              title="Password must be at least 8 characters with one uppercase letter and one number"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             />

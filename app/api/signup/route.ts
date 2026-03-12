@@ -3,6 +3,8 @@ import { db } from '@/lib/firebase'
 import { hashPassword } from '@/lib/auth'
 import { collection, query, where, getDocs, addDoc, Timestamp } from 'firebase/firestore'
 
+const USER_PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\d).{8,}$/
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -16,10 +18,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate password length
-    if (password.length < 6) {
+    // Validate password requirements
+    if (!USER_PASSWORD_REGEX.test(password)) {
       return NextResponse.json(
-        { error: 'Password must be at least 6 characters' },
+        { error: 'Password must be at least 8 characters with one uppercase letter and one number' },
         { status: 400 }
       )
     }
